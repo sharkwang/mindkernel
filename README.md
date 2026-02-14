@@ -54,6 +54,15 @@
 - 输出架构视图、接口契约、状态迁移图
 - 在需求冻结后进入实现阶段
 
+## 贡献指南
+
+请先阅读：`CONTRIBUTING.md`
+
+该文件定义了：
+- 设计变更流程（讨论记录 → 主规范 → schema）
+- 提交规范与 PR 清单
+- 本项目四道评审闸门（Constitution / Uncertainty / Temporal / Audit）
+
 ---
 
 项目命名来源：Isaac Asimov 的 **Positronic Brain**（正子脑）。
