@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "experience.schema.json",
+  "title": "ExperienceRecord",
+  "type": "object",
+  "allOf": [
+    { "$ref": "./common-temporal.schema.json" }
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "memory_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "episode_summary": { "type": "string" },
+    "action_taken": { "type": "string" },
+    "outcome": { "type": "string" },
+    "impact": {
+      "type": "object",
+      "properties": {
+        "direction": { "type": "string", "enum": ["positive", "neutral", "negative"] },
+        "scope": { "type": "string" },
+        "score": { "type": "number", "minimum": -1, "maximum": 1 }
+      },
+      "additionalProperties": true
+    },
+    "applicability": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "failure_modes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["candidate", "active", "needs_review", "invalidated", "archived"]
+    },
+    "affect_snapshot": {
+      "type": "object",
+      "properties": {
+        "valence": { "type": "number", "minimum": -1, "maximum": 1 },
+        "arousal": { "type": "number", "minimum": 0, "maximum": 1 },
+        "urgency": { "type": "number", "minimum": 0, "maximum": 1 },
+        "certainty": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "impulse_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["challenge", "avoid", "confirm", "delay", "escalate", "assist"] },
+          "strength": { "type": "number", "minimum": 0, "maximum": 1 }
+        },
+        "required": ["type", "strength"],
+        "additionalProperties": false
+      }
+    },
+    "regulation_action": {
+      "type": "string",
+      "enum": ["allow", "delay", "reframe", "block", "escalate"]
+    },
+    "post_action_affect": { "$ref": "#/properties/affect_snapshot" },
+    "behavior_outcome": { "type": "string" }
+  },
+  "required": ["id", "memory_refs", "episode_summary", "outcome", "confidence", "status"],
+  "additionalProperties": true
+}

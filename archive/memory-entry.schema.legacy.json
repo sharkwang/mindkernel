@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memory-entry.schema.json",
+  "title": "MemoryEntry",
+  "type": "object",
+  "required": [
+    "id",
+    "fact",
+    "type",
+    "source",
+    "confidence",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "fact": { "type": "string" },
+    "type": {
+      "type": "string",
+      "enum": ["preference", "decision", "profile", "project", "todo", "constraint", "other"]
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string" },
+        "startLine": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "sessionKey": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "stale", "archived"],
+      "default": "active"
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "lastVerifiedAt": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

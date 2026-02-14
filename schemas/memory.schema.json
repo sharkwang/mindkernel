@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "memory.schema.json",
+  "title": "MemoryItem",
+  "type": "object",
+  "allOf": [
+    { "$ref": "./common-temporal.schema.json" }
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "kind": { "type": "string", "enum": ["event", "fact"] },
+    "content": { "type": "string" },
+    "source": {
+      "type": "object",
+      "properties": {
+        "source_type": { "type": "string", "enum": ["session", "tool", "file", "external"] },
+        "source_ref": { "type": "string" },
+        "integrity_hash": { "type": "string" }
+      },
+      "required": ["source_type", "source_ref"],
+      "additionalProperties": true
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "risk_tier": { "type": "string", "enum": ["low", "medium", "high"] },
+    "impact_tier": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "status": {
+      "type": "string",
+      "enum": [
+        "candidate",
+        "quarantine",
+        "verified",
+        "active",
+        "stale",
+        "stale_uncertain",
+        "rejected_poisoned",
+        "archived"
+      ]
+    },
+    "provenance_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "corroboration_score": { "type": "number", "minimum": 0, "maximum": 1 },
+    "tamper_risk": { "type": "number", "minimum": 0, "maximum": 1 },
+    "investigation_status": {
+      "type": "string",
+      "enum": ["none", "under_investigation", "cleared", "poisoned"]
+    },
+    "derived_links": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "half_life": {
+      "description": "ISO-8601 duration, e.g. P30D",
+      "type": "string",
+      "pattern": "^P"
+    },
+    "reinforcement_count": { "type": "integer", "minimum": 0 },
+    "impact_weight": { "type": "number", "minimum": 0 }
+  },
+  "required": ["id", "kind", "content", "source", "status", "confidence", "risk_tier", "impact_tier"],
+  "additionalProperties": true
+}

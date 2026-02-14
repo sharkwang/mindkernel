@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "persona.schema.json",
+  "title": "PersonaProfile",
+  "type": "object",
+  "allOf": [
+    { "$ref": "./common-temporal.schema.json" }
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "identity": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "tone": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "values": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "boundaries": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "archived"]
+    },
+    "manual_update_only": { "type": "boolean", "const": true }
+  },
+  "required": ["id", "identity", "values", "boundaries", "status", "manual_update_only"],
+  "additionalProperties": true
+}

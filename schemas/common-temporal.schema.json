@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common-temporal.schema.json",
+  "title": "CommonTemporalFields",
+  "type": "object",
+  "properties": {
+    "created_at": { "type": "string", "format": "date-time" },
+    "last_accessed_at": { "type": "string", "format": "date-time" },
+    "last_reinforced_at": { "type": "string", "format": "date-time" },
+    "last_verified_at": { "type": "string", "format": "date-time" },
+    "review_due_at": { "type": "string", "format": "date-time" },
+    "stale_since": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "uncertainty_ttl": {
+      "description": "ISO-8601 duration, e.g. P7D",
+      "type": "string",
+      "pattern": "^P"
+    },
+    "next_action_at": { "type": "string", "format": "date-time" }
+  },
+  "required": ["created_at", "review_due_at", "next_action_at"],
+  "additionalProperties": true
+}

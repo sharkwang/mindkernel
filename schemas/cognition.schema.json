@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cognition.schema.json",
+  "title": "CognitiveRule",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "rule": { "type": "string" },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "domains": { "type": "array", "items": { "type": "string" } },
+        "channels": { "type": "array", "items": { "type": "string" } },
+        "risk_tier_max": { "type": "string", "enum": ["low", "medium", "high"] }
+      },
+      "additionalProperties": true
+    },
+    "epistemic_state": {
+      "type": "string",
+      "enum": ["supported", "uncertain", "refuted"]
+    },
+    "unknown_type": {
+      "type": "string",
+      "enum": ["multipath", "out_of_scope", "ontic_unknowable"]
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "falsify_if": {
+      "description": "Condition that falsifies this rule",
+      "type": "string"
+    },
+    "review_interval": {
+      "description": "ISO-8601 duration, e.g. P14D",
+      "type": "string",
+      "pattern": "^P"
+    },
+    "decision_mode_if_uncertain": {
+      "type": "string",
+      "enum": ["explore", "conservative", "abstain", "escalate"]
+    },
+    "risk_tier": { "type": "string", "enum": ["low", "medium", "high"] },
+    "impact_tier": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "auto_verify_budget": { "type": "integer", "minimum": 0 },
+    "status": {
+      "type": "string",
+      "enum": ["candidate", "active", "stale", "needs_revalidate", "refuted", "archived"]
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "id",
+    "rule",
+    "scope",
+    "epistemic_state",
+    "confidence",
+    "status",
+    "falsify_if",
+    "review_interval",
+    "evidence_refs"
+  ],
+  "allOf": [
+    { "$ref": "./common-temporal.schema.json" },
+    {
+      "if": {
+        "properties": { "epistemic_state": { "const": "uncertain" } },
+        "required": ["epistemic_state"]
+      },
+      "then": {
+        "required": ["unknown_type", "decision_mode_if_uncertain", "uncertainty_ttl", "auto_verify_budget"]
+      }
+    }
+  ],
+  "additionalProperties": true
+}
