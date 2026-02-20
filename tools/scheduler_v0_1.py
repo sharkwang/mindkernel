@@ -2,7 +2,7 @@
 """
 MindKernel v0.1 minimal scheduler prototype (SQLite).
 
-Implements the interface in docs/scheduler-interface-v0.1.md:
+Implements the interface in docs/02-design/scheduler-interface-v0.1.md:
 - enqueue
 - pull
 - ack

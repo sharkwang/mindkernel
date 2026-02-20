@@ -1,6 +1,6 @@
 # Scheduler Prototype v0.1（最小可运行原型）
 
-> 目标：把 `scheduler-interface-v0.1.md` 从接口草案推进到本地可运行脚本。
+> 目标：把 `02-design/scheduler-interface-v0.1.md` 从接口草案推进到本地可运行脚本。
 
 ## 1. 实现位置
 

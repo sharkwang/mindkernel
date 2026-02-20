@@ -46,11 +46,11 @@ python3 tools/system_smoke_report_v0_1.py
 
 ## 推荐阅读顺序
 
-1. `docs/requirements-and-architecture.md`（主规范）
-2. `docs/rtm-v0.1.md`（需求追踪）
-3. `docs/state-machines-v0.1.md`（状态机）
-4. `docs/full-path-prototype-v0.1.md`（一体化原型）
-5. `docs/validation-critical-paths-v0.1.md`（验证覆盖）
+1. `docs/01-foundation/requirements-and-architecture.md`（主规范）
+2. `docs/02-design/rtm-v0.1.md`（需求追踪）
+3. `docs/02-design/state-machines-v0.1.md`（状态机）
+4. `docs/04-prototypes/full-path-prototype-v0.1.md`（一体化原型）
+5. `docs/03-validation/validation-critical-paths-v0.1.md`（验证覆盖）
 6. `docs/contents-map.md`（完整索引）
 
 ## 目录结构
@@ -65,4 +65,4 @@ python3 tools/system_smoke_report_v0_1.py
 
 请先阅读：`CONTRIBUTING.md`
 
-项目命名说明见：`docs/name-origin.md`。
+项目命名说明见：`docs/05-history/name-origin.md`。

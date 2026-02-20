@@ -35,10 +35,10 @@
 
 ## 3) v0.1 执行链路（实现优先级）
 
-1. **状态机先行**：按 `state-machines-v0.1.md` 落地迁移函数。
-2. **调度触发**：按 `scheduler-interface-v0.1.md` 落地到期拉取与重试。
+1. **状态机先行**：按 `02-design/state-machines-v0.1.md` 落地迁移函数。
+2. **调度触发**：按 `02-design/scheduler-interface-v0.1.md` 落地到期拉取与重试。
 3. **审计闭环**：每次迁移写审计，所有高风险决策写 DecisionTrace。
-4. **E2E 验收**：按 `e2e-scenarios-v0.1.md` 跑 5 个场景。
+4. **E2E 验收**：按 `03-validation/e2e-scenarios-v0.1.md` 跑 5 个场景。
 
 ## 4) 本轮整理后的一致性结果
 
@@ -60,7 +60,7 @@
 
 - 先改规则，再改 schema，再改 E2E。
 - 任一术语变更必须同步更新：
-  - `rule-table-v0.1.md`
-  - `state-machines-v0.1.md`
-  - `e2e-scenarios-v0.1.md`
+  - `02-design/rule-table-v0.1.md`
+  - `02-design/state-machines-v0.1.md`
+  - `03-validation/e2e-scenarios-v0.1.md`
   - 对应 schema

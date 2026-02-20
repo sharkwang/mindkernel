@@ -9,11 +9,11 @@
   - **Partial**：v0.1 有框架/部分实现，仍需补充
   - **Out**：明确不在 v0.1 范围内
 - 关联文档：
-  - `docs/mindkernel-v0.1-scope.md`
-  - `docs/rule-table-v0.1.md`
-  - `docs/e2e-scenarios-v0.1.md`
-  - `docs/state-machines-v0.1.md`
-  - `docs/scheduler-interface-v0.1.md`
+  - `docs/01-foundation/mindkernel-v0.1-scope.md`
+  - `docs/02-design/rule-table-v0.1.md`
+  - `docs/03-validation/e2e-scenarios-v0.1.md`
+  - `docs/02-design/state-machines-v0.1.md`
+  - `docs/02-design/scheduler-interface-v0.1.md`
   - `schemas/decision-trace.schema.json`
   - `schemas/audit-event.schema.json`
 

@@ -126,9 +126,9 @@
 
 ## 5) 文档关系
 
-- 主规范：`docs/requirements-and-architecture.md`
+- 主规范：`docs/01-foundation/requirements-and-architecture.md`
 - 历史草案：`archive/requirements-and-architecture.legacy.md`
-- 本讨论记录：`docs/discussion-log.md`
+- 本讨论记录：`docs/05-history/discussion-log.md`
 
 > 维护规则：后续新增讨论优先写入“讨论记录”，定稿后再进入“主规范”。
 
@@ -149,9 +149,9 @@
 
 - 决策：采用“先闭环、后扩展”的启动策略，先交付可验证的 v0.1 最小系统定义。
 - 新增文档：
-  - `docs/mindkernel-v0.1-scope.md`
-  - `docs/rule-table-v0.1.md`
-  - `docs/e2e-scenarios-v0.1.md`
+  - `docs/01-foundation/mindkernel-v0.1-scope.md`
+  - `docs/02-design/rule-table-v0.1.md`
+  - `docs/03-validation/e2e-scenarios-v0.1.md`
   - `schemas/decision-trace.schema.json`
 - 覆盖内容：
   - v0.1 In/Out Scope 与 Go/No-Go 验收门槛
@@ -169,11 +169,11 @@
 
 ### 6.4 三步执行结果（2026-02-20）
 
-- 已完成 `docs/rtm-v0.1.md`
+- 已完成 `docs/02-design/rtm-v0.1.md`
   - 将 v0.1 设计与主规范 MR/CR/FR/NFR 做覆盖映射（Full/Partial/Out）。
-- 已完成 `docs/state-machines-v0.1.md`
+- 已完成 `docs/02-design/state-machines-v0.1.md`
   - 定义 Memory/Experience/Cognition 最小状态机及不变量，明确与 `epistemic_state` 双轴关系。
-- 已完成 `docs/scheduler-interface-v0.1.md`
+- 已完成 `docs/02-design/scheduler-interface-v0.1.md`
   - 给出到期调度器最小接口（enqueue/pull/ack/fail）与幂等、重试、死信策略。
 - 同步动作：`docs/contents-map.md` 更新为 v2，并纳入 v0.1 启动包索引。
 
@@ -185,9 +185,9 @@
   2. Cognition 的 `stale_uncertain` 术语与状态枚举存在层次差异，统一为“概念层术语”，数据层表达为 `status=stale + epistemic_state=uncertain`。
   3. `memory.schema.json` 缺少 `evidence_refs` 约束，与规则表不一致；已补为必填（`minItems=1`）。
   4. schema 索引未纳入 `decision-trace.schema.json`；已补齐。
-  5. README 命名来源描述与 `name-origin.md` 不一致；已统一为引用 `docs/name-origin.md`。
+  5. README 命名来源描述与 `05-history/name-origin.md` 不一致；已统一为引用 `docs/05-history/name-origin.md`。
 - 新增整理文档：
-  - `docs/design-consolidation-v0.1.md`（统一口径与维护规则）
+  - `docs/02-design/design-consolidation-v0.1.md`（统一口径与维护规则）
 - 结果：v0.1 启动包在“规则表 ↔ 状态机 ↔ E2E ↔ schema”四层之间达到当前一致。
 
 ### 6.6 审计契约补全（2026-02-20）
@@ -200,9 +200,9 @@
   - 高风险事件要求绑定 `decision_trace_id`
 - 同步更新：
   - `schemas/README.md`
-  - `docs/requirements-and-architecture.md`（2.11 映射）
+  - `docs/01-foundation/requirements-and-architecture.md`（2.11 映射）
   - `docs/contents-map.md`
-  - `docs/design-consolidation-v0.1.md`
+  - `docs/02-design/design-consolidation-v0.1.md`
 
 ### 6.7 关键路径验证资产化（2026-02-20）
 
@@ -214,7 +214,7 @@
   - `data/fixtures/critical-paths/04-high-risk-block.json`
   - `data/fixtures/critical-paths/05-reinstate.json`
   - `tools/validate_scenarios_v0_1.py`
-  - `docs/validation-critical-paths-v0.1.md`
+  - `docs/03-validation/validation-critical-paths-v0.1.md`
 - 覆盖关键路径：
   1. 正常闭环（Memory→Experience→Cognition→Decision）
   2. 注入确认与级联回滚
@@ -239,7 +239,7 @@
 - 决策：进入实现前半步，先交付 `next_action_at` 调度器可运行原型（SQLite）。
 - 新增：
   - `tools/scheduler_v0_1.py`
-  - `docs/scheduler-prototype-v0.1.md`
+  - `docs/04-prototypes/scheduler-prototype-v0.1.md`
 - 支持能力：
   - `init-db / enqueue / pull / ack / fail / stats`
   - 幂等键去重（`idempotency_key`）
@@ -269,7 +269,7 @@
   - `tools/scheduler_v0_1.py` 的审计写入前强制校验 `audit-event.schema.json`。
 - 新增前半链路原型：
   - `tools/memory_experience_v0_1.py`
-  - `docs/memory-experience-prototype-v0.1.md`
+  - `docs/04-prototypes/memory-experience-prototype-v0.1.md`
 - 关键能力：
   - `ingest-memory`（Memory 入库 + schema 校验）
   - `memory-to-experience`（基于 R-ME-01 生成 Experience candidate）
@@ -298,7 +298,7 @@
 - 决策：推进 Experience→Cognition 最小可运行实现，并引入 Persona Gate 的可解释阻断路径。
 - 新增原型：
   - `tools/experience_cognition_v0_1.py`
-  - `docs/experience-cognition-prototype-v0.1.md`
+  - `docs/04-prototypes/experience-cognition-prototype-v0.1.md`
 - 核心能力：
   - `upsert-persona` / `ingest-experience` / `experience-to-cognition` / `run-path`
   - Persona Gate 最小策略：`boundaries` 关键词与 `episode_summary/outcome/action_taken` 匹配
@@ -315,7 +315,7 @@
 - 决策：将前两段原型串联为单命令全链路，降低联调成本。
 - 新增：
   - `tools/full_path_v0_1.py`
-  - `docs/full-path-prototype-v0.1.md`
+  - `docs/04-prototypes/full-path-prototype-v0.1.md`
 - 能力：
   - `run-full-path` 一次执行：Memory ingest -> Experience candidate -> Persona gate -> Cognition promotion/block。
 - 验证覆盖扩展：
@@ -329,7 +329,7 @@
 - 决策：补齐闭环最后一跳，交付 Cognition→DecisionTrace 原型。
 - 新增：
   - `tools/cognition_decision_v0_1.py`
-  - `docs/cognition-decision-prototype-v0.1.md`
+  - `docs/04-prototypes/cognition-decision-prototype-v0.1.md`
 - 最小策略：
   - supported + low/medium -> normal/executed
   - uncertain + medium -> conservative/limited
@@ -359,7 +359,7 @@
 - 结构整理：
   - 新增 `tools/README.md`（脚本地图）
   - 新增 `data/README.md`（fixtures 与运行产物边界）
-  - 新增 `docs/system-smoke-report-v0.1.md`（报告产出说明）
+  - 新增 `docs/03-validation/system-smoke-report-v0.1.md`（报告产出说明）
   - `docs/contents-map.md` 升级为 v10，并纳入 smoke-report 文档
 - 规范对齐：
   - 更新 `README.md` 为“规范 + 原型并行”阶段说明，补齐快速开始
@@ -368,3 +368,19 @@
   - 清理 `data/*.sqlite`、`reports/*` 与 `tools/__pycache__`
   - `.gitignore` 增加 `reports/` 忽略规则
 - 结果：项目入口更清晰，运行产物与源码边界明确。
+
+### 6.18 docs 分类归档（2026-02-20）
+
+- 需求：按主题对 `docs/` 文件进行分类存储。
+- 执行：
+  - `docs/01-foundation/`：主规范与章程（requirements/charter/scope）
+  - `docs/02-design/`：规则、状态机、调度接口、RTM、设计整合
+  - `docs/03-validation/`：E2E、关键路径校验、smoke 报告说明
+  - `docs/04-prototypes/`：各链路原型说明（ME/EC/CD/full/scheduler）
+  - `docs/05-history/`：discussion-log 与命名历史
+- 同步：
+  - 全仓引用路径更新（README/CONTRIBUTING/docs/schemas/tools）
+  - `docs/contents-map.md` 升级并反映新目录结构
+- 校验：
+  - 所有 `docs/...` 引用路径存在性检查通过
+  - 关键路径验证脚本通过（62 对象/事件）

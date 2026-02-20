@@ -3,7 +3,7 @@
 这些是 MindKernel 的**数据契约草案**（draft），用于需求对齐与接口讨论。
 
 - 当前状态：设计中（non-production）
-- 作用：把 `docs/requirements-and-architecture.md` 中的 CR/FR/NFR 映射为可检查结构
+- 作用：把 `docs/01-foundation/requirements-and-architecture.md` 中的 CR/FR/NFR 映射为可检查结构
 
 ## 文件
 - `common-temporal.schema.json`：统一时间轴字段

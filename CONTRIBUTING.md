@@ -30,8 +30,8 @@
 
 涉及设计/规则的变更，请按顺序：
 
-1. 先写讨论记录（`docs/discussion-log.md`）
-2. 再更新主规范（`docs/requirements-and-architecture.md`）
+1. 先写讨论记录（`docs/05-history/discussion-log.md`）
+2. 再更新主规范（`docs/01-foundation/requirements-and-architecture.md`）
 3. 若字段变化，必须同步更新 `schemas/*.schema.json`
 4. 同步更新验证资产（fixtures / 断言 / CI）
 5. 若目录或阅读顺序变化，更新 `docs/contents-map.md`

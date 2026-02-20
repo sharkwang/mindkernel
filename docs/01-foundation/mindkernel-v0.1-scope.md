@@ -39,9 +39,9 @@
 ## 4. v0.1 交付物清单
 
 - 文档
-  - `docs/rule-table-v0.1.md`
-  - `docs/e2e-scenarios-v0.1.md`
-  - `docs/mindkernel-v0.1-scope.md`（本文档）
+  - `docs/02-design/rule-table-v0.1.md`
+  - `docs/03-validation/e2e-scenarios-v0.1.md`
+  - `docs/01-foundation/mindkernel-v0.1-scope.md`（本文档）
 - 数据契约
   - `schemas/decision-trace.schema.json`
   - `schemas/audit-event.schema.json`
@@ -61,7 +61,7 @@
 
 ## 6. 验收门槛（Go/No-Go）
 
-1. 至少 3 条端到端场景全部通过（见 `e2e-scenarios-v0.1.md`）
+1. 至少 3 条端到端场景全部通过（见 `03-validation/e2e-scenarios-v0.1.md`）
 2. 高风险决策 100% 具备 DecisionTrace
 3. 注入场景回滚成功率 = 100%
 4. `uncertain` 到期事项可自动分流，不出现无限悬挂
@@ -69,7 +69,7 @@
 ## 7. 风险与对应缓解
 
 - 风险：规则定义不清，导致实现漂移
-  - 缓解：先冻结 `rule-table-v0.1.md`，再写实现
+  - 缓解：先冻结 `02-design/rule-table-v0.1.md`，再写实现
 - 风险：审计后补，导致链路断裂
   - 缓解：把审计写入作为“默认路径”而非可选项
 - 风险：调度器复杂度提前膨胀

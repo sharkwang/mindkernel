@@ -11,7 +11,7 @@
 ## 使用方式
 
 1. 本文档仅用于追溯历史讨论，不再作为当前主规范。
-2. 当前主规范迁移到：`docs/requirements-and-architecture.md`。
+2. 当前主规范迁移到：`docs/01-foundation/requirements-and-architecture.md`。
 3. 任何新增设计请写入主规范，避免继续在 legacy 里追加。
 
 ---

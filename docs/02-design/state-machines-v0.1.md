@@ -138,4 +138,4 @@ DecisionTrace 不做复杂状态机，仅约束结果：
 3. `expires_at` 到期 -> archive/freeze
 4. 新证据事件 -> reinstate 候选迁移
 
-> 详细接口见 `docs/scheduler-interface-v0.1.md`。
+> 详细接口见 `docs/02-design/scheduler-interface-v0.1.md`。
