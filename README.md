@@ -27,7 +27,7 @@
 
 1. `docs/requirements-and-architecture.md`（主规范）
 2. `docs/project-charter.md`（项目宪法级方向）
-3. `docs/discussion-log-2026-02-14.md`（决策脉络）
+3. `docs/discussion-log.md`（决策脉络）
 4. `docs/contents-map.md`（文档索引）
 5. `archive/requirements-and-architecture.legacy.md`（历史输入）
 

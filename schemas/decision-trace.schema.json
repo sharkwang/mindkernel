@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "decision-trace.schema.json",
+  "title": "DecisionTrace",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "decision_id": { "type": "string" },
+    "request_ref": { "type": "string" },
+    "risk_tier": { "type": "string", "enum": ["low", "medium", "high"] },
+    "impact_tier": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+    "decision_mode": {
+      "type": "string",
+      "enum": ["normal", "explore", "conservative", "escalate", "abstain"]
+    },
+    "epistemic_state": {
+      "type": "string",
+      "enum": ["supported", "uncertain", "refuted"]
+    },
+    "unknown_type": {
+      "type": "string",
+      "enum": ["multipath", "out_of_scope", "ontic_unknowable"]
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "memory_refs": { "type": "array", "items": { "type": "string" } },
+        "experience_refs": { "type": "array", "items": { "type": "string" } },
+        "cognition_refs": { "type": "array", "items": { "type": "string" } },
+        "persona_refs": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "gates": {
+      "type": "object",
+      "properties": {
+        "persona_conflict_gate": { "type": "string", "enum": ["pass", "block", "override"] },
+        "social_gate": { "type": "string", "enum": ["pass", "block", "defer"] },
+        "risk_gate": { "type": "string", "enum": ["pass", "limit", "block"] },
+        "cognition_gate": { "type": "string", "enum": ["pass", "degrade", "block"] }
+      },
+      "required": ["persona_conflict_gate", "risk_gate", "cognition_gate"],
+      "additionalProperties": true
+    },
+    "reason": { "type": "string" },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "step": { "type": "string" },
+          "result": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        },
+        "required": ["step", "result", "timestamp"],
+        "additionalProperties": true
+      }
+    },
+    "final_outcome": {
+      "type": "string",
+      "enum": ["executed", "limited", "blocked", "escalated", "abstained"]
+    },
+    "review_due_at": { "type": "string", "format": "date-time" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "required": [
+    "id",
+    "decision_id",
+    "risk_tier",
+    "decision_mode",
+    "epistemic_state",
+    "gates",
+    "reason",
+    "evidence_refs",
+    "final_outcome",
+    "created_at",
+    "updated_at"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "epistemic_state": { "const": "uncertain" } },
+        "required": ["epistemic_state"]
+      },
+      "then": {
+        "required": ["unknown_type"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "risk_tier": { "const": "high" } },
+        "required": ["risk_tier"]
+      },
+      "then": {
+        "properties": {
+          "final_outcome": { "enum": ["blocked", "escalated", "abstained", "limited"] }
+        }
+      }
+    }
+  ],
+  "additionalProperties": true
+}

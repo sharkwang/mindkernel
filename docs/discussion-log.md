@@ -128,6 +128,41 @@
 
 - 主规范：`docs/requirements-and-architecture.md`
 - 历史草案：`archive/requirements-and-architecture.legacy.md`
-- 本讨论记录：`docs/discussion-log-2026-02-14.md`
+- 本讨论记录：`docs/discussion-log.md`
 
 > 维护规则：后续新增讨论优先写入“讨论记录”，定稿后再进入“主规范”。
+
+---
+
+## 6) 增量讨论记录（2026-02-20）
+
+### 6.1 项目更名与仓库对齐
+
+- 决策：项目正式名称统一为 **MindKernel（心智内核）**，仓库目录名统一为 `mindkernel`。
+- 动作：
+  - 本地目录由 `projects/positronic-brain` 重命名为 `projects/mindkernel`。
+  - 文档中项目名与相关描述已批量更新。
+  - Git remote 从 `sharkwang/positronic-brain` 切换到 `sharkwang/mindkernel`。
+- 结果：远程 `origin/main` 已与本地主线对齐（包含改名提交）。
+
+### 6.2 v0.1 启动文档与最小契约落地
+
+- 决策：采用“先闭环、后扩展”的启动策略，先交付可验证的 v0.1 最小系统定义。
+- 新增文档：
+  - `docs/mindkernel-v0.1-scope.md`
+  - `docs/rule-table-v0.1.md`
+  - `docs/e2e-scenarios-v0.1.md`
+  - `schemas/decision-trace.schema.json`
+- 覆盖内容：
+  - v0.1 In/Out Scope 与 Go/No-Go 验收门槛
+  - Memory→Experience→Cognition 的可执行规则表
+  - uncertain 分流与高风险拦截策略
+  - 伪造注入回滚、TTL 分流、reinstate 等 E2E 验收场景
+  - DecisionTrace 最小审计契约（风险、闸门、证据、结论）
+
+### 6.3 下一步建议（待执行）
+
+1. 复核 `rule-table-v0.1` 的阈值参数（TTL/预算/风险阈值）。
+2. 将 v0.1 启动文档与主规范做条款映射（补 RTM 子表）。
+3. 实现最小调度器原型（基于 `next_action_at` 的到期拉取）。
+4. 按 `e2e-scenarios-v0.1` 执行首次可运行验收。
