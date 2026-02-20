@@ -323,3 +323,20 @@
   - `data/fixtures/critical-paths/13-full-path-block.json`
   - `tools/validate_scenarios_v0_1.py` 新增 S12/S13 断言。
 - 结果：关键路径覆盖从 11 条扩展到 13 条。
+
+### 6.15 Cognition→Decision 最小链路（2026-02-20）
+
+- 决策：补齐闭环最后一跳，交付 Cognition→DecisionTrace 原型。
+- 新增：
+  - `tools/cognition_decision_v0_1.py`
+  - `docs/cognition-decision-prototype-v0.1.md`
+- 最小策略：
+  - supported + low/medium -> normal/executed
+  - uncertain + medium -> conservative/limited
+  - uncertain + high -> escalate/escalated
+  - refuted -> abstain/abstained
+- 验证覆盖扩展：
+  - `data/fixtures/critical-paths/14-cognition-decision-pass.json`
+  - `data/fixtures/critical-paths/15-cognition-decision-high-risk-block.json`
+  - `tools/validate_scenarios_v0_1.py` 新增 S14/S15 断言。
+- 结果：关键路径覆盖从 13 条扩展到 15 条。

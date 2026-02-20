@@ -1,0 +1,66 @@
+{
+  "scenario_id": "S15-cognition-decision-high-risk-block",
+  "cognition": {
+    "id": "cg_s15_001",
+    "rule": "Uncertain cognition in high-risk domain requires escalation.",
+    "scope": {
+      "domains": ["external_action"],
+      "channels": ["webchat"],
+      "risk_tier_max": "high"
+    },
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "confidence": 0.41,
+    "falsify_if": "Independent verification confirms one safe path.",
+    "review_interval": "P7D",
+    "decision_mode_if_uncertain": "escalate",
+    "risk_tier": "high",
+    "impact_tier": "high",
+    "auto_verify_budget": 1,
+    "status": "needs_revalidate",
+    "evidence_refs": ["exp_s15_001"],
+    "created_at": "2026-02-20T09:10:00Z",
+    "review_due_at": "2026-02-27T09:10:00Z",
+    "next_action_at": "2026-02-27T09:10:00Z",
+    "uncertainty_ttl": "P7D"
+  },
+  "decision_trace": {
+    "id": "dt_s15_001",
+    "decision_id": "dec_s15_001",
+    "request_ref": "req://s15/001",
+    "risk_tier": "high",
+    "impact_tier": "high",
+    "decision_mode": "escalate",
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "inputs": {
+      "cognition_refs": ["cg_s15_001"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "defer",
+      "risk_gate": "block",
+      "cognition_gate": "degrade"
+    },
+    "reason": "High-risk request with uncertain cognition requires escalation.",
+    "evidence_refs": ["cg_s15_001"],
+    "final_outcome": "escalated",
+    "created_at": "2026-02-20T09:10:20Z",
+    "updated_at": "2026-02-20T09:10:20Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s15_001",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-cd-pipeline" },
+      "object_type": "decision",
+      "object_id": "dec_s15_001",
+      "before": { "gate": "pending" },
+      "after": { "risk_gate": "block", "cognition_gate": "degrade", "final_outcome": "escalated" },
+      "reason": "High-risk request with uncertain cognition requires escalation.",
+      "evidence_refs": ["cg_s15_001"],
+      "timestamp": "2026-02-20T09:10:21Z",
+      "metadata": { "decision_trace_id": "dt_s15_001" }
+    }
+  ]
+}

@@ -48,6 +48,12 @@
 13. **S13 Full Path Block (M→E→Gate Block)**
    - 文件：`13-full-path-block.json`
    - 覆盖：一体化路径中 Persona Gate 阻断认知升格
+14. **S14 Cognition→Decision Pass**
+   - 文件：`14-cognition-decision-pass.json`
+   - 覆盖：supported cognition 驱动低风险正常执行
+15. **S15 Cognition→Decision High-Risk Block**
+   - 文件：`15-cognition-decision-high-risk-block.json`
+   - 覆盖：uncertain + high risk 的升级/阻断策略
 
 ## 3. 校验内容
 
@@ -68,6 +74,8 @@
   - S11 必须出现 Persona Gate `block` 且带 boundary_hits
   - S12 必须贯通 Memory/Experience/Cognition 引用链并出现 gate `pass`
   - S13 必须在完整链路中触发 gate `block` 且不创建 Cognition
+  - S14 必须在 supported 场景输出 `decision_mode=normal` 与 `final_outcome=executed`
+  - S15 必须满足 high-risk 非直执（`final_outcome != executed`）
 
 ## 4. 运行方式
 
@@ -85,7 +93,9 @@ python3 tools/validate_scenarios_v0_1.py
 - `PASS 11-experience-cognition-block.json`
 - `PASS 12-full-path-pass.json`
 - `PASS 13-full-path-block.json`
-- `All good. Validated objects/events: 52`
+- `PASS 14-cognition-decision-pass.json`
+- `PASS 15-cognition-decision-high-risk-block.json`
+- `All good. Validated objects/events: 58`
 
 ## 5. CI 自动校验
 

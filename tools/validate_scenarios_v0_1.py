@@ -239,6 +239,23 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
             for e in scenario.get("audit_events", [])
         ), "S13 must include persona gate block with boundary hits"
 
+    elif sid_prefix == "S14":
+        cg = scenario["cognition"]
+        dt = scenario["decision_trace"]
+        assert cg["epistemic_state"] == "supported", "S14 cognition must be supported"
+        assert dt["decision_mode"] == "normal", "S14 should use normal decision mode"
+        assert dt["final_outcome"] == "executed", "S14 should execute"
+        assert dt.get("gates", {}).get("risk_gate") == "pass", "S14 risk gate should pass"
+
+    elif sid_prefix == "S15":
+        cg = scenario["cognition"]
+        dt = scenario["decision_trace"]
+        assert cg["epistemic_state"] == "uncertain", "S15 cognition must be uncertain"
+        assert dt["risk_tier"] == "high", "S15 risk tier must be high"
+        assert dt["final_outcome"] in {"escalated", "blocked", "abstained", "limited"}, "S15 high-risk outcome invalid"
+        assert dt.get("gates", {}).get("risk_gate") in {"block", "limit"}, "S15 risk gate must block/limit"
+        assert dt["final_outcome"] != "executed", "S15 must not execute directly"
+
     else:
         raise AssertionError(f"Unknown scenario id in {source_path.name}: {sid}")
 

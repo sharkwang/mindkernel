@@ -1,4 +1,4 @@
-# Contents Map (v8)
+# Contents Map (v9)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -42,19 +42,21 @@
    - 经验到认知路径（含 Persona Gate 最小实现）
 16. `full-path-prototype-v0.1.md`
    - Memory→Experience→Cognition 一体化最小链路说明
+17. `cognition-decision-prototype-v0.1.md`
+   - Cognition→DecisionTrace 最小链路说明
 
 ## 数据契约草案（与主规范配套）
 
-17. `../schemas/README.md`
+18. `../schemas/README.md`
     - schema 草案索引与维护说明
-18. `../schemas/*.schema.json`
+19. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-19. `../archive/requirements-and-architecture.legacy.md`
-20. `../archive/design.legacy.md`
-21. `../archive/memory-entry.schema.legacy.json`
+20. `../archive/requirements-and-architecture.legacy.md`
+21. `../archive/design.legacy.md`
+22. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 
