@@ -42,6 +42,12 @@
 11. **S11 Experience→Cognition Block**
    - 文件：`11-experience-cognition-block.json`
    - 覆盖：Persona 边界冲突触发阻断（R-EC-02）
+12. **S12 Full Path Pass (M→E→C)**
+   - 文件：`12-full-path-pass.json`
+   - 覆盖：Memory→Experience→Cognition 一体化通过路径
+13. **S13 Full Path Block (M→E→Gate Block)**
+   - 文件：`13-full-path-block.json`
+   - 覆盖：一体化路径中 Persona Gate 阻断认知升格
 
 ## 3. 校验内容
 
@@ -60,6 +66,8 @@
   - S9 Markdown 输入必须转化为合法 Memory（含 content 与 evidence_refs）
   - S10 必须出现 Persona Gate `pass` 且 Cognition candidate 被创建
   - S11 必须出现 Persona Gate `block` 且带 boundary_hits
+  - S12 必须贯通 Memory/Experience/Cognition 引用链并出现 gate `pass`
+  - S13 必须在完整链路中触发 gate `block` 且不创建 Cognition
 
 ## 4. 运行方式
 
@@ -75,7 +83,9 @@ python3 tools/validate_scenarios_v0_1.py
 - `PASS 09-memory-markdown.md`
 - `PASS 10-experience-cognition-pass.json`
 - `PASS 11-experience-cognition-block.json`
-- `All good. Validated objects/events: 41`
+- `PASS 12-full-path-pass.json`
+- `PASS 13-full-path-block.json`
+- `All good. Validated objects/events: 52`
 
 ## 5. CI 自动校验
 

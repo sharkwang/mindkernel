@@ -309,3 +309,17 @@
   - 新增 `data/fixtures/critical-paths/11-experience-cognition-block.json`
   - `tools/validate_scenarios_v0_1.py` 新增 S10/S11 断言
 - 结果：关键路径覆盖从 9 条扩展到 11 条。
+
+### 6.14 一体化链路串联（Memory→Experience→Cognition）（2026-02-20）
+
+- 决策：将前两段原型串联为单命令全链路，降低联调成本。
+- 新增：
+  - `tools/full_path_v0_1.py`
+  - `docs/full-path-prototype-v0.1.md`
+- 能力：
+  - `run-full-path` 一次执行：Memory ingest -> Experience candidate -> Persona gate -> Cognition promotion/block。
+- 验证覆盖扩展：
+  - `data/fixtures/critical-paths/12-full-path-pass.json`
+  - `data/fixtures/critical-paths/13-full-path-block.json`
+  - `tools/validate_scenarios_v0_1.py` 新增 S12/S13 断言。
+- 结果：关键路径覆盖从 11 条扩展到 13 条。

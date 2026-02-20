@@ -1,0 +1,111 @@
+{
+  "scenario_id": "S12-full-path-pass",
+  "memory": {
+    "id": "mem_s12_001",
+    "kind": "event",
+    "content": "User gave stable signal for better planning workflow.",
+    "source": {
+      "source_type": "session",
+      "source_ref": "msg://s12/001"
+    },
+    "evidence_refs": ["ev://s12/001"],
+    "confidence": 0.84,
+    "risk_tier": "low",
+    "impact_tier": "medium",
+    "status": "active",
+    "created_at": "2026-02-20T08:00:00Z",
+    "review_due_at": "2026-02-27T08:00:00Z",
+    "next_action_at": "2026-02-27T08:00:00Z"
+  },
+  "persona": {
+    "id": "persona_s12",
+    "identity": {
+      "name": "MindKernel Assistant",
+      "role": "assistant",
+      "tone": "balanced"
+    },
+    "values": ["helpful", "safe", "transparent"],
+    "boundaries": ["no harmful execution", "do not leak secrets"],
+    "status": "active",
+    "manual_update_only": true,
+    "created_at": "2026-02-20T08:00:30Z",
+    "review_due_at": "2026-03-20T08:00:30Z",
+    "next_action_at": "2026-03-20T08:00:30Z"
+  },
+  "experience": {
+    "id": "exp_s12_001",
+    "memory_refs": ["mem_s12_001"],
+    "episode_summary": "Planning support signal appears stable and useful.",
+    "action_taken": "derive_from_memory",
+    "outcome": "candidate generated",
+    "confidence": 0.76,
+    "status": "candidate",
+    "created_at": "2026-02-20T08:01:00Z",
+    "review_due_at": "2026-02-27T08:01:00Z",
+    "next_action_at": "2026-02-27T08:01:00Z"
+  },
+  "cognition": {
+    "id": "cg_s12_001",
+    "rule": "Derived from experience: planning support signal appears stable and useful.",
+    "scope": {
+      "domains": ["experience-derived"],
+      "channels": ["webchat"],
+      "risk_tier_max": "medium"
+    },
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "confidence": 0.68,
+    "falsify_if": "Contradictory outcomes dominate in the next cycle.",
+    "review_interval": "P7D",
+    "decision_mode_if_uncertain": "conservative",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "auto_verify_budget": 2,
+    "status": "candidate",
+    "evidence_refs": ["exp_s12_001"],
+    "created_at": "2026-02-20T08:01:30Z",
+    "review_due_at": "2026-02-27T08:01:30Z",
+    "next_action_at": "2026-02-27T08:01:30Z",
+    "uncertainty_ttl": "P7D"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s12_001",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-full-path" },
+      "object_type": "experience",
+      "object_id": "exp_s12_001",
+      "before": { "status": null },
+      "after": { "status": "candidate", "memory_refs": ["mem_s12_001"] },
+      "reason": "Experience created from memory via R-ME-01.",
+      "evidence_refs": ["ev://s12/001"],
+      "timestamp": "2026-02-20T08:01:00Z"
+    },
+    {
+      "id": "aud_s12_002",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-full-path" },
+      "object_type": "cognition",
+      "object_id": "cg_s12_001",
+      "before": { "persona_conflict_gate": "pending" },
+      "after": { "persona_conflict_gate": "pass" },
+      "reason": "Persona gate passed for Experience->Cognition promotion.",
+      "evidence_refs": ["exp_s12_001"],
+      "timestamp": "2026-02-20T08:01:31Z",
+      "metadata": { "rule_id": "R-EC-01", "persona_id": "persona_s12" }
+    },
+    {
+      "id": "aud_s12_003",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-full-path" },
+      "object_type": "cognition",
+      "object_id": "cg_s12_001",
+      "before": { "status": null },
+      "after": { "status": "candidate", "epistemic_state": "uncertain" },
+      "reason": "Cognition candidate created from experience via R-EC-01.",
+      "evidence_refs": ["exp_s12_001"],
+      "timestamp": "2026-02-20T08:01:32Z",
+      "metadata": { "rule_id": "R-EC-01" }
+    }
+  ]
+}

@@ -209,6 +209,36 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
             for e in scenario.get("audit_events", [])
         ), "S11 must include persona gate block event with boundary hits"
 
+    elif sid_prefix == "S12":
+        mem = scenario["memory"]
+        persona = scenario["persona"]
+        exp = scenario["experience"]
+        cg = scenario["cognition"]
+        assert mem["status"] == "active", "S12 memory must be active"
+        assert persona["status"] == "active", "S12 persona must be active"
+        assert mem["id"] in exp.get("memory_refs", []), "S12 experience must reference memory"
+        assert exp["id"] in cg.get("evidence_refs", []), "S12 cognition must reference experience"
+        assert any(
+            e.get("event_type") == "decision_gate"
+            and e.get("after", {}).get("persona_conflict_gate") == "pass"
+            for e in scenario.get("audit_events", [])
+        ), "S12 must include persona gate pass"
+
+    elif sid_prefix == "S13":
+        mem = scenario["memory"]
+        persona = scenario["persona"]
+        exp = scenario["experience"]
+        assert mem["status"] == "active", "S13 memory must be active"
+        assert persona["status"] == "active", "S13 persona must be active"
+        assert mem["id"] in exp.get("memory_refs", []), "S13 experience must reference memory"
+        assert "cognition" not in scenario, "S13 blocked path should not include cognition object"
+        assert any(
+            e.get("event_type") == "decision_gate"
+            and e.get("after", {}).get("persona_conflict_gate") == "block"
+            and len(e.get("metadata", {}).get("boundary_hits", [])) >= 1
+            for e in scenario.get("audit_events", [])
+        ), "S13 must include persona gate block with boundary hits"
+
     else:
         raise AssertionError(f"Unknown scenario id in {source_path.name}: {sid}")
 
