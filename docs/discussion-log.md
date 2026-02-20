@@ -222,3 +222,14 @@
   4. 高风险拦截（禁止 uncertain 直执）
   5. 新证据 reinstate 回升
 - 执行结果：本地脚本校验通过（5/5 场景，25 个对象/事件）。
+
+### 6.8 关键路径验证接入 CI（2026-02-20）
+
+- 决策：将关键路径校验接入 GitHub Actions，确保变更自动回归。
+- 新增：`.github/workflows/critical-path-validation.yml`
+- 触发策略：
+  - push 到 `main`（当 `schemas/**`、`docs/**`、`data/fixtures/**`、校验脚本或工作流本身变更时）
+  - pull request（同路径过滤）
+  - `workflow_dispatch` 手动触发
+- 执行命令：`python3 tools/validate_scenarios_v0_1.py`
+- 目标：把 v0.1 关键路径从“可手动验证”升级为“默认自动守护”。

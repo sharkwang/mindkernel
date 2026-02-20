@@ -1,0 +1,37 @@
+name: critical-path-validation
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "schemas/**"
+      - "docs/**"
+      - "data/fixtures/**"
+      - "tools/validate_scenarios_v0_1.py"
+      - ".github/workflows/critical-path-validation.yml"
+  pull_request:
+    paths:
+      - "schemas/**"
+      - "docs/**"
+      - "data/fixtures/**"
+      - "tools/validate_scenarios_v0_1.py"
+      - ".github/workflows/critical-path-validation.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run critical-path validation
+        run: |
+          python3 tools/validate_scenarios_v0_1.py

@@ -50,7 +50,16 @@ python3 tools/validate_scenarios_v0_1.py
 - ...
 - `All good. Validated objects/events: 25`
 
-## 5. 维护规则
+## 5. CI 自动校验
+
+- GitHub Actions 工作流：`.github/workflows/critical-path-validation.yml`
+- 触发条件：
+  - push 到 `main`（当 schemas/docs/fixtures/validator/workflow 变更时）
+  - pull request（同上路径）
+  - 手动触发（workflow_dispatch）
+- 执行动作：运行 `python3 tools/validate_scenarios_v0_1.py`
+
+## 6. 维护规则
 
 - 新增关键场景时：
   1) 增加 fixture
