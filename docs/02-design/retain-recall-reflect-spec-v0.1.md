@@ -61,19 +61,30 @@
 
 ## 3. Reflect 输出规范（v0.1）
 
-Reflect 不直接改写规范文件，先产出建议包：
+默认模式：产出建议包（不写回文件）。
 
 ```json
 {
   "entity_summaries": [...],
   "opinion_candidates": [...],
-  "sources": [...]
+  "generated_at": "..."
 }
 ```
 
-可选落盘到：
+可选写回（`--writeback`）：
 - `bank/entities/<entity>.md`
-- `bank/opinions.md`
+- `bank/opinions.md`（自动区块）
+
+写回结果会在响应中返回：
+
+```json
+{
+  "writeback": {
+    "enabled": true,
+    "paths": ["bank/entities/...", "bank/opinions.md"]
+  }
+}
+```
 
 ## 4. 约束与安全
 

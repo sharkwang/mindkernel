@@ -421,3 +421,18 @@
   - `reflect`：生成实体摘要与观点候选（建议包）
 - 说明：
   - 该脚本为草案骨架，重点是接口与数据流闭环；后续再补意见置信度演化与自动回写。
+
+### 6.21 Retain 样例与 Reflect 写回（2026-02-20）
+
+- 新增样例工作区：
+  - `data/fixtures/memory-workspace/memory/2026-02-20.md`
+  - `data/fixtures/memory-workspace/memory/2026-02-21.md`
+  - `data/fixtures/memory-workspace/memory.md`
+- `memory_index_v0_1.py` 增强：
+  - `reflect` 新增 `--writeback`，可写回：
+    - `bank/entities/<slug>.md`
+    - `bank/opinions.md`（自动区块）
+  - 新增参数：`--max-per-entity`、`--max-opinions`
+- 新增原型文档：
+  - `docs/04-prototypes/memory-index-prototype-v0.1.md`
+- 结果：retain/recall/reflect 从“只输出”推进到“可建议式回写”。
