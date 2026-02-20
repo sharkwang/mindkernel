@@ -1,7 +1,7 @@
 # Project Charter (v0.1)
 
 ## 项目名
-**Positronic Brain（正子脑）**
+**MindKernel（心智内核）**
 
 ## 核心目标
 构建一个以“人格-认知-经验-记忆”为主干、并具备社会与安全治理能力的智能体架构。

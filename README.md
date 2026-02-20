@@ -1,10 +1,10 @@
-# Positronic Brain（正子脑）
+# MindKernel（心智内核）
 
 > 一个面向智能体的心智系统工程项目：在可审计、可治理前提下，构建 Persona / Cognition / Experience / Memory 闭环。
 
 ## 项目简介
 
-`positronic-brain` 不是单纯的“记忆增强”工程，而是一个完整的心智架构项目。
+`mindkernel` 不是单纯的“记忆增强”工程，而是一个完整的心智架构项目。
 
 核心目标：
 - **连续性**：人格连续、认知可演化
@@ -65,4 +65,4 @@
 
 ---
 
-项目命名来源：Isaac Asimov 的 **Positronic Brain**（正子脑）。
+项目命名来源：Isaac Asimov 的 **MindKernel**（心智内核）。

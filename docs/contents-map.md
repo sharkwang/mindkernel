@@ -1,6 +1,6 @@
 # Contents Map (v1)
 
-本文件用于整理 `positronic-brain/docs` 当前文档结构，避免信息分散。
+本文件用于整理 `mindkernel/docs` 当前文档结构，避免信息分散。
 
 ## 核心文档（优先阅读）
 
@@ -18,7 +18,7 @@
    - 用于理解“为什么会有这些条款”
 
 4. `name-origin.md`
-   - 项目命名来源（Positronic Brain/正子脑）
+   - 项目命名来源（MindKernel/心智内核）
 
 ## 数据契约草案（与主规范配套）
 

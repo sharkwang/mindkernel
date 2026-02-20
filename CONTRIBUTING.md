@@ -1,4 +1,4 @@
-# Contributing to Positronic Brain（正子脑）
+# Contributing to MindKernel（心智内核）
 
 感谢你参与本项目。
 
