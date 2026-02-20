@@ -436,3 +436,22 @@
 - 新增原型文档：
   - `docs/04-prototypes/memory-index-prototype-v0.1.md`
 - 结果：retain/recall/reflect 从“只输出”推进到“可建议式回写”。
+
+### 6.22 Opinion 置信度演化（2026-02-20）
+
+- 决策：在 memory-index 层先引入可解释、规则化的 opinion confidence 演化机制，不直接改动主闭环决策逻辑。
+- `memory_index_v0_1.py` 新增：
+  - `opinions_state` 表（`confidence/support_count/contradict_count/evidence_refs`）
+  - `list-opinions-state` 命令
+  - reflect 写回前执行演化更新（support/contradict）
+- v0.1.1 规则：
+  - 同向证据：`+0.05`（上限 0.99）
+  - 反向证据：`-0.08`（下限 0.05）
+- 新增验证资产：
+  - `data/fixtures/memory-workspace-evolution/*`
+  - `tools/validate_memory_index_v0_1.py`
+- 文档同步：
+  - `docs/02-design/retain-recall-reflect-spec-v0.1.md`
+  - `docs/02-design/memory-index-architecture-v0.1.md`
+  - `docs/04-prototypes/memory-index-prototype-v0.1.md`
+- 结果：Reflect 从“建议式写回”升级为“建议式写回 + 置信度可追踪演化”。

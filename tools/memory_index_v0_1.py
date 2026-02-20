@@ -22,9 +22,54 @@ RETAIN_LINE_RE = re.compile(
     r"^\s*[-*]\s*(?P<kind>[WBOS])(?:\(c=(?P<conf>0(?:\.\d+)?|1(?:\.0+)?)\))?\s*(?P<entities>(?:@[^:\s]+\s*)*):\s*(?P<content>.+)$"
 )
 DATE_IN_PATH_RE = re.compile(r"memory/(\d{4}-\d{2}-\d{2})\.md$")
+TOKEN_RE = re.compile(r"[a-z0-9']+|[\u4e00-\u9fff]+")
 SLUG_RE = re.compile(r"[^a-z0-9]+")
+
 AUTO_START = "<!-- AUTO-GENERATED:REFLECT:START -->"
 AUTO_END = "<!-- AUTO-GENERATED:REFLECT:END -->"
+
+NEG_WORDS = {
+    "not",
+    "no",
+    "never",
+    "dont",
+    "don't",
+    "doesnt",
+    "doesn't",
+    "cannot",
+    "can't",
+    "won't",
+    "无",
+    "不",
+    "没",
+    "不是",
+    "不要",
+}
+
+STOP_WORDS = {
+    "a",
+    "an",
+    "the",
+    "and",
+    "or",
+    "to",
+    "of",
+    "with",
+    "for",
+    "in",
+    "on",
+    "is",
+    "are",
+    "was",
+    "were",
+    "be",
+    "do",
+    "does",
+    "did",
+}
+
+SUPPORT_DELTA = 0.05
+CONTRADICT_DELTA = 0.08
 
 
 def now_iso() -> str:
@@ -70,8 +115,24 @@ def init_db(c: sqlite3.Connection):
             kind
         );
 
+        CREATE TABLE IF NOT EXISTS opinions_state (
+            opinion_key TEXT PRIMARY KEY,
+            statement TEXT NOT NULL,
+            entities TEXT NOT NULL,
+            signature TEXT NOT NULL,
+            negation INTEGER NOT NULL,
+            confidence REAL NOT NULL,
+            support_count INTEGER NOT NULL DEFAULT 0,
+            contradict_count INTEGER NOT NULL DEFAULT 0,
+            evidence_refs_json TEXT NOT NULL,
+            last_event TEXT NOT NULL,
+            last_updated TEXT NOT NULL,
+            UNIQUE(signature, entities)
+        );
+
         CREATE INDEX IF NOT EXISTS idx_facts_kind ON facts(kind);
         CREATE INDEX IF NOT EXISTS idx_facts_observed_date ON facts(observed_date);
+        CREATE INDEX IF NOT EXISTS idx_opinions_sig_entities ON opinions_state(signature, entities);
         """
     )
     c.commit()
@@ -84,6 +145,39 @@ def sha1_text(text: str) -> str:
 def slugify(text: str) -> str:
     s = SLUG_RE.sub("-", text.strip().lower()).strip("-")
     return s or "entity"
+
+
+def tokenize_text(text: str) -> list[str]:
+    return TOKEN_RE.findall(text.lower())
+
+
+def has_negation(tokens: list[str]) -> bool:
+    for t in tokens:
+        if t in NEG_WORDS:
+            return True
+        if any(ch in t for ch in ["不", "没", "无"]) and len(t) >= 1:
+            return True
+    return False
+
+
+def _normalize_signature_token(t: str) -> str:
+    # tiny heuristic: normalize simple English plural/3rd-person suffix
+    if re.fullmatch(r"[a-z']+", t) and len(t) > 3 and t.endswith("s"):
+        t = t[:-1]
+    return t
+
+
+def opinion_signature(text: str) -> str:
+    tokens = tokenize_text(text)
+    cleaned = []
+    for t in tokens:
+        if t in NEG_WORDS or t in STOP_WORDS:
+            continue
+        t = t.replace("不", "").replace("没", "").replace("无", "")
+        t = _normalize_signature_token(t)
+        if t:
+            cleaned.append(t)
+    return " ".join(cleaned)
 
 
 def iter_md_files(workspace: Path):
@@ -173,7 +267,7 @@ def upsert_document_and_facts(c: sqlite3.Connection, workspace: Path, path: Path
     facts = parse_retain_facts(text, rel_path)
     for f in facts:
         fid = f"fact_{sha1_text(f['source_ref'] + '|' + f['content'])[:16]}"
-        entities_str = " ".join(f["entities"])
+        entities_str = " ".join(sorted(f["entities"]))
         c.execute(
             "INSERT INTO facts(id, kind, content, entities, confidence, source_path, line_no, source_ref, observed_date, indexed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
@@ -297,6 +391,114 @@ def _upsert_autogen_block(path: Path, title: str, block_lines: list[str]):
     path.write_text(new_content)
 
 
+def evolve_opinions(c: sqlite3.Connection, opinion_candidates: list[dict]):
+    # deterministic order: observed_date then source_ref
+    def _key(x):
+        return (x.get("observed_date") or "", x.get("source_ref") or "")
+
+    for op in sorted(opinion_candidates, key=_key):
+        entities = sorted(op.get("entities", []))
+        entities_str = " ".join(entities)
+        statement = op.get("content", "").strip()
+        if not statement:
+            continue
+
+        sig = opinion_signature(statement)
+        neg = 1 if has_negation(tokenize_text(statement)) else 0
+
+        row = c.execute(
+            "SELECT * FROM opinions_state WHERE signature=? AND entities=?",
+            (sig, entities_str),
+        ).fetchone()
+
+        src = op.get("source_ref") or ""
+        base_conf = float(op.get("confidence", 0.7))
+
+        if not row:
+            opinion_key = f"op_{sha1_text(sig + '|' + entities_str)[:16]}"
+            c.execute(
+                """
+                INSERT INTO opinions_state(
+                    opinion_key, statement, entities, signature, negation,
+                    confidence, support_count, contradict_count,
+                    evidence_refs_json, last_event, last_updated
+                ) VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?, 'new', ?)
+                """,
+                (
+                    opinion_key,
+                    statement,
+                    entities_str,
+                    sig,
+                    neg,
+                    max(0.05, min(0.99, base_conf)),
+                    json.dumps([src], ensure_ascii=False),
+                    now_iso(),
+                ),
+            )
+            continue
+
+        conf = float(row["confidence"])
+        support = int(row["support_count"])
+        contradict = int(row["contradict_count"])
+        evidence = json.loads(row["evidence_refs_json"] or "[]")
+
+        if src and src not in evidence:
+            evidence.append(src)
+
+        if int(row["negation"]) == neg:
+            conf = min(0.99, conf + SUPPORT_DELTA)
+            support += 1
+            last_event = "support"
+        else:
+            conf = max(0.05, conf - CONTRADICT_DELTA)
+            contradict += 1
+            last_event = "contradict"
+
+        c.execute(
+            """
+            UPDATE opinions_state
+            SET confidence=?, support_count=?, contradict_count=?,
+                evidence_refs_json=?, last_event=?, last_updated=?
+            WHERE opinion_key=?
+            """,
+            (
+                conf,
+                support,
+                contradict,
+                json.dumps(evidence, ensure_ascii=False),
+                last_event,
+                now_iso(),
+                row["opinion_key"],
+            ),
+        )
+
+    c.commit()
+
+
+def list_opinion_states(c: sqlite3.Connection, limit: int = 200):
+    rows = c.execute(
+        "SELECT * FROM opinions_state ORDER BY last_updated DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+
+    out = []
+    for r in rows:
+        out.append(
+            {
+                "opinion_key": r["opinion_key"],
+                "statement": r["statement"],
+                "entities": [x for x in (r["entities"] or "").split() if x],
+                "confidence": r["confidence"],
+                "support_count": r["support_count"],
+                "contradict_count": r["contradict_count"],
+                "last_event": r["last_event"],
+                "evidence_refs": json.loads(r["evidence_refs_json"] or "[]"),
+                "last_updated": r["last_updated"],
+            }
+        )
+    return out
+
+
 def apply_reflect_writeback(workspace: Path, reflection: dict, max_per_entity: int, max_opinions: int):
     written = []
 
@@ -325,16 +527,31 @@ def apply_reflect_writeback(workspace: Path, reflection: dict, max_per_entity: i
         written.append(str(out_path.relative_to(workspace)))
 
     opinions_path = workspace / "bank" / "opinions.md"
-    ops = reflection.get("opinion_candidates", [])[:max_opinions]
+    states = reflection.get("opinion_states", [])[:max_opinions]
     op_lines = [
         "## Auto Opinions",
         "",
     ]
-    for op in ops:
-        entities = " ".join(f"@{e}" for e in op.get("entities", []))
-        op_lines.append(
-            f"- (c={op['confidence']:.2f}) {entities} {op['content']} _(source: {op['source_ref']})_".strip()
-        )
+
+    if states:
+        for st in states:
+            entities = " ".join(f"@{e}" for e in st.get("entities", []))
+            s = int(st.get("support_count", 0))
+            c = int(st.get("contradict_count", 0))
+            trend = "↑" if s > c else ("↓" if c > s else "→")
+            op_lines.append(
+                f"- (c={float(st['confidence']):.2f}, trend={trend}, +{s}/-{c}) {entities} {st['statement']}"
+            )
+            ev = st.get("evidence_refs", [])[:3]
+            if ev:
+                op_lines.append(f"  - evidence: {', '.join(ev)}")
+    else:
+        # fallback for no evolved state
+        for op in reflection.get("opinion_candidates", [])[:max_opinions]:
+            entities = " ".join(f"@{e}" for e in op.get("entities", []))
+            op_lines.append(
+                f"- (c={op['confidence']:.2f}) {entities} {op['content']} _(source: {op['source_ref']})_".strip()
+            )
 
     _upsert_autogen_block(opinions_path, "Opinions", op_lines)
     written.append(str(opinions_path.relative_to(workspace)))
@@ -357,7 +574,7 @@ def cmd_reflect(
         where.append("(observed_date IS NULL OR observed_date >= ?)")
         params.append(day)
 
-    sql = "SELECT kind, entities, confidence, content, source_ref FROM facts"
+    sql = "SELECT kind, entities, confidence, content, source_ref, observed_date FROM facts"
     if where:
         sql += " WHERE " + " AND ".join(where)
     rows = c.execute(sql, params).fetchall()
@@ -383,6 +600,7 @@ def cmd_reflect(
                     "content": r["content"],
                     "confidence": r["confidence"],
                     "source_ref": r["source_ref"],
+                    "observed_date": r["observed_date"],
                 }
             )
 
@@ -398,11 +616,13 @@ def cmd_reflect(
 
     out = {
         "entity_summaries": entity_summaries,
-        "opinion_candidates": opinion_candidates[:20],
+        "opinion_candidates": opinion_candidates[:50],
         "generated_at": now_iso(),
     }
 
     if writeback:
+        evolve_opinions(c, opinion_candidates)
+        out["opinion_states"] = list_opinion_states(c, limit=max_opinions)
         written = apply_reflect_writeback(workspace, out, max_per_entity=max_per_entity, max_opinions=max_opinions)
         out["writeback"] = {"enabled": True, "paths": written}
 
@@ -431,6 +651,9 @@ def main():
     rf.add_argument("--writeback", action="store_true", help="write reflection result into bank/entities + bank/opinions")
     rf.add_argument("--max-per-entity", type=int, default=8)
     rf.add_argument("--max-opinions", type=int, default=50)
+
+    lo = sub.add_parser("list-opinions-state")
+    lo.add_argument("--limit", type=int, default=50)
 
     args = p.parse_args()
 
@@ -473,6 +696,10 @@ def main():
                 indent=2,
             )
         )
+        return
+
+    if args.cmd == "list-opinions-state":
+        print(json.dumps(list_opinion_states(c, args.limit), ensure_ascii=False, indent=2))
         return
 
 

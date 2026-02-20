@@ -92,7 +92,22 @@
 - 置信度仅用于排序与提示，不等于决策放行。
 - Recall 层不得绕开 Persona Gate 与风险闸门。
 
-## 5. 版本计划
+## 5. Opinion 置信度演化规则（v0.1.1）
+
+适用范围：`O(...)` 类型 Retain 事实。
+
+- 归一化：对 opinion 文本做轻量 token 归一化，生成 `signature`。
+- 匹配键：`(signature, entities)`。
+- 判定：
+  - 同向（support）：当前 evidence 与已有 opinion 极性一致。
+  - 反向（contradict）：当前 evidence 与已有 opinion 极性相反（基于否定词启发式）。
+- 更新：
+  - support：`confidence += 0.05`（封顶 `0.99`）
+  - contradict：`confidence -= 0.08`（保底 `0.05`）
+- 审计字段：`support_count`、`contradict_count`、`last_event`、`evidence_refs`。
+
+## 6. 版本计划
 
 - v0.1：规则抽取 + 词法 recall + reflect 建议
-- v0.2：观点置信度演化（强化/冲突更新）+ 自动化 reflect 作业
+- v0.1.1：加入 opinion 置信度演化 + writeback
+- v0.2：冲突聚类与更精细置信度更新 + 自动化 reflect 作业

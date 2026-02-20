@@ -24,7 +24,9 @@
 - `schema_runtime.py`
   - 轻量运行时 schema 校验模块
 - `memory_index_v0_1.py`
-  - 离线记忆索引草案（retain/recall/reflect）
+  - 离线记忆索引草案（retain/recall/reflect，含 opinion 置信度演化）
+- `validate_memory_index_v0_1.py`
+  - 记忆索引演化与写回验证脚本
 
 ## 备注
 

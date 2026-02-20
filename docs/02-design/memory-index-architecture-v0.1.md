@@ -37,6 +37,10 @@
   - `observed_date` / `indexed_at`
 - `facts_fts`（FTS5）
   - `content` / `entities` / `kind` / `fact_id`
+- `opinions_state`
+  - `opinion_key` / `signature` / `entities`
+  - `confidence` / `support_count` / `contradict_count`
+  - `evidence_refs_json` / `last_event` / `last_updated`
 
 > 说明：v0.1 不引入向量索引；先做词法 + 元数据过滤。
 
