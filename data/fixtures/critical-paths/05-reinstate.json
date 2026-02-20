@@ -1,0 +1,103 @@
+{
+  "scenario_id": "S5-reinstate",
+  "memory": {
+    "id": "mem_s5_001",
+    "kind": "event",
+    "content": "New high-quality evidence resolves prior uncertainty.",
+    "source": {
+      "source_type": "external",
+      "source_ref": "src://s5/verified"
+    },
+    "evidence_refs": ["ev://s5/new-proof"],
+    "confidence": 0.93,
+    "risk_tier": "low",
+    "impact_tier": "medium",
+    "status": "active",
+    "created_at": "2026-02-20T05:00:00Z",
+    "review_due_at": "2026-03-01T05:00:00Z",
+    "next_action_at": "2026-03-01T05:00:00Z"
+  },
+  "cognition_before": {
+    "id": "cg_s5_001",
+    "rule": "Previously uncertain operational guideline.",
+    "scope": {
+      "domains": ["task_planning"],
+      "channels": ["webchat"],
+      "risk_tier_max": "medium"
+    },
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "confidence": 0.42,
+    "falsify_if": "Stable external evidence confirms one path.",
+    "review_interval": "P7D",
+    "decision_mode_if_uncertain": "conservative",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "auto_verify_budget": 0,
+    "status": "stale",
+    "evidence_refs": ["ev://s5/old-signal"],
+    "created_at": "2026-02-10T05:00:00Z",
+    "review_due_at": "2026-02-17T05:00:00Z",
+    "next_action_at": "2026-02-20T05:00:00Z",
+    "uncertainty_ttl": "P7D"
+  },
+  "cognition_after": {
+    "id": "cg_s5_001",
+    "rule": "Previously uncertain operational guideline.",
+    "scope": {
+      "domains": ["task_planning"],
+      "channels": ["webchat"],
+      "risk_tier_max": "medium"
+    },
+    "epistemic_state": "supported",
+    "confidence": 0.84,
+    "falsify_if": "New contradictory high-quality evidence appears.",
+    "review_interval": "P14D",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "auto_verify_budget": 2,
+    "status": "active",
+    "evidence_refs": ["ev://s5/new-proof"],
+    "created_at": "2026-02-10T05:00:00Z",
+    "review_due_at": "2026-03-06T05:00:00Z",
+    "next_action_at": "2026-03-06T05:00:00Z"
+  },
+  "decision_trace": {
+    "id": "dt_s5_001",
+    "decision_id": "dec_s5_001",
+    "request_ref": "req://s5/001",
+    "risk_tier": "low",
+    "impact_tier": "medium",
+    "decision_mode": "normal",
+    "epistemic_state": "supported",
+    "inputs": {
+      "memory_refs": ["mem_s5_001"],
+      "cognition_refs": ["cg_s5_001"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "pass",
+      "risk_gate": "pass",
+      "cognition_gate": "pass"
+    },
+    "reason": "Reinstate succeeded with new verified evidence.",
+    "evidence_refs": ["ev://s5/new-proof"],
+    "final_outcome": "executed",
+    "created_at": "2026-02-20T05:10:00Z",
+    "updated_at": "2026-02-20T05:10:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s5_001",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-core" },
+      "object_type": "cognition",
+      "object_id": "cg_s5_001",
+      "before": { "status": "stale", "epistemic_state": "uncertain" },
+      "after": { "status": "active", "epistemic_state": "supported" },
+      "reason": "Reinstate after high-quality evidence.",
+      "evidence_refs": ["ev://s5/new-proof"],
+      "timestamp": "2026-02-20T05:08:00Z"
+    }
+  ]
+}

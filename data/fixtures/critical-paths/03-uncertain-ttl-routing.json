@@ -1,0 +1,99 @@
+{
+  "scenario_id": "S3-uncertain-ttl-routing",
+  "memory": {
+    "id": "mem_s3_001",
+    "kind": "event",
+    "content": "Ambiguous signal with insufficient external corroboration.",
+    "source": {
+      "source_type": "tool",
+      "source_ref": "tool://mixed-signal"
+    },
+    "evidence_refs": ["ev://s3/signal-a"],
+    "confidence": 0.51,
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "status": "stale_uncertain",
+    "investigation_status": "none",
+    "created_at": "2026-02-10T03:00:00Z",
+    "review_due_at": "2026-02-17T03:00:00Z",
+    "next_action_at": "2026-02-20T03:00:00Z",
+    "uncertainty_ttl": "P7D"
+  },
+  "experience": {
+    "id": "exp_s3_001",
+    "memory_refs": ["mem_s3_001"],
+    "episode_summary": "Conflicting outcomes across similar tasks.",
+    "outcome": "inconclusive",
+    "confidence": 0.46,
+    "status": "needs_review",
+    "created_at": "2026-02-10T03:05:00Z",
+    "review_due_at": "2026-02-17T03:05:00Z",
+    "next_action_at": "2026-02-20T03:05:00Z"
+  },
+  "cognition": {
+    "id": "cg_s3_001",
+    "rule": "Fallback behavior under ambiguous external signals.",
+    "scope": {
+      "domains": ["task_planning"],
+      "channels": ["webchat"],
+      "risk_tier_max": "medium"
+    },
+    "epistemic_state": "uncertain",
+    "unknown_type": "out_of_scope",
+    "confidence": 0.44,
+    "falsify_if": "Two independent sources converge on a stable pattern.",
+    "review_interval": "P7D",
+    "decision_mode_if_uncertain": "conservative",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "auto_verify_budget": 0,
+    "status": "stale",
+    "evidence_refs": ["exp_s3_001"],
+    "created_at": "2026-02-10T03:10:00Z",
+    "review_due_at": "2026-02-17T03:10:00Z",
+    "next_action_at": "2026-02-20T03:10:00Z",
+    "uncertainty_ttl": "P7D"
+  },
+  "decision_trace": {
+    "id": "dt_s3_001",
+    "decision_id": "dec_s3_001",
+    "request_ref": "req://s3/001",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "decision_mode": "conservative",
+    "epistemic_state": "uncertain",
+    "unknown_type": "out_of_scope",
+    "inputs": {
+      "memory_refs": ["mem_s3_001"],
+      "experience_refs": ["exp_s3_001"],
+      "cognition_refs": ["cg_s3_001"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "defer",
+      "risk_gate": "limit",
+      "cognition_gate": "degrade"
+    },
+    "reason": "TTL expired and auto_verify_budget exhausted; conservative mode enforced.",
+    "evidence_refs": ["exp_s3_001"],
+    "final_outcome": "limited",
+    "created_at": "2026-02-20T03:15:00Z",
+    "updated_at": "2026-02-20T03:15:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s3_001",
+      "event_type": "scheduler_job",
+      "actor": { "type": "worker", "id": "scheduler-1" },
+      "object_type": "scheduler_job",
+      "object_id": "job_s3_001",
+      "before": { "status": "running", "attempt": 1 },
+      "after": { "status": "succeeded", "action": "revalidate" },
+      "reason": "Uncertainty TTL reached; trigger revalidation and downgrade.",
+      "evidence_refs": ["cg_s3_001"],
+      "job_id": "job_s3_001",
+      "correlation_id": "corr_s3_001",
+      "timestamp": "2026-02-20T03:12:00Z"
+    }
+  ]
+}

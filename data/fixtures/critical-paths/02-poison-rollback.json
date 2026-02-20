@@ -1,0 +1,106 @@
+{
+  "scenario_id": "S2-poison-rollback",
+  "memory": {
+    "id": "mem_s2_001",
+    "kind": "fact",
+    "content": "A prior claim was later proven injected and false.",
+    "source": {
+      "source_type": "external",
+      "source_ref": "src://s2/untrusted"
+    },
+    "evidence_refs": ["ev://s2/forensic-report"],
+    "confidence": 0.2,
+    "risk_tier": "high",
+    "impact_tier": "high",
+    "status": "rejected_poisoned",
+    "investigation_status": "poisoned",
+    "created_at": "2026-02-18T03:00:00Z",
+    "review_due_at": "2026-02-20T03:00:00Z",
+    "next_action_at": "2026-02-20T03:00:00Z"
+  },
+  "experience": {
+    "id": "exp_s2_001",
+    "memory_refs": ["mem_s2_001"],
+    "episode_summary": "Experience derived from poisoned memory.",
+    "outcome": "invalidated by investigation",
+    "confidence": 0.1,
+    "status": "invalidated",
+    "created_at": "2026-02-18T03:10:00Z",
+    "review_due_at": "2026-02-20T03:10:00Z",
+    "next_action_at": "2026-02-20T03:10:00Z"
+  },
+  "cognition": {
+    "id": "cg_s2_001",
+    "rule": "Rule derived from corrupted memory source.",
+    "scope": {
+      "domains": ["policy_inference"],
+      "channels": ["webchat"],
+      "risk_tier_max": "high"
+    },
+    "epistemic_state": "refuted",
+    "confidence": 0.05,
+    "falsify_if": "Forensic evidence confirms source tampering.",
+    "review_interval": "P7D",
+    "status": "refuted",
+    "evidence_refs": ["exp_s2_001"],
+    "created_at": "2026-02-18T03:20:00Z",
+    "review_due_at": "2026-02-20T03:20:00Z",
+    "next_action_at": "2026-02-20T03:20:00Z"
+  },
+  "decision_trace": {
+    "id": "dt_s2_001",
+    "decision_id": "dec_s2_001",
+    "request_ref": "req://s2/001",
+    "risk_tier": "high",
+    "impact_tier": "high",
+    "decision_mode": "abstain",
+    "epistemic_state": "refuted",
+    "inputs": {
+      "memory_refs": ["mem_s2_001"],
+      "experience_refs": ["exp_s2_001"],
+      "cognition_refs": ["cg_s2_001"],
+      "persona_refs": ["persona_main"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "defer",
+      "risk_gate": "block",
+      "cognition_gate": "block"
+    },
+    "reason": "Upstream memory poisoned; cognition refuted; rollback required.",
+    "evidence_refs": ["ev://s2/forensic-report"],
+    "final_outcome": "abstained",
+    "created_at": "2026-02-20T03:30:00Z",
+    "updated_at": "2026-02-20T03:30:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s2_001",
+      "event_type": "investigation",
+      "actor": { "type": "worker", "id": "investigator-1" },
+      "object_type": "memory",
+      "object_id": "mem_s2_001",
+      "before": { "status": "active", "investigation_status": "under_investigation" },
+      "after": { "status": "rejected_poisoned", "investigation_status": "poisoned" },
+      "reason": "Forensic evidence confirms tampering.",
+      "evidence_refs": ["ev://s2/forensic-report"],
+      "risk_tier": "high",
+      "decision_trace_id": "dt_s2_001",
+      "timestamp": "2026-02-20T03:25:00Z"
+    },
+    {
+      "id": "aud_s2_002",
+      "event_type": "rollback",
+      "actor": { "type": "system", "id": "mk-core" },
+      "object_type": "cognition",
+      "object_id": "cg_s2_001",
+      "before": { "status": "active", "epistemic_state": "supported" },
+      "after": { "status": "refuted", "epistemic_state": "refuted" },
+      "reason": "Cascade rollback from poisoned memory.",
+      "evidence_refs": ["mem_s2_001"],
+      "risk_tier": "high",
+      "decision_trace_id": "dt_s2_001",
+      "timestamp": "2026-02-20T03:26:00Z"
+    }
+  ]
+}

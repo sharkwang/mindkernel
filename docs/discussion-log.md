@@ -203,3 +203,22 @@
   - `docs/requirements-and-architecture.md`（2.11 映射）
   - `docs/contents-map.md`
   - `docs/design-consolidation-v0.1.md`
+
+### 6.7 关键路径验证资产化（2026-02-20）
+
+- 决策：将 v0.1 验证场景从“文档描述”升级为“fixtures + 可执行校验脚本”。
+- 新增：
+  - `data/fixtures/critical-paths/01-happy-path.json`
+  - `data/fixtures/critical-paths/02-poison-rollback.json`
+  - `data/fixtures/critical-paths/03-uncertain-ttl-routing.json`
+  - `data/fixtures/critical-paths/04-high-risk-block.json`
+  - `data/fixtures/critical-paths/05-reinstate.json`
+  - `tools/validate_scenarios_v0_1.py`
+  - `docs/validation-critical-paths-v0.1.md`
+- 覆盖关键路径：
+  1. 正常闭环（Memory→Experience→Cognition→Decision）
+  2. 注入确认与级联回滚
+  3. uncertain 到期分流（TTL + 预算耗尽）
+  4. 高风险拦截（禁止 uncertain 直执）
+  5. 新证据 reinstate 回升
+- 执行结果：本地脚本校验通过（5/5 场景，25 个对象/事件）。

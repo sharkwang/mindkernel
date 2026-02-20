@@ -1,0 +1,68 @@
+{
+  "scenario_id": "S4-high-risk-block",
+  "cognition": {
+    "id": "cg_s4_001",
+    "rule": "Potentially harmful action under uncertain evidence.",
+    "scope": {
+      "domains": ["external_action"],
+      "channels": ["webchat"],
+      "risk_tier_max": "high"
+    },
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "confidence": 0.38,
+    "falsify_if": "Independent operator confirms safe path.",
+    "review_interval": "P3D",
+    "decision_mode_if_uncertain": "escalate",
+    "risk_tier": "high",
+    "impact_tier": "critical",
+    "auto_verify_budget": 1,
+    "status": "needs_revalidate",
+    "evidence_refs": ["ev://s4/conflict-01"],
+    "created_at": "2026-02-20T04:00:00Z",
+    "review_due_at": "2026-02-23T04:00:00Z",
+    "next_action_at": "2026-02-20T04:10:00Z",
+    "uncertainty_ttl": "P3D"
+  },
+  "decision_trace": {
+    "id": "dt_s4_001",
+    "decision_id": "dec_s4_001",
+    "request_ref": "req://s4/001",
+    "risk_tier": "high",
+    "impact_tier": "critical",
+    "decision_mode": "escalate",
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "inputs": {
+      "cognition_refs": ["cg_s4_001"],
+      "persona_refs": ["persona_main"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "defer",
+      "risk_gate": "block",
+      "cognition_gate": "degrade"
+    },
+    "reason": "High-risk + uncertain cognition cannot execute directly.",
+    "evidence_refs": ["cg_s4_001"],
+    "final_outcome": "escalated",
+    "created_at": "2026-02-20T04:05:00Z",
+    "updated_at": "2026-02-20T04:05:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s4_001",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-core" },
+      "object_type": "decision",
+      "object_id": "dec_s4_001",
+      "before": { "risk_gate": "pending" },
+      "after": { "risk_gate": "block" },
+      "reason": "Policy CR-4: no direct high-risk execution from uncertain state.",
+      "evidence_refs": ["dt_s4_001"],
+      "risk_tier": "high",
+      "decision_trace_id": "dt_s4_001",
+      "timestamp": "2026-02-20T04:05:00Z"
+    }
+  ]
+}

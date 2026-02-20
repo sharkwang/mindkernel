@@ -1,0 +1,111 @@
+{
+  "scenario_id": "S1-happy-path",
+  "memory": {
+    "id": "mem_s1_001",
+    "kind": "event",
+    "content": "User confirmed a stable preference with verifiable evidence.",
+    "source": {
+      "source_type": "session",
+      "source_ref": "msg://s1/001"
+    },
+    "evidence_refs": ["ev://chat/001"],
+    "confidence": 0.92,
+    "risk_tier": "low",
+    "impact_tier": "medium",
+    "status": "active",
+    "investigation_status": "none",
+    "created_at": "2026-02-20T03:00:00Z",
+    "review_due_at": "2026-02-27T03:00:00Z",
+    "next_action_at": "2026-02-27T03:00:00Z"
+  },
+  "experience": {
+    "id": "exp_s1_001",
+    "memory_refs": ["mem_s1_001"],
+    "episode_summary": "Preference repeated and confirmed across interactions.",
+    "outcome": "stable preference",
+    "confidence": 0.89,
+    "status": "active",
+    "created_at": "2026-02-20T03:05:00Z",
+    "review_due_at": "2026-02-27T03:05:00Z",
+    "next_action_at": "2026-02-27T03:05:00Z"
+  },
+  "cognition": {
+    "id": "cg_s1_001",
+    "rule": "Apply known preference unless user explicitly overrides.",
+    "scope": {
+      "domains": ["assistant_behavior"],
+      "channels": ["webchat"],
+      "risk_tier_max": "medium"
+    },
+    "epistemic_state": "supported",
+    "confidence": 0.88,
+    "falsify_if": "User provides contradictory preference twice.",
+    "review_interval": "P14D",
+    "status": "active",
+    "evidence_refs": ["exp_s1_001"],
+    "created_at": "2026-02-20T03:10:00Z",
+    "review_due_at": "2026-03-05T03:10:00Z",
+    "next_action_at": "2026-03-05T03:10:00Z"
+  },
+  "decision_trace": {
+    "id": "dt_s1_001",
+    "decision_id": "dec_s1_001",
+    "request_ref": "req://s1/001",
+    "risk_tier": "low",
+    "impact_tier": "medium",
+    "decision_mode": "normal",
+    "epistemic_state": "supported",
+    "inputs": {
+      "memory_refs": ["mem_s1_001"],
+      "experience_refs": ["exp_s1_001"],
+      "cognition_refs": ["cg_s1_001"],
+      "persona_refs": ["persona_main"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "pass",
+      "risk_gate": "pass",
+      "cognition_gate": "pass"
+    },
+    "reason": "Supported cognition with low risk and no gate conflicts.",
+    "evidence_refs": ["cg_s1_001"],
+    "actions": [
+      {
+        "step": "apply_preference",
+        "result": "done",
+        "timestamp": "2026-02-20T03:11:00Z"
+      }
+    ],
+    "final_outcome": "executed",
+    "review_due_at": "2026-03-05T03:10:00Z",
+    "created_at": "2026-02-20T03:11:00Z",
+    "updated_at": "2026-02-20T03:11:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s1_001",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-core" },
+      "object_type": "cognition",
+      "object_id": "cg_s1_001",
+      "before": { "status": "candidate", "epistemic_state": "uncertain" },
+      "after": { "status": "active", "epistemic_state": "supported" },
+      "reason": "Evidence threshold met and persona gate passed.",
+      "evidence_refs": ["exp_s1_001"],
+      "risk_tier": "low",
+      "timestamp": "2026-02-20T03:10:30Z"
+    },
+    {
+      "id": "aud_s1_002",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-core" },
+      "object_type": "decision",
+      "object_id": "dec_s1_001",
+      "before": { "gate": "pending" },
+      "after": { "gate": "pass" },
+      "reason": "All gates pass for low-risk request.",
+      "evidence_refs": ["dt_s1_001"],
+      "timestamp": "2026-02-20T03:11:00Z"
+    }
+  ]
+}

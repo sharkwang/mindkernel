@@ -1,4 +1,4 @@
-# Contents Map (v3)
+# Contents Map (v4)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -32,19 +32,21 @@
    - v0.1 需求追踪子表（覆盖主规范条款）
 11. `design-consolidation-v0.1.md`
    - docs + schemas 统一口径与术语整理基线
+12. `validation-critical-paths-v0.1.md`
+   - v0.1 fixtures + 校验脚本的关键路径覆盖说明
 
 ## 数据契约草案（与主规范配套）
 
-12. `../schemas/README.md`
+13. `../schemas/README.md`
     - schema 草案索引与维护说明
-13. `../schemas/*.schema.json`
+14. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-14. `../archive/requirements-and-architecture.legacy.md`
-15. `../archive/design.legacy.md`
-16. `../archive/memory-entry.schema.legacy.json`
+15. `../archive/requirements-and-architecture.legacy.md`
+16. `../archive/design.legacy.md`
+17. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 

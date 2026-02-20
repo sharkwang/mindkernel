@@ -101,3 +101,13 @@
 - [ ] `evidence_refs` 可回溯到源
 - [ ] 回滚与恢复都可执行（可逆）
 - [ ] 调度器仅处理到期对象（非全量扫描）
+
+## 场景 Fixture 对应关系（可执行校验）
+
+- 场景 1 -> `data/fixtures/critical-paths/01-happy-path.json`
+- 场景 2 -> `data/fixtures/critical-paths/02-poison-rollback.json`
+- 场景 3 -> `data/fixtures/critical-paths/03-uncertain-ttl-routing.json`
+- 场景 4 -> `data/fixtures/critical-paths/04-high-risk-block.json`
+- 场景 5 -> `data/fixtures/critical-paths/05-reinstate.json`
+
+运行校验：`python3 tools/validate_scenarios_v0_1.py`
