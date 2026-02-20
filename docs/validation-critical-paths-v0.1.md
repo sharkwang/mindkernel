@@ -33,6 +33,9 @@
 8. **S8 Memory→Experience Path**
    - 文件：`08-memory-experience-path.json`
    - 覆盖：记忆入库到经验候选生成（R-ME-01）
+9. **S9 Markdown Memory Input**
+   - 文件：`09-memory-markdown.md`
+   - 覆盖：Markdown（front matter + 正文）转换为合法 Memory 对象
 
 ## 3. 校验内容
 
@@ -48,6 +51,7 @@
   - S6 必须出现 retry 回队（`queued` 且 `attempt=1`）
   - S7 必须出现 `dead_letter` 终态
   - S8 必须体现 Memory 与 Experience 的引用链一致
+  - S9 Markdown 输入必须转化为合法 Memory（含 content 与 evidence_refs）
 
 ## 4. 运行方式
 
@@ -60,7 +64,8 @@ python3 tools/validate_scenarios_v0_1.py
 
 - `PASS 01-happy-path.json`
 - ...
-- `All good. Validated objects/events: 32`
+- `PASS 09-memory-markdown.md`
+- `All good. Validated objects/events: 33`
 
 ## 5. CI 自动校验
 

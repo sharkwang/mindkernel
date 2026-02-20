@@ -121,13 +121,114 @@ def write_audit_event(
     )
 
 
+def _coerce_scalar(raw: str):
+    v = raw.strip()
+    if (v.startswith('"') and v.endswith('"')) or (v.startswith("'") and v.endswith("'")):
+        v = v[1:-1]
+
+    low = v.lower()
+    if low in {"true", "false"}:
+        return low == "true"
+
+    try:
+        if "." in v:
+            return float(v)
+        return int(v)
+    except ValueError:
+        return v
+
+
+def _parse_front_matter(md_text: str) -> tuple[dict, str]:
+    text = md_text.replace("\r\n", "\n")
+    if not text.startswith("---\n"):
+        return {}, text
+
+    end = text.find("\n---\n", 4)
+    if end < 0:
+        return {}, text
+
+    header = text[4:end]
+    body = text[end + 5 :]
+
+    meta: dict = {}
+    for line in header.split("\n"):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if ":" not in line:
+            continue
+        k, raw = line.split(":", 1)
+        key = k.strip()
+        val = raw.strip()
+
+        if key == "evidence_refs":
+            if val.startswith("[") and val.endswith("]"):
+                inner = val[1:-1].strip()
+                items = [x.strip().strip('"').strip("'") for x in inner.split(",") if x.strip()]
+                meta[key] = items
+            else:
+                items = [x.strip() for x in val.split(",") if x.strip()]
+                meta[key] = items
+            continue
+
+        meta[key] = _coerce_scalar(val)
+
+    return meta, body
+
+
+def _build_memory_from_markdown(file_path: Path) -> dict:
+    text = file_path.read_text()
+    meta, body = _parse_front_matter(text)
+
+    created_at = str(meta.get("created_at") or now_iso())
+
+    review_due_at = meta.get("review_due_at")
+    if not review_due_at:
+        review_days = int(meta.get("review_due_days", 7))
+        review_due_at = in_days_iso(review_days)
+
+    next_action_at = meta.get("next_action_at")
+    if not next_action_at:
+        next_days = int(meta.get("next_action_days", 7))
+        next_action_at = in_days_iso(next_days)
+
+    source_type = str(meta.get("source_type", "file"))
+    source_ref = str(meta.get("source_ref", f"file://{file_path}"))
+
+    memory_payload = {
+        "id": str(meta.get("id", f"mem_{uuid.uuid4().hex[:8]}")),
+        "kind": str(meta.get("kind", "event")),
+        "content": str(meta.get("content", body.strip())),
+        "source": {
+            "source_type": source_type,
+            "source_ref": source_ref,
+        },
+        "evidence_refs": meta.get("evidence_refs") or [f"file://{file_path}#content"],
+        "confidence": float(meta.get("confidence", 0.7)),
+        "risk_tier": str(meta.get("risk_tier", "low")),
+        "impact_tier": str(meta.get("impact_tier", "low")),
+        "status": str(meta.get("status", "candidate")),
+        "created_at": created_at,
+        "review_due_at": str(review_due_at),
+        "next_action_at": str(next_action_at),
+    }
+
+    if "investigation_status" in meta:
+        memory_payload["investigation_status"] = str(meta["investigation_status"])
+
+    return memory_payload
+
+
 def _extract_memory_payload(file_path: Path) -> dict:
+    if file_path.suffix.lower() in {".md", ".markdown"}:
+        return _build_memory_from_markdown(file_path)
+
     data = json.loads(file_path.read_text())
     if isinstance(data, dict) and "memory" in data and isinstance(data["memory"], dict):
         return data["memory"]
     if isinstance(data, dict):
         return data
-    raise ValueError("memory input json must be an object or scenario object containing `memory`")
+    raise ValueError("memory input must be JSON object/scenario or Markdown memory note")
 
 
 def ingest_memory(c: sqlite3.Connection, memory_payload: dict, actor_id: str = "mk-me-pipeline") -> dict:
@@ -275,7 +376,11 @@ def main():
     sub.add_parser("init-db")
 
     ing = sub.add_parser("ingest-memory")
-    ing.add_argument("--file", required=True, help="Memory JSON file or scenario file containing `memory`")
+    ing.add_argument(
+        "--file",
+        required=True,
+        help="Memory JSON/scenario file, or Markdown note (.md/.markdown with optional front matter)",
+    )
 
     m2e = sub.add_parser("memory-to-experience")
     m2e.add_argument("--memory-id", required=True)
@@ -283,7 +388,11 @@ def main():
     m2e.add_argument("--outcome", required=True)
 
     rp = sub.add_parser("run-path")
-    rp.add_argument("--file", required=True, help="Memory JSON file or scenario file containing `memory`")
+    rp.add_argument(
+        "--file",
+        required=True,
+        help="Memory JSON/scenario file, or Markdown note (.md/.markdown with optional front matter)",
+    )
     rp.add_argument("--episode-summary", required=True)
     rp.add_argument("--outcome", required=True)
 

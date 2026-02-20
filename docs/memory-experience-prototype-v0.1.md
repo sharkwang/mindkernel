@@ -19,6 +19,8 @@
 
 ## 3. 快速跑通（推荐）
 
+### 3.1 使用 JSON 输入
+
 ```bash
 cd /Users/zhengwang/projects/mindkernel
 
@@ -33,6 +35,29 @@ python3 tools/memory_experience_v0_1.py list-memory --limit 5
 python3 tools/memory_experience_v0_1.py list-experience --limit 5
 python3 tools/memory_experience_v0_1.py list-audits --limit 10
 ```
+
+### 3.2 使用 Markdown 输入（新增）
+
+支持 `.md/.markdown`，可选 front matter；正文会作为 `content`。
+
+```markdown
+---
+id: mem_md_001
+kind: event
+status: candidate
+confidence: 0.78
+risk_tier: low
+impact_tier: medium
+source_type: session
+source_ref: msg://example/001
+evidence_refs: ev://md/001, ev://md/002
+review_due_days: 7
+next_action_days: 7
+---
+用户明确表达了新的偏好，后续需要纳入经验层抽象。
+```
+
+如未提供部分字段，原型会自动补默认值（如 id、时间轴字段、source、evidence_refs）。
 
 ## 4. 设计对齐
 

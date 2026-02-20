@@ -5,6 +5,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from memory_experience_v0_1 import _extract_memory_payload
+
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS_DIR = ROOT / "schemas"
 FIXTURES_DIR = ROOT / "data" / "fixtures" / "critical-paths"
@@ -215,6 +217,15 @@ def main():
 
         validate_scenario_assertions(scenario, fp)
         print(f"PASS {fp.name}")
+
+    md_fixture = FIXTURES_DIR / "09-memory-markdown.md"
+    if md_fixture.exists():
+        md_memory = _extract_memory_payload(md_fixture)
+        validate(load_schema("memory.schema.json"), md_memory, f"{md_fixture.name}.memory", "memory.schema.json")
+        assert md_memory.get("content"), "S9 markdown memory must produce non-empty content"
+        assert len(md_memory.get("evidence_refs", [])) >= 1, "S9 markdown memory must include evidence_refs"
+        print(f"PASS {md_fixture.name}")
+        total += 1
 
     print(f"All good. Validated objects/events: {total}")
     return 0

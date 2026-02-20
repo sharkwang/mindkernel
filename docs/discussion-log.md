@@ -279,3 +279,16 @@
   - 新增 `data/fixtures/critical-paths/08-memory-experience-path.json`
   - `tools/validate_scenarios_v0_1.py` 增加 S8 断言
 - 结果：关键路径覆盖从 7 条扩展到 8 条。
+
+### 6.12 Markdown 记忆输入支持（2026-02-20）
+
+- 需求：Memory 输入形式增加 Markdown。
+- 实现：
+  - `tools/memory_experience_v0_1.py` 新增 Markdown 解析路径（`.md/.markdown`）。
+  - 支持可选 front matter（`key: value`），正文自动映射到 `content`。
+  - 对缺省字段自动补全（`id/source/evidence_refs/时间轴字段` 等），再走 `memory.schema.json` 强校验。
+- 新增样例：
+  - `data/fixtures/critical-paths/09-memory-markdown.md`
+- 校验增强：
+  - `tools/validate_scenarios_v0_1.py` 新增 Markdown fixture 校验（S9）。
+- 结果：关键路径覆盖从 8 条扩展到 9 条。
