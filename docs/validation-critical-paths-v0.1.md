@@ -95,7 +95,7 @@ python3 tools/validate_scenarios_v0_1.py
 - `PASS 13-full-path-block.json`
 - `PASS 14-cognition-decision-pass.json`
 - `PASS 15-cognition-decision-high-risk-block.json`
-- `All good. Validated objects/events: 58`
+- `All good. Validated objects/events: 62`
 
 ## 5. CI 自动校验
 

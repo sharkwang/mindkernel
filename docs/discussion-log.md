@@ -340,3 +340,15 @@
   - `data/fixtures/critical-paths/15-cognition-decision-high-risk-block.json`
   - `tools/validate_scenarios_v0_1.py` 新增 S14/S15 断言。
 - 结果：关键路径覆盖从 13 条扩展到 15 条。
+
+### 6.16 Full Path 升级为 M→E→C→D 闭环（2026-02-20）
+
+- 决策：将 `tools/full_path_v0_1.py` 从 M→E→C 升级为 M→E→C→D 一键闭环。
+- 关键更新：
+  - 引入 `cognition_decision_v0_1` 依赖，`run-full-path` 新增 `--request-ref` 与可选 `--risk-tier`。
+  - Gate pass：调用 `cognition_to_decision` 产出 DecisionTrace。
+  - Gate block：调用 `gate_block_to_decision` 产出 blocked DecisionTrace（保留 boundary_hits）。
+- 对齐调整：
+  - `12-full-path-pass.json` 与 `13-full-path-block.json` 增补 `decision_trace` 与决策审计事件。
+  - `tools/validate_scenarios_v0_1.py` 同步强化 S12/S13 断言（检查 decision 层行为）。
+- 结果：全链路闭环可一键执行，关键路径总覆盖维持 15 条，但校验对象/事件提升到 62。

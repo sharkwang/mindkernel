@@ -68,6 +68,30 @@
     "next_action_at": "2026-02-27T08:01:30Z",
     "uncertainty_ttl": "P7D"
   },
+  "decision_trace": {
+    "id": "dt_s12_001",
+    "decision_id": "dec_s12_001",
+    "request_ref": "req://s12/001",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "decision_mode": "conservative",
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "inputs": {
+      "cognition_refs": ["cg_s12_001"]
+    },
+    "gates": {
+      "persona_conflict_gate": "pass",
+      "social_gate": "defer",
+      "risk_gate": "limit",
+      "cognition_gate": "degrade"
+    },
+    "reason": "Medium-risk request with uncertain cognition is limited to conservative mode.",
+    "evidence_refs": ["cg_s12_001"],
+    "final_outcome": "limited",
+    "created_at": "2026-02-20T08:01:40Z",
+    "updated_at": "2026-02-20T08:01:40Z"
+  },
   "audit_events": [
     {
       "id": "aud_s12_001",
@@ -106,6 +130,19 @@
       "evidence_refs": ["exp_s12_001"],
       "timestamp": "2026-02-20T08:01:32Z",
       "metadata": { "rule_id": "R-EC-01" }
+    },
+    {
+      "id": "aud_s12_004",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-full-path" },
+      "object_type": "decision",
+      "object_id": "dec_s12_001",
+      "before": { "gate": "pending" },
+      "after": { "risk_gate": "limit", "cognition_gate": "degrade", "final_outcome": "limited" },
+      "reason": "Medium-risk request with uncertain cognition is limited to conservative mode.",
+      "evidence_refs": ["cg_s12_001"],
+      "timestamp": "2026-02-20T08:01:41Z",
+      "metadata": { "decision_trace_id": "dt_s12_001" }
     }
   ]
 }

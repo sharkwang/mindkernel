@@ -41,7 +41,7 @@
 15. `experience-cognition-prototype-v0.1.md`
    - 经验到认知路径（含 Persona Gate 最小实现）
 16. `full-path-prototype-v0.1.md`
-   - Memory→Experience→Cognition 一体化最小链路说明
+   - Memory→Experience→Cognition→Decision 一体化最小闭环说明
 17. `cognition-decision-prototype-v0.1.md`
    - Cognition→DecisionTrace 最小链路说明
 

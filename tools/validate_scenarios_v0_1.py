@@ -214,10 +214,13 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
         persona = scenario["persona"]
         exp = scenario["experience"]
         cg = scenario["cognition"]
+        dt = scenario["decision_trace"]
         assert mem["status"] == "active", "S12 memory must be active"
         assert persona["status"] == "active", "S12 persona must be active"
         assert mem["id"] in exp.get("memory_refs", []), "S12 experience must reference memory"
         assert exp["id"] in cg.get("evidence_refs", []), "S12 cognition must reference experience"
+        assert cg["id"] in dt.get("evidence_refs", []), "S12 decision must reference cognition"
+        assert dt.get("final_outcome") == "limited", "S12 should end in limited outcome"
         assert any(
             e.get("event_type") == "decision_gate"
             and e.get("after", {}).get("persona_conflict_gate") == "pass"
@@ -228,10 +231,13 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
         mem = scenario["memory"]
         persona = scenario["persona"]
         exp = scenario["experience"]
+        dt = scenario["decision_trace"]
         assert mem["status"] == "active", "S13 memory must be active"
         assert persona["status"] == "active", "S13 persona must be active"
         assert mem["id"] in exp.get("memory_refs", []), "S13 experience must reference memory"
         assert "cognition" not in scenario, "S13 blocked path should not include cognition object"
+        assert dt.get("final_outcome") == "blocked", "S13 decision must be blocked"
+        assert dt.get("gates", {}).get("persona_conflict_gate") == "block", "S13 persona gate must block"
         assert any(
             e.get("event_type") == "decision_gate"
             and e.get("after", {}).get("persona_conflict_gate") == "block"

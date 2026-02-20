@@ -44,6 +44,31 @@
     "review_due_at": "2026-02-27T08:11:00Z",
     "next_action_at": "2026-02-27T08:11:00Z"
   },
+  "decision_trace": {
+    "id": "dt_s13_001",
+    "decision_id": "dec_s13_001",
+    "request_ref": "req://s13/001",
+    "risk_tier": "high",
+    "impact_tier": "high",
+    "decision_mode": "abstain",
+    "epistemic_state": "uncertain",
+    "unknown_type": "out_of_scope",
+    "inputs": {
+      "experience_refs": ["exp_s13_001"],
+      "persona_refs": ["persona_s13"]
+    },
+    "gates": {
+      "persona_conflict_gate": "block",
+      "social_gate": "defer",
+      "risk_gate": "block",
+      "cognition_gate": "block"
+    },
+    "reason": "Persona gate blocked cognition promotion; decision blocked by policy boundary.",
+    "evidence_refs": ["exp_s13_001"],
+    "final_outcome": "blocked",
+    "created_at": "2026-02-20T08:11:25Z",
+    "updated_at": "2026-02-20T08:11:25Z"
+  },
   "audit_events": [
     {
       "id": "aud_s13_001",
@@ -58,6 +83,28 @@
       "timestamp": "2026-02-20T08:11:20Z",
       "metadata": {
         "rule_id": "R-EC-02",
+        "persona_id": "persona_s13",
+        "boundary_hits": ["forbidden"]
+      }
+    },
+    {
+      "id": "aud_s13_002",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-full-path" },
+      "object_type": "decision",
+      "object_id": "dec_s13_001",
+      "before": { "gate": "pending" },
+      "after": {
+        "persona_conflict_gate": "block",
+        "risk_gate": "block",
+        "cognition_gate": "block",
+        "final_outcome": "blocked"
+      },
+      "reason": "Persona gate blocked cognition promotion; decision blocked by policy boundary.",
+      "evidence_refs": ["exp_s13_001"],
+      "timestamp": "2026-02-20T08:11:26Z",
+      "metadata": {
+        "decision_trace_id": "dt_s13_001",
         "persona_id": "persona_s13",
         "boundary_hits": ["forbidden"]
       }

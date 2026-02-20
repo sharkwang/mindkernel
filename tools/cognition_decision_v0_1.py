@@ -305,6 +305,87 @@ def cognition_to_decision(
     }
 
 
+def gate_block_to_decision(
+    c: sqlite3.Connection,
+    *,
+    experience_id: str,
+    persona_id: str,
+    request_ref: str,
+    boundary_hits: list[str] | None = None,
+    risk_tier: str = "high",
+    actor_id: str = "mk-cd-pipeline",
+):
+    dt_id = f"dt_{uuid.uuid4().hex[:12]}"
+    dec_id = f"dec_{uuid.uuid4().hex[:12]}"
+
+    payload = {
+        "id": dt_id,
+        "decision_id": dec_id,
+        "request_ref": request_ref,
+        "risk_tier": risk_tier,
+        "impact_tier": "high",
+        "decision_mode": "abstain",
+        "epistemic_state": "uncertain",
+        "unknown_type": "out_of_scope",
+        "inputs": {
+            "experience_refs": [experience_id],
+            "persona_refs": [persona_id],
+        },
+        "gates": {
+            "persona_conflict_gate": "block",
+            "social_gate": "defer",
+            "risk_gate": "block",
+            "cognition_gate": "block",
+        },
+        "reason": "Persona gate blocked cognition promotion; decision blocked by policy boundary.",
+        "evidence_refs": [experience_id],
+        "final_outcome": "blocked",
+        "review_due_at": in_days_iso(7),
+        "created_at": now_iso(),
+        "updated_at": now_iso(),
+    }
+
+    validate_payload("decision-trace.schema.json", payload)
+
+    c.execute(
+        "INSERT INTO decision_traces(id, final_outcome, payload_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+        (dt_id, payload["final_outcome"], json.dumps(payload, ensure_ascii=False), now_iso(), now_iso()),
+    )
+
+    write_audit_event(
+        c,
+        event_type="decision_gate",
+        actor_type="system",
+        actor_id=actor_id,
+        object_type="decision",
+        object_id=dec_id,
+        before={"gate": "pending"},
+        after={
+            "persona_conflict_gate": "block",
+            "risk_gate": "block",
+            "cognition_gate": "block",
+            "final_outcome": "blocked",
+        },
+        reason=payload["reason"],
+        evidence_refs=[experience_id],
+        metadata={
+            "decision_trace_id": dt_id,
+            "persona_id": persona_id,
+            "boundary_hits": boundary_hits or [],
+        },
+    )
+
+    c.commit()
+    return {
+        "decision_trace_id": dt_id,
+        "decision_id": dec_id,
+        "risk_tier": payload["risk_tier"],
+        "decision_mode": payload["decision_mode"],
+        "final_outcome": payload["final_outcome"],
+        "blocked_by_persona_gate": True,
+    }
+
+
 def list_items(c: sqlite3.Connection, table: str, limit: int = 20):
     if table not in {"cognition_rules", "decision_traces"}:
         raise ValueError("invalid table")
