@@ -103,7 +103,7 @@
   3) `expires_at` 或 `review_due_at`（到期/复核时间点）。
   缺任一字段者，不得发布为 `active`。
 - **CR-8（有界探索）**：系统必须在每个治理周期保留“最小探索预算”，且探索仅允许发生在低/中风险、可回滚场景。若连续 3 个治理周期探索执行量为 0，判定为“学习停滞事件”，必须触发治理纠偏。
-- **CR-9（不确定性分级处置）**：任何 `uncertain` 事项必须具备 `risk_tier`、`impact_tier`、`uncertainty_ttl`、`auto_verify_budget`。TTL 到期后应先执行自动验证（多源核验/反证检验/微实验）直至预算耗尽。仅在以下条件满足时升级人工：高风险或高影响、与人格硬边界冲突、或连续欺骗信号触发。其余未决事项进入 `stale_uncertain`（隔离+降权），且不得参与认知升格。
+- **CR-9（不确定性分级处置）**：任何 `uncertain` 事项必须具备 `risk_tier`、`impact_tier`、`uncertainty_ttl`、`auto_verify_budget`。TTL 到期后应先执行自动验证（多源核验/反证检验/微实验）直至预算耗尽。仅在以下条件满足时升级人工：高风险或高影响、与人格硬边界冲突、或连续欺骗信号触发。其余未决事项进入 `stale_uncertain`（隔离+降权，数据层可表达为 `status=stale + epistemic_state=uncertain`），且不得参与认知升格。
 - **CR-10（认知非二元）**：认知规则必须采用 `epistemic_state`，至少支持 `supported` / `uncertain` / `refuted` 三态；禁止仅以“对/错”二值状态驱动高风险决策。
 - **CR-11（未知态细分）**：所有 `uncertain` 事项必须声明 `unknown_type`，至少包括：`multipath`（多路径并存）、`out_of_scope`（超出认知范围）、`ontic_unknowable`（原理性不可知）。系统必须将 `unknown_type` 绑定到不同处置策略，禁止用单一流程处理全部未知。
 - **CR-12（时间轴驱动遗忘）**：遗忘机制必须基于时间轴变量与到期调度执行。任何参与遗忘评估的对象至少应具备 `created_at`、`last_accessed_at`、`last_reinforced_at`、`last_verified_at`、`review_due_at`、`next_action_at`。遗忘作业不得依赖全量扫描作为默认模式。
@@ -148,7 +148,7 @@
 - **FR-18**：系统应为 `Memory/Experience/Cognition` 对象提供统一时间轴字段：`created_at`、`last_accessed_at`、`last_reinforced_at`、`last_verified_at`、`review_due_at`、`stale_since`、`expires_at`、`next_action_at`。
 - **FR-19**：系统应支持“到期驱动调度器”，按 `next_action_at` 拉取待处理对象执行遗忘/复核/降权，避免全量扫描。
 - **FR-20**：系统应支持可配置衰减函数（至少包含 `half_life`、`reinforcement_count`、`impact_weight`、`risk_tier` 因子）用于记忆权重更新。
-- **FR-21**：系统应实现时间条件状态迁移（如 `supported -> uncertain -> stale_uncertain -> archived`）并支持新证据回升路径（reinstate）。
+- **FR-21**：系统应实现时间条件状态迁移（如 `supported -> uncertain -> stale_uncertain -> archived`，其中 `stale_uncertain` 在数据层可表达为 `status=stale + epistemic_state=uncertain`）并支持新证据回升路径（reinstate）。
 
 ### 2.6 非功能需求（NFR）
 
@@ -244,6 +244,7 @@
 | 记忆层对象 | `memory.schema.json` |
 | 经验层对象 | `experience.schema.json` |
 | 认知层对象（含未知态） | `cognition.schema.json` |
+| 决策审计轨迹对象 | `decision-trace.schema.json` |
 
 映射原则：
 1. 需求条款优先，schema 跟随需求更新。

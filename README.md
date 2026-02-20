@@ -21,7 +21,7 @@
 - 认知三态：`supported / uncertain / refuted`
 - 未知态细分：`multipath / out_of_scope / ontic_unknowable`
 - 时间轴驱动遗忘：`next_action_at` 到期调度（非全量扫描）
-- Schema 草案映射（Persona/Cognition/Experience/Memory + Common Temporal）
+- Schema 草案映射（Persona/Cognition/Experience/Memory/DecisionTrace + Common Temporal）
 
 ## 阅读顺序（推荐）
 
@@ -65,4 +65,4 @@
 
 ---
 
-项目命名来源：Isaac Asimov 的 **MindKernel**（心智内核）。
+项目命名说明见：`docs/name-origin.md`。

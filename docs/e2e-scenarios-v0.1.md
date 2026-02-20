@@ -29,7 +29,7 @@
 
 ### 期望流程
 1. 注入调查触发（冻结 + 取证）
-2. Memory 标记为 `forged/invalidated`
+2. Memory 标记为 `rejected_poisoned`（`investigation_status=poisoned`）
 3. 级联回滚 Experience/Cognition/Decision
 4. 回滚事件进入审计日志
 
@@ -49,7 +49,7 @@
 ### 期望流程
 1. 调度器在 `next_action_at` 到期时拉取
 2. 优先执行自动验证（预算内）
-3. 预算耗尽仍未解决则进入 `stale_uncertain`
+3. 预算耗尽仍未解决则进入 `status=stale + epistemic_state=uncertain`
 4. 对应决策模式切为保守/升级
 
 ### 通过标准
@@ -80,7 +80,7 @@
 ## 场景 5：新证据触发 reinstate
 
 ### 输入
-- 一条已降级为 `stale_uncertain` 的 Cognition
+- 一条已降级为 `status=stale + epistemic_state=uncertain` 的 Cognition
 - 新增高质量证据
 
 ### 期望流程

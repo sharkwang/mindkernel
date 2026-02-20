@@ -176,3 +176,16 @@
 - 已完成 `docs/scheduler-interface-v0.1.md`
   - 给出到期调度器最小接口（enqueue/pull/ack/fail）与幂等、重试、死信策略。
 - 同步动作：`docs/contents-map.md` 更新为 v2，并纳入 v0.1 启动包索引。
+
+### 6.5 docs + schemas 联合复核与整理（2026-02-20）
+
+- 目标：对全量 docs 与 schemas 做一致性复核，统一术语与状态语义。
+- 发现并处理：
+  1. E2E 场景中的 Memory 注入状态与 schema 枚举不一致（`forged/invalidated` -> `rejected_poisoned`）。
+  2. Cognition 的 `stale_uncertain` 术语与状态枚举存在层次差异，统一为“概念层术语”，数据层表达为 `status=stale + epistemic_state=uncertain`。
+  3. `memory.schema.json` 缺少 `evidence_refs` 约束，与规则表不一致；已补为必填（`minItems=1`）。
+  4. schema 索引未纳入 `decision-trace.schema.json`；已补齐。
+  5. README 命名来源描述与 `name-origin.md` 不一致；已统一为引用 `docs/name-origin.md`。
+- 新增整理文档：
+  - `docs/design-consolidation-v0.1.md`（统一口径与维护规则）
+- 结果：v0.1 启动包在“规则表 ↔ 状态机 ↔ E2E ↔ schema”四层之间达到当前一致。

@@ -20,6 +20,11 @@
       "required": ["source_type", "source_ref"],
       "additionalProperties": true
     },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
     "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
     "risk_tier": { "type": "string", "enum": ["low", "medium", "high"] },
     "impact_tier": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
@@ -55,6 +60,6 @@
     "reinforcement_count": { "type": "integer", "minimum": 0 },
     "impact_weight": { "type": "number", "minimum": 0 }
   },
-  "required": ["id", "kind", "content", "source", "status", "confidence", "risk_tier", "impact_tier"],
+  "required": ["id", "kind", "content", "source", "evidence_refs", "status", "confidence", "risk_tier", "impact_tier"],
   "additionalProperties": true
 }

@@ -1,4 +1,4 @@
-# Contents Map (v2)
+# Contents Map (v3)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -30,19 +30,21 @@
    - 端到端验收场景
 10. `rtm-v0.1.md`
    - v0.1 需求追踪子表（覆盖主规范条款）
+11. `design-consolidation-v0.1.md`
+   - docs + schemas 统一口径与术语整理基线
 
 ## 数据契约草案（与主规范配套）
 
-11. `../schemas/README.md`
+12. `../schemas/README.md`
     - schema 草案索引与维护说明
-12. `../schemas/*.schema.json`
+13. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace`
 
 ## 归档文档（只读）
 
-13. `../archive/requirements-and-architecture.legacy.md`
-14. `../archive/design.legacy.md`
-15. `../archive/memory-entry.schema.legacy.json`
+14. `../archive/requirements-and-architecture.legacy.md`
+15. `../archive/design.legacy.md`
+16. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 
