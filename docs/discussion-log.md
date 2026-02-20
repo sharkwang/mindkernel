@@ -233,3 +233,16 @@
   - `workflow_dispatch` 手动触发
 - 执行命令：`python3 tools/validate_scenarios_v0_1.py`
 - 目标：把 v0.1 关键路径从“可手动验证”升级为“默认自动守护”。
+
+### 6.9 最小调度器原型落地（2026-02-20）
+
+- 决策：进入实现前半步，先交付 `next_action_at` 调度器可运行原型（SQLite）。
+- 新增：
+  - `tools/scheduler_v0_1.py`
+  - `docs/scheduler-prototype-v0.1.md`
+- 支持能力：
+  - `init-db / enqueue / pull / ack / fail / stats`
+  - 幂等键去重（`idempotency_key`）
+  - 失败重试与死信（`dead_letter`）
+  - 到期拉取排序（`run_at ASC + priority DESC`）
+- 结果：原型本地命令流已验证可用，可作为后续状态机与审计接入底座。
