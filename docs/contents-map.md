@@ -1,4 +1,4 @@
-# Contents Map (v9)
+# Contents Map (v10)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -40,23 +40,25 @@
    - 记忆到经验路径的本地可运行原型说明
 15. `experience-cognition-prototype-v0.1.md`
    - 经验到认知路径（含 Persona Gate 最小实现）
-16. `full-path-prototype-v0.1.md`
-   - Memory→Experience→Cognition→Decision 一体化最小闭环说明
-17. `cognition-decision-prototype-v0.1.md`
+16. `cognition-decision-prototype-v0.1.md`
    - Cognition→DecisionTrace 最小链路说明
+17. `full-path-prototype-v0.1.md`
+   - Memory→Experience→Cognition→Decision 一体化最小闭环说明
+18. `system-smoke-report-v0.1.md`
+   - 系统烟测报告产出与解读方式
 
 ## 数据契约草案（与主规范配套）
 
-18. `../schemas/README.md`
+19. `../schemas/README.md`
     - schema 草案索引与维护说明
-19. `../schemas/*.schema.json`
+20. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-20. `../archive/requirements-and-architecture.legacy.md`
-21. `../archive/design.legacy.md`
-22. `../archive/memory-entry.schema.legacy.json`
+21. `../archive/requirements-and-architecture.legacy.md`
+22. `../archive/design.legacy.md`
+23. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 

@@ -352,3 +352,19 @@
   - `12-full-path-pass.json` 与 `13-full-path-block.json` 增补 `decision_trace` 与决策审计事件。
   - `tools/validate_scenarios_v0_1.py` 同步强化 S12/S13 断言（检查 decision 层行为）。
 - 结果：全链路闭环可一键执行，关键路径总覆盖维持 15 条，但校验对象/事件提升到 62。
+
+### 6.17 项目整理（2026-02-20）
+
+- 目标：统一仓库入口、文档索引与运行资产边界，降低后续维护成本。
+- 结构整理：
+  - 新增 `tools/README.md`（脚本地图）
+  - 新增 `data/README.md`（fixtures 与运行产物边界）
+  - 新增 `docs/system-smoke-report-v0.1.md`（报告产出说明）
+  - `docs/contents-map.md` 升级为 v10，并纳入 smoke-report 文档
+- 规范对齐：
+  - 更新 `README.md` 为“规范 + 原型并行”阶段说明，补齐快速开始
+  - 更新 `CONTRIBUTING.md`，修正讨论记录路径并强化“实现必须带验证”原则
+- 运行资产清理：
+  - 清理 `data/*.sqlite`、`reports/*` 与 `tools/__pycache__`
+  - `.gitignore` 增加 `reports/` 忽略规则
+- 结果：项目入口更清晰，运行产物与源码边界明确。
