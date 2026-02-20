@@ -384,3 +384,25 @@
 - 校验：
   - 所有 `docs/...` 引用路径存在性检查通过
   - 关键路径验证脚本通过（62 对象/事件）
+
+### 6.19 OpenClaw 记忆研究对比分析（2026-02-20）
+
+- 参考文档：`/opt/homebrew/lib/node_modules/openclaw/docs/zh-CN/experiments/research/memory.md`
+- 结论：
+  - MindKernel 当前在“治理闭环”更强（M→E→C→D + 审计 + Gate + 回滚）。
+  - 研究文档在“离线记忆回忆层”更强（retain/recall/reflect、实体中心检索、时间查询）。
+  - 两者应融合为“Markdown 规范源 + 派生索引 + 治理闭环”的统一架构。
+- 差距识别：
+  1. 缺少 `memory/YYYY-MM-DD.md + bank/*` 的长期记忆分层组织。
+  2. 缺少 retain 规范与反思作业（reflect）机制。
+  3. 缺少实体中心 recall 与时间窗口检索能力。
+  4. opinion 置信度演化机制尚未实现（证据驱动更新）。
+- 改进建议（分层）：
+  - P0：引入记忆目录分层（daily + bank）与 `## Retain` 规范。
+  - P1：实现 `.memory/index.sqlite` 派生索引（FTS 优先，离线可重建）。
+  - P2：实现 recall API（lexical/entity/time/opinion）并输出 fact-pack（含 source 引用）。
+  - P3：将 reflect 作业接入 scheduler，回写 entities/opinions/core memory。
+- 架构落点：
+  - `Markdown Source -> Index(reindex) -> Recall(fact-pack) -> M/E/C/D Governance -> Reflect(update bank)`
+- 预期收益：
+  - 保持可审计与可编辑的 Markdown 优势，同时补齐高召回、实体化记忆与长期演化能力。
