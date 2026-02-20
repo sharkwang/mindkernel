@@ -15,6 +15,7 @@
 - `ack`
 - `fail`
 - `stats`
+- `list-audits`
 
 ## 3. 快速开始
 
@@ -40,6 +41,9 @@ python3 tools/scheduler_v0_1.py ack --job-id <job_id>
 
 # 5) 查看统计
 python3 tools/scheduler_v0_1.py stats
+
+# 6) 查看最近审计事件
+python3 tools/scheduler_v0_1.py list-audits --limit 10
 ```
 
 ## 4. 对齐点（与设计文档）
@@ -49,15 +53,17 @@ python3 tools/scheduler_v0_1.py stats
 - 幂等：`idempotency_key` 去重
 - 重试：`fail` 后按 `retry_delay_sec` 重新入队
 - 死信：超过 `max_attempts` -> `dead_letter`
+- 审计：enqueue/pull/ack/fail 自动写 `audit_events`（`event_type=scheduler_job`）
 
 ## 5. 当前边界（v0.1）
 
 - 单实例 SQLite
 - 单 worker 友好（多 worker 竞争需后续补事务锁策略）
 - 只做任务调度，不直接改业务对象状态
+- `audit_events` 仅记录调度动作，不替代业务层审计
 
 ## 6. 下一步建议
 
 1. 增加 `worker loop`（定时 pull + 处理 + ack/fail）
-2. 接入 `audit-event` 写入（scheduler_job 事件）
-3. 增加与 fixtures 联动的调度回放测试
+2. 增加并发 worker 的乐观锁/租约机制
+3. 增加与 fixtures 联动的调度回放测试（含 dead_letter）

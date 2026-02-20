@@ -246,3 +246,17 @@
   - 失败重试与死信（`dead_letter`）
   - 到期拉取排序（`run_at ASC + priority DESC`）
 - 结果：原型本地命令流已验证可用，可作为后续状态机与审计接入底座。
+
+### 6.10 调度审计接入与韧性路径补全（2026-02-20）
+
+- 决策：将调度器原型直接接入 `audit-event`，并把重试/死信纳入关键路径验证。
+- 调度器增强：
+  - `tools/scheduler_v0_1.py` 新增 `audit_events` 表写入。
+  - `enqueue/pull/ack/fail` 自动产出 `event_type=scheduler_job` 审计事件。
+  - 新增 `list-audits` 命令用于快速查看审计流。
+- 新增验证场景：
+  - `data/fixtures/critical-paths/06-scheduler-retry.json`
+  - `data/fixtures/critical-paths/07-scheduler-dead-letter.json`
+- 校验脚本更新：
+  - `tools/validate_scenarios_v0_1.py` 新增 S6/S7 业务断言（retry 回队与 dead_letter 终态）。
+- 结果：关键路径覆盖从 5 条扩展到 7 条。

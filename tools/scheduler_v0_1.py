@@ -8,6 +8,8 @@ Implements the interface in docs/scheduler-interface-v0.1.md:
 - ack
 - fail
 - stats
+
+Also records scheduler audit events aligned with schemas/audit-event.schema.json.
 """
 
 from __future__ import annotations
@@ -74,6 +76,19 @@ def init_db(c: sqlite3.Connection):
 
         CREATE INDEX IF NOT EXISTS idx_scheduler_jobs_status_runat
         ON scheduler_jobs(status, run_at, priority_rank);
+
+        CREATE TABLE IF NOT EXISTS audit_events (
+            id TEXT PRIMARY KEY,
+            event_type TEXT NOT NULL,
+            object_type TEXT NOT NULL,
+            object_id TEXT NOT NULL,
+            correlation_id TEXT,
+            timestamp TEXT NOT NULL,
+            payload_json TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_audit_events_ts
+        ON audit_events(timestamp DESC);
         """
     )
     c.commit()
@@ -82,6 +97,66 @@ def init_db(c: sqlite3.Connection):
 def validate_enum(name: str, value: str, allowed: set[str]):
     if value not in allowed:
         raise ValueError(f"{name} must be one of {sorted(allowed)}, got: {value}")
+
+
+def write_audit_event(
+    c: sqlite3.Connection,
+    *,
+    event_type: str,
+    actor_type: str,
+    actor_id: str,
+    object_type: str,
+    object_id: str,
+    before: dict,
+    after: dict,
+    reason: str,
+    evidence_refs: list[str],
+    risk_tier: str | None = None,
+    decision_trace_id: str | None = None,
+    job_id: str | None = None,
+    correlation_id: str | None = None,
+    metadata: dict | None = None,
+):
+    ts = now_iso()
+    event_id = f"aud_{uuid.uuid4().hex[:12]}"
+    payload = {
+        "id": event_id,
+        "event_type": event_type,
+        "actor": {"type": actor_type, "id": actor_id},
+        "object_type": object_type,
+        "object_id": object_id,
+        "before": before,
+        "after": after,
+        "reason": reason,
+        "evidence_refs": evidence_refs,
+        "timestamp": ts,
+    }
+    if risk_tier is not None:
+        payload["risk_tier"] = risk_tier
+    if decision_trace_id is not None:
+        payload["decision_trace_id"] = decision_trace_id
+    if job_id is not None:
+        payload["job_id"] = job_id
+    if correlation_id is not None:
+        payload["correlation_id"] = correlation_id
+    if metadata is not None:
+        payload["metadata"] = metadata
+
+    c.execute(
+        """
+        INSERT INTO audit_events(id, event_type, object_type, object_id, correlation_id, timestamp, payload_json)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            event_id,
+            event_type,
+            object_type,
+            object_id,
+            correlation_id,
+            ts,
+            json.dumps(payload, ensure_ascii=False),
+        ),
+    )
 
 
 def enqueue(
@@ -135,6 +210,31 @@ def enqueue(
             t,
         ),
     )
+
+    write_audit_event(
+        c,
+        event_type="scheduler_job",
+        actor_type="system",
+        actor_id="scheduler-cli",
+        object_type="scheduler_job",
+        object_id=job_id,
+        before={"status": None},
+        after={
+            "status": "queued",
+            "object_type": object_type,
+            "object_id": object_id,
+            "action": action,
+            "run_at": run_at,
+            "priority": priority,
+            "attempt": 0,
+            "max_attempts": max_attempts,
+        },
+        reason="Scheduler job enqueued.",
+        evidence_refs=[f"scheduler_job:{job_id}"],
+        job_id=job_id,
+        correlation_id=correlation_id,
+    )
+
     c.commit()
     return {"deduplicated": False, "job_id": job_id, "status": "queued", "idempotency_key": idem}
 
@@ -163,12 +263,28 @@ def pull_due(c: sqlite3.Connection, worker_id: str, now: str, limit: int):
         row["status"] = "running"
         row["worker_id"] = worker_id
         out.append(row)
+
+        write_audit_event(
+            c,
+            event_type="scheduler_job",
+            actor_type="worker",
+            actor_id=worker_id,
+            object_type="scheduler_job",
+            object_id=job["job_id"],
+            before={"status": "queued", "attempt": job["attempt"]},
+            after={"status": "running", "attempt": job["attempt"]},
+            reason="Worker pulled due job.",
+            evidence_refs=[f"scheduler_job:{job['job_id']}"],
+            job_id=job["job_id"],
+            correlation_id=job["correlation_id"],
+        )
+
     c.commit()
     return out
 
 
 def ack(c: sqlite3.Connection, job_id: str):
-    cur = c.execute("SELECT status FROM scheduler_jobs WHERE job_id=?", (job_id,)).fetchone()
+    cur = c.execute("SELECT * FROM scheduler_jobs WHERE job_id=?", (job_id,)).fetchone()
     if not cur:
         raise ValueError(f"job not found: {job_id}")
     if cur["status"] != "running":
@@ -178,12 +294,28 @@ def ack(c: sqlite3.Connection, job_id: str):
         "UPDATE scheduler_jobs SET status='succeeded', updated_at=?, last_error=NULL WHERE job_id=?",
         (now_iso(), job_id),
     )
+
+    write_audit_event(
+        c,
+        event_type="scheduler_job",
+        actor_type="worker" if cur["worker_id"] else "system",
+        actor_id=cur["worker_id"] or "scheduler-cli",
+        object_type="scheduler_job",
+        object_id=job_id,
+        before={"status": "running", "attempt": cur["attempt"]},
+        after={"status": "succeeded", "attempt": cur["attempt"]},
+        reason="Job acknowledged as succeeded.",
+        evidence_refs=[f"scheduler_job:{job_id}"],
+        job_id=job_id,
+        correlation_id=cur["correlation_id"],
+    )
+
     c.commit()
 
 
 def fail(c: sqlite3.Connection, job_id: str, error: str, retry_delay_sec: int):
     row = c.execute(
-        "SELECT attempt, max_attempts, status FROM scheduler_jobs WHERE job_id=?",
+        "SELECT attempt, max_attempts, status, correlation_id, worker_id FROM scheduler_jobs WHERE job_id=?",
         (job_id,),
     ).fetchone()
     if not row:
@@ -210,6 +342,27 @@ def fail(c: sqlite3.Connection, job_id: str, error: str, retry_delay_sec: int):
         """,
         (status, attempt, run_at, error, now_iso(), job_id),
     )
+
+    after = {"status": status, "attempt": attempt}
+    if run_at is not None:
+        after["run_at"] = run_at
+
+    write_audit_event(
+        c,
+        event_type="scheduler_job",
+        actor_type="worker" if row["worker_id"] else "system",
+        actor_id=row["worker_id"] or "scheduler-cli",
+        object_type="scheduler_job",
+        object_id=job_id,
+        before={"status": "running", "attempt": row["attempt"]},
+        after=after,
+        reason=f"Job failed: {error}",
+        evidence_refs=[f"scheduler_job:{job_id}"],
+        job_id=job_id,
+        correlation_id=row["correlation_id"],
+        metadata={"retry_delay_sec": retry_delay_sec},
+    )
+
     c.commit()
     return {"job_id": job_id, "status": status, "attempt": attempt, "max_attempts": max_attempts}
 
@@ -226,7 +379,19 @@ def stats(c: sqlite3.Connection):
         "SELECT run_at FROM scheduler_jobs WHERE status='queued' ORDER BY run_at ASC LIMIT 1"
     ).fetchone()
     out["oldest_queued_run_at"] = oldest["run_at"] if oldest else None
+
+    out["audit_event_count"] = c.execute("SELECT COUNT(*) FROM audit_events").fetchone()[0]
     return out
+
+
+def list_audits(c: sqlite3.Connection, limit: int):
+    if limit < 1:
+        raise ValueError("limit must be >= 1")
+    rows = c.execute(
+        "SELECT payload_json FROM audit_events ORDER BY timestamp DESC LIMIT ?",
+        (limit,),
+    ).fetchall()
+    return [json.loads(r["payload_json"]) for r in rows]
 
 
 def main():
@@ -261,6 +426,9 @@ def main():
     fail_p.add_argument("--retry-delay-sec", type=int, default=300)
 
     sub.add_parser("stats")
+
+    audits_p = sub.add_parser("list-audits")
+    audits_p.add_argument("--limit", type=int, default=20)
 
     args = p.parse_args()
 
@@ -306,6 +474,10 @@ def main():
 
     if args.cmd == "stats":
         print(json.dumps(stats(c), ensure_ascii=False, indent=2))
+        return
+
+    if args.cmd == "list-audits":
+        print(json.dumps(list_audits(c, args.limit), ensure_ascii=False, indent=2))
         return
 
 

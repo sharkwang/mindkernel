@@ -157,6 +157,20 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
         assert before["status"] == "stale" and before["epistemic_state"] == "uncertain", "S5 before state invalid"
         assert after["status"] == "active" and after["epistemic_state"] == "supported", "S5 after state invalid"
 
+    elif sid.startswith("S6"):
+        events = scenario.get("audit_events", [])
+        assert len(events) >= 2, "S6 must include pull + retry events"
+        assert any(e.get("after", {}).get("status") == "running" for e in events), "S6 missing running transition"
+        assert any(
+            e.get("after", {}).get("status") == "queued" and e.get("after", {}).get("attempt") == 1
+            for e in events
+        ), "S6 missing re-queue retry transition"
+
+    elif sid.startswith("S7"):
+        events = scenario.get("audit_events", [])
+        assert len(events) >= 1, "S7 must include dead-letter event"
+        assert any(e.get("after", {}).get("status") == "dead_letter" for e in events), "S7 must reach dead_letter"
+
     else:
         raise AssertionError(f"Unknown scenario id in {source_path.name}: {sid}")
 

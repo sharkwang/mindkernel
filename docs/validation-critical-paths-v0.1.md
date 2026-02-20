@@ -24,6 +24,12 @@
 5. **S5 Reinstate**
    - 文件：`05-reinstate.json`
    - 覆盖：新证据触发 `stale+uncertain -> active+supported`
+6. **S6 Scheduler Retry**
+   - 文件：`06-scheduler-retry.json`
+   - 覆盖：运行中失败后重试回队（attempt 递增）
+7. **S7 Scheduler Dead Letter**
+   - 文件：`07-scheduler-dead-letter.json`
+   - 覆盖：超过重试上限后进入 `dead_letter`
 
 ## 3. 校验内容
 
@@ -36,6 +42,8 @@
   - S3 必须出现 `status=stale + epistemic_state=uncertain`
   - S4 高风险结果禁止 `executed`
   - S5 必须体现前后状态回升
+  - S6 必须出现 retry 回队（`queued` 且 `attempt=1`）
+  - S7 必须出现 `dead_letter` 终态
 
 ## 4. 运行方式
 
@@ -48,7 +56,7 @@ python3 tools/validate_scenarios_v0_1.py
 
 - `PASS 01-happy-path.json`
 - ...
-- `All good. Validated objects/events: 25`
+- `All good. Validated objects/events: 28`
 
 ## 5. CI 自动校验
 
