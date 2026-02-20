@@ -15,6 +15,7 @@
   - `docs/state-machines-v0.1.md`
   - `docs/scheduler-interface-v0.1.md`
   - `schemas/decision-trace.schema.json`
+  - `schemas/audit-event.schema.json`
 
 ## 2. MR 覆盖
 
@@ -75,7 +76,7 @@
 
 | Requirement | Coverage | 设计落点 |
 |---|---|---|
-| NFR-1 可追溯性 | Full | decision-trace + audit 规则 |
+| NFR-1 可追溯性 | Full | decision-trace + audit-event schema + audit 规则 |
 | NFR-2 可解释性 | Full | reason + gates + evidence_refs |
 | NFR-3 安全性（检测/隔离/回滚） | Partial | 回滚已覆盖，检测规则待补 |
 | NFR-4 可维护性（schema 演进） | Partial | schema 草案已拆分 |

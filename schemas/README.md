@@ -12,6 +12,7 @@
 - `experience.schema.json`：经验层对象
 - `cognition.schema.json`：认知层对象
 - `decision-trace.schema.json`：决策审计轨迹对象
+- `audit-event.schema.json`：状态迁移与治理动作审计事件对象
 
 ## 注意
 - 字段会根据后续评审（特别是 OI-1~OI-12）继续调整。

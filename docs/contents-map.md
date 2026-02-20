@@ -38,7 +38,7 @@
 12. `../schemas/README.md`
     - schema 草案索引与维护说明
 13. `../schemas/*.schema.json`
-    - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace`
+    - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 

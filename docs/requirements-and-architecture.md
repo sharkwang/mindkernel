@@ -245,6 +245,7 @@
 | 经验层对象 | `experience.schema.json` |
 | 认知层对象（含未知态） | `cognition.schema.json` |
 | 决策审计轨迹对象 | `decision-trace.schema.json` |
+| 审计事件对象 | `audit-event.schema.json` |
 
 映射原则：
 1. 需求条款优先，schema 跟随需求更新。

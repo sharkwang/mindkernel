@@ -189,3 +189,17 @@
 - 新增整理文档：
   - `docs/design-consolidation-v0.1.md`（统一口径与维护规则）
 - 结果：v0.1 启动包在“规则表 ↔ 状态机 ↔ E2E ↔ schema”四层之间达到当前一致。
+
+### 6.6 审计契约补全（2026-02-20）
+
+- 决策：补齐独立审计事件契约，避免将“状态迁移审计”与“决策快照”混写。
+- 新增：`schemas/audit-event.schema.json`
+- 字段基线：
+  - `actor` / `reason` / `evidence_refs` / `before` / `after` / `timestamp`
+  - `event_type`、`object_type`、`object_id`、`correlation_id`
+  - 高风险事件要求绑定 `decision_trace_id`
+- 同步更新：
+  - `schemas/README.md`
+  - `docs/requirements-and-architecture.md`（2.11 映射）
+  - `docs/contents-map.md`
+  - `docs/design-consolidation-v0.1.md`

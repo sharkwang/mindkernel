@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit-event.schema.json",
+  "title": "AuditEvent",
+  "type": "object",
+  "properties": {
+    "id": { "type": "string" },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "state_transition",
+        "decision_gate",
+        "scheduler_job",
+        "rollback",
+        "investigation",
+        "policy_override"
+      ]
+    },
+    "actor": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["system", "user", "agent", "worker"] },
+        "id": { "type": "string" }
+      },
+      "required": ["type", "id"],
+      "additionalProperties": true
+    },
+    "object_type": {
+      "type": "string",
+      "enum": ["memory", "experience", "cognition", "decision", "scheduler_job", "persona"]
+    },
+    "object_id": { "type": "string" },
+    "before": { "type": "object", "additionalProperties": true },
+    "after": { "type": "object", "additionalProperties": true },
+    "reason": { "type": "string" },
+    "evidence_refs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "risk_tier": { "type": "string", "enum": ["low", "medium", "high"] },
+    "decision_trace_id": { "type": "string" },
+    "job_id": { "type": "string" },
+    "correlation_id": { "type": "string" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "required": [
+    "id",
+    "event_type",
+    "actor",
+    "object_type",
+    "object_id",
+    "before",
+    "after",
+    "reason",
+    "evidence_refs",
+    "timestamp"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "risk_tier": { "const": "high" } },
+        "required": ["risk_tier"]
+      },
+      "then": {
+        "required": ["decision_trace_id"]
+      }
+    }
+  ],
+  "additionalProperties": true
+}

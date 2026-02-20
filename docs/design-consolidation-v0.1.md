@@ -30,6 +30,7 @@
 - `experience.schema.json`：事件化/结果化经验对象（连接 Memory 与 Cognition）
 - `cognition.schema.json`：规则对象（三态认知、未知态、决策模式）
 - `decision-trace.schema.json`：决策审计对象（闸门、依据、结论）
+- `audit-event.schema.json`：审计事件对象（状态迁移、回滚、调度治理事件）
 - `common-temporal.schema.json`：统一时间轴字段
 
 ## 3) v0.1 执行链路（实现优先级）
@@ -44,15 +45,16 @@
 - 已对齐：
   - Rule Table 与状态机术语（`needs_review`、gate=block）
   - E2E 场景与 schema 状态枚举（`rejected_poisoned`）
-  - Schema 索引包含 `decision-trace`
+  - Schema 索引包含 `decision-trace` 与 `audit-event`
 - 已补强：
   - Memory 增加 `evidence_refs` 必填约束（与规则一致）
+  - 新增独立 `audit-event.schema.json`（承接状态迁移与治理动作审计）
 
 ## 5) 仍保留的设计张力（下轮处理）
 
 1. `common-temporal` 对 Persona 的字段强制程度是否过高。
 2. `CR/FR` 中概念词（如 `stale_uncertain`）与数据层枚举如何长期治理。
-3. 审计事件 schema 尚未独立成文（当前由 DecisionTrace 部分承接）。
+3. `audit-event` 与 `decision-trace` 的边界（事件流 vs 决策快照）还需在实现层进一步固化。
 
 ## 6) 维护规则
 

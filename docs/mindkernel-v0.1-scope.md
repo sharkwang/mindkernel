@@ -44,6 +44,7 @@
   - `docs/mindkernel-v0.1-scope.md`（本文档）
 - 数据契约
   - `schemas/decision-trace.schema.json`
+  - `schemas/audit-event.schema.json`
 - 运行能力（最小）
   - 对象创建与状态变更
   - 到期调度任务执行
