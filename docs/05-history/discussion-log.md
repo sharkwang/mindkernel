@@ -455,3 +455,40 @@
   - `docs/02-design/memory-index-architecture-v0.1.md`
   - `docs/04-prototypes/memory-index-prototype-v0.1.md`
 - 结果：Reflect 从“建议式写回”升级为“建议式写回 + 置信度可追踪演化”。
+
+### 6.23 今日工作总结（2026-02-20）
+
+今日已完成从“规范整理”到“可运行闭环 + 记忆层草案”的一整轮推进，核心结果如下：
+
+1. **项目与文档体系**
+   - 项目统一为 `mindkernel`，仓库与文档命名完成对齐。
+   - `docs/` 按主题完成分类归档（foundation/design/validation/prototypes/history）。
+   - `README / CONTRIBUTING / contents-map` 同步更新，入口更清晰。
+
+2. **v0.1 核心闭环实现**
+   - 完成并联通原型链路：
+     - `memory_experience_v0_1.py`
+     - `experience_cognition_v0_1.py`（含 Persona Gate）
+     - `cognition_decision_v0_1.py`
+     - `full_path_v0_1.py`（M→E→C→D 一键闭环）
+   - Gate pass / Gate block 路径均可执行并产出 DecisionTrace。
+
+3. **验证与工程化**
+   - 建立关键路径 fixtures 与统一校验脚本，当前覆盖 **15 条关键路径**。
+   - 校验规模达到 **62 objects/events**，全量通过。
+   - 接入 GitHub Actions 自动校验，并支持 smoke report 生成。
+
+4. **记忆层（retain/recall/reflect）草案落地**
+   - 完成架构与规范草案：
+     - `memory-index-architecture-v0.1.md`
+     - `retain-recall-reflect-spec-v0.1.md`
+   - 落地 `memory_index_v0_1.py`（reindex/recall/reflect）。
+   - 增加样例 workspace 与 reflect 写回（entities/opinions）。
+
+5. **opinion 演化能力（v0.1.1）**
+   - 引入 `opinions_state` 与可解释置信度更新规则（support/contradict）。
+   - 新增 `list-opinions-state` 与独立验证脚本。
+
+**结论**：
+- MindKernel 已从“设计规范主导”进入“规范 + 原型并行且可验证”的稳定阶段。
+- 主闭环（M→E→C→D）可运行，记忆层（retain/recall/reflect）具备继续演进基础。
