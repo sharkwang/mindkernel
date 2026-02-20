@@ -1,46 +1,51 @@
-# Contents Map (v1)
+# Contents Map (v2)
 
-本文件用于整理 `mindkernel/docs` 当前文档结构，避免信息分散。
+本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
-## 核心文档（优先阅读）
+## 核心规范（优先阅读）
 
 1. `requirements-and-architecture.md`
-   - 主规范（需求工程基线）
-   - 包含 MR/CR/FR/NFR、V&V、Traceability、Open Issues
-
+   - 主规范（MR/CR/FR/NFR、V&V、Traceability、Open Issues）
 2. `project-charter.md`
    - 项目宪法级方向与阶段目标
 
-## 过程文档（讨论与追溯）
+## 讨论与追溯
 
 3. `discussion-log.md`
    - 关键讨论与决策时间线
-   - 用于理解“为什么会有这些条款”
-
 4. `name-origin.md`
-   - 项目命名来源（MindKernel/心智内核）
+   - 命名来源与更名说明
+
+## v0.1 启动包（当前执行主线）
+
+5. `mindkernel-v0.1-scope.md`
+   - v0.1 交付边界、里程碑、Go/No-Go
+6. `rule-table-v0.1.md`
+   - 可执行规则表（IF/THEN）
+7. `state-machines-v0.1.md`
+   - Memory / Experience / Cognition 最小状态机
+8. `scheduler-interface-v0.1.md`
+   - `next_action_at` 到期调度接口草案
+9. `e2e-scenarios-v0.1.md`
+   - 端到端验收场景
+10. `rtm-v0.1.md`
+   - v0.1 需求追踪子表（覆盖主规范条款）
 
 ## 数据契约草案（与主规范配套）
 
-5. `../schemas/README.md`
-   - schema 草案索引与维护说明
-
-6. `../schemas/*.schema.json`
-   - `common-temporal` / `persona` / `memory` / `experience` / `cognition`
+11. `../schemas/README.md`
+    - schema 草案索引与维护说明
+12. `../schemas/*.schema.json`
+    - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace`
 
 ## 归档文档（只读）
 
-7. `../archive/requirements-and-architecture.legacy.md`
-   - 历史草案（从 memory-v2 迁移）
-
-8. `../archive/design.legacy.md`
-   - 早期设计草稿
-
-9. `../archive/memory-entry.schema.legacy.json`
-   - 早期 schema 草稿
+13. `../archive/requirements-and-architecture.legacy.md`
+14. `../archive/design.legacy.md`
+15. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 
 - 新决策：先写入 `discussion-log`，达成共识后再写入主规范。
-- 主规范只保留“当前生效条款”，避免混杂历史语境。
+- v0.1 改动：同步更新 `rtm-v0.1.md` 与 `e2e-scenarios-v0.1.md`。
 - 归档目录只读，不再追加新条款。

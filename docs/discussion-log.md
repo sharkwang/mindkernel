@@ -160,9 +160,19 @@
   - 伪造注入回滚、TTL 分流、reinstate 等 E2E 验收场景
   - DecisionTrace 最小审计契约（风险、闸门、证据、结论）
 
-### 6.3 下一步建议（待执行）
+### 6.3 下一步建议（已转执行）
 
 1. 复核 `rule-table-v0.1` 的阈值参数（TTL/预算/风险阈值）。
 2. 将 v0.1 启动文档与主规范做条款映射（补 RTM 子表）。
 3. 实现最小调度器原型（基于 `next_action_at` 的到期拉取）。
 4. 按 `e2e-scenarios-v0.1` 执行首次可运行验收。
+
+### 6.4 三步执行结果（2026-02-20）
+
+- 已完成 `docs/rtm-v0.1.md`
+  - 将 v0.1 设计与主规范 MR/CR/FR/NFR 做覆盖映射（Full/Partial/Out）。
+- 已完成 `docs/state-machines-v0.1.md`
+  - 定义 Memory/Experience/Cognition 最小状态机及不变量，明确与 `epistemic_state` 双轴关系。
+- 已完成 `docs/scheduler-interface-v0.1.md`
+  - 给出到期调度器最小接口（enqueue/pull/ack/fail）与幂等、重试、死信策略。
+- 同步动作：`docs/contents-map.md` 更新为 v2，并纳入 v0.1 启动包索引。

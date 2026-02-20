@@ -7,7 +7,7 @@
 | Rule ID | 条件（IF） | 动作（THEN） | 输出状态 |
 |---|---|---|---|
 | R-ME-01 | Memory 新建且 `evidence_refs >=1` | 创建 Experience 候选 | `experience.status = candidate` |
-| R-ME-02 | Memory 来源可信度低且存在冲突证据 | 标记为待核验，不允许升格 | `experience.status = needs_verify` |
+| R-ME-02 | Memory 来源可信度低且存在冲突证据 | 标记为待复核，不允许升格 | `experience.status = needs_review` |
 | R-ME-03 | Memory 被判定伪造 | 触发级联回滚流程 | `experience.status = invalidated` |
 
 ## 2. Experience -> Cognition
@@ -15,7 +15,7 @@
 | Rule ID | 条件（IF） | 动作（THEN） | 输出状态 |
 |---|---|---|---|
 | R-EC-01 | Experience 通过 Persona 冲突闸门 + 最低证据门槛 | 生成 Cognition 候选 | `cognition.status = candidate` |
-| R-EC-02 | 与 Persona 硬边界冲突 | 禁止升格 + 记录冲突 | `cognition.status = blocked` |
+| R-EC-02 | 与 Persona 硬边界冲突 | 禁止升格 + 记录冲突闸门 | `cognition 不进入 active（gate=block）` |
 | R-EC-03 | 证据不足但具潜在价值 | 进入 uncertain 并分配 TTL | `epistemic_state = uncertain` |
 
 ## 3. Cognition 三态迁移
@@ -41,7 +41,7 @@
 | Rule ID | 条件（IF） | 动作（THEN） |
 |---|---|---|
 | R-TM-01 | `now >= next_action_at` 且对象为 uncertain | 触发复核或自动验证 |
-| R-TM-02 | `uncertainty_ttl` 到期且预算耗尽 | 标记 `stale_uncertain` 并降权 |
+| R-TM-02 | `uncertainty_ttl` 到期且预算耗尽 | 标记 `status=stale` + `epistemic_state=uncertain` 并降权 |
 | R-TM-03 | `expires_at` 到期 | 归档或冻结（按风险层） |
 | R-TM-04 | 有新高质量证据到达 | 允许 reinstate 并重排 `next_action_at` |
 
