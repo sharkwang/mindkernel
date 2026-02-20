@@ -23,6 +23,8 @@
   - 一键执行烟测并输出报告
 - `schema_runtime.py`
   - 轻量运行时 schema 校验模块
+- `memory_index_v0_1.py`
+  - 离线记忆索引草案（retain/recall/reflect）
 
 ## 备注
 

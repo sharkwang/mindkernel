@@ -406,3 +406,18 @@
   - `Markdown Source -> Index(reindex) -> Recall(fact-pack) -> M/E/C/D Governance -> Reflect(update bank)`
 - 预期收益：
   - 保持可审计与可编辑的 Markdown 优势，同时补齐高召回、实体化记忆与长期演化能力。
+
+### 6.20 记忆层草案启动（2026-02-20）
+
+- 已落地草案文档：
+  - `docs/02-design/memory-index-architecture-v0.1.md`
+  - `docs/02-design/retain-recall-reflect-spec-v0.1.md`
+- 已新增原型骨架：
+  - `tools/memory_index_v0_1.py`
+- 当前能力（draft）：
+  - `init-db`：初始化 `.memory/index.sqlite`
+  - `reindex`：扫描 `memory.md`、`memory/*.md`、`bank/**/*.md`，抽取 `## Retain`
+  - `recall`：FTS5 + kind/entity/time 过滤，返回 fact-pack（含 `source_ref`）
+  - `reflect`：生成实体摘要与观点候选（建议包）
+- 说明：
+  - 该脚本为草案骨架，重点是接口与数据流闭环；后续再补意见置信度演化与自动回写。

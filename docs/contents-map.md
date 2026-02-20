@@ -1,4 +1,4 @@
-# Contents Map (v10)
+# Contents Map (v11)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -26,42 +26,46 @@
    - Memory / Experience / Cognition 最小状态机
 8. `02-design/scheduler-interface-v0.1.md`
    - `next_action_at` 到期调度接口草案
-9. `03-validation/e2e-scenarios-v0.1.md`
-   - 端到端验收场景
-10. `02-design/rtm-v0.1.md`
+9. `02-design/rtm-v0.1.md`
    - v0.1 需求追踪子表（覆盖主规范条款）
-11. `02-design/design-consolidation-v0.1.md`
-   - docs + schemas 统一口径与术语整理基线
-12. `03-validation/validation-critical-paths-v0.1.md`
-   - v0.1 fixtures + 校验脚本的关键路径覆盖说明
-13. `04-prototypes/scheduler-prototype-v0.1.md`
-   - 调度器接口的本地可运行原型说明
-14. `04-prototypes/memory-experience-prototype-v0.1.md`
-   - 记忆到经验路径的本地可运行原型说明
-15. `04-prototypes/experience-cognition-prototype-v0.1.md`
-   - 经验到认知路径（含 Persona Gate 最小实现）
-16. `04-prototypes/cognition-decision-prototype-v0.1.md`
-   - Cognition→DecisionTrace 最小链路说明
-17. `04-prototypes/full-path-prototype-v0.1.md`
-   - Memory→Experience→Cognition→Decision 一体化最小闭环说明
-18. `03-validation/system-smoke-report-v0.1.md`
-   - 系统烟测报告产出与解读方式
+10. `02-design/design-consolidation-v0.1.md`
+    - docs + schemas 统一口径与术语整理基线
+11. `02-design/memory-index-architecture-v0.1.md`
+    - Markdown 规范源 + 派生索引架构草案
+12. `02-design/retain-recall-reflect-spec-v0.1.md`
+    - retain/recall/reflect 语法与接口规范草案
+13. `03-validation/e2e-scenarios-v0.1.md`
+    - 端到端验收场景
+14. `03-validation/validation-critical-paths-v0.1.md`
+    - v0.1 fixtures + 校验脚本的关键路径覆盖说明
+15. `03-validation/system-smoke-report-v0.1.md`
+    - 系统烟测报告产出与解读方式
+16. `04-prototypes/scheduler-prototype-v0.1.md`
+    - 调度器接口的本地可运行原型说明
+17. `04-prototypes/memory-experience-prototype-v0.1.md`
+    - 记忆到经验路径的本地可运行原型说明
+18. `04-prototypes/experience-cognition-prototype-v0.1.md`
+    - 经验到认知路径（含 Persona Gate 最小实现）
+19. `04-prototypes/cognition-decision-prototype-v0.1.md`
+    - Cognition→DecisionTrace 最小链路说明
+20. `04-prototypes/full-path-prototype-v0.1.md`
+    - Memory→Experience→Cognition→Decision 一体化最小闭环说明
 
 ## 数据契约草案（与主规范配套）
 
-19. `../schemas/README.md`
+21. `../schemas/README.md`
     - schema 草案索引与维护说明
-20. `../schemas/*.schema.json`
+22. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-21. `../archive/requirements-and-architecture.legacy.md`
-22. `../archive/design.legacy.md`
-23. `../archive/memory-entry.schema.legacy.json`
+23. `../archive/requirements-and-architecture.legacy.md`
+24. `../archive/design.legacy.md`
+25. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 
-- 新决策：先写入 `discussion-log`，达成共识后再写入主规范。
+- 新决策：先写入 `05-history/discussion-log.md`，达成共识后再写入主规范。
 - v0.1 改动：同步更新 `02-design/rtm-v0.1.md` 与 `03-validation/e2e-scenarios-v0.1.md`。
 - 归档目录只读，不再追加新条款。
