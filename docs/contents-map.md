@@ -1,4 +1,4 @@
-# Contents Map (v6)
+# Contents Map (v7)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -38,19 +38,21 @@
    - 调度器接口的本地可运行原型说明
 14. `memory-experience-prototype-v0.1.md`
    - 记忆到经验路径的本地可运行原型说明
+15. `experience-cognition-prototype-v0.1.md`
+   - 经验到认知路径（含 Persona Gate 最小实现）
 
 ## 数据契约草案（与主规范配套）
 
-15. `../schemas/README.md`
+16. `../schemas/README.md`
     - schema 草案索引与维护说明
-16. `../schemas/*.schema.json`
+17. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-17. `../archive/requirements-and-architecture.legacy.md`
-18. `../archive/design.legacy.md`
-19. `../archive/memory-entry.schema.legacy.json`
+18. `../archive/requirements-and-architecture.legacy.md`
+19. `../archive/design.legacy.md`
+20. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 

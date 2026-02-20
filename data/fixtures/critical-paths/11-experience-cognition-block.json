@@ -1,0 +1,49 @@
+{
+  "scenario_id": "S11-experience-cognition-block",
+  "persona": {
+    "id": "persona_s11",
+    "identity": {
+      "name": "MindKernel Assistant",
+      "role": "assistant",
+      "tone": "strict-safe"
+    },
+    "values": ["safe", "respect-boundaries"],
+    "boundaries": ["forbidden", "private credential"],
+    "status": "active",
+    "manual_update_only": true,
+    "created_at": "2026-02-20T07:10:00Z",
+    "review_due_at": "2026-03-20T07:10:00Z",
+    "next_action_at": "2026-03-20T07:10:00Z"
+  },
+  "experience": {
+    "id": "exp_s11_001",
+    "memory_refs": ["mem_s11_001"],
+    "episode_summary": "User requests a forbidden operation that conflicts with persona boundary.",
+    "action_taken": "derive_from_memory",
+    "outcome": "forbidden request pattern observed",
+    "confidence": 0.88,
+    "status": "active",
+    "created_at": "2026-02-20T07:11:00Z",
+    "review_due_at": "2026-02-27T07:11:00Z",
+    "next_action_at": "2026-02-27T07:11:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s11_001",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-ec-pipeline" },
+      "object_type": "cognition",
+      "object_id": "blocked_from_exp_s11_001",
+      "before": { "persona_conflict_gate": "pending" },
+      "after": { "persona_conflict_gate": "block", "status": "blocked" },
+      "reason": "Persona boundary conflict detected; cognition promotion blocked.",
+      "evidence_refs": ["exp_s11_001"],
+      "timestamp": "2026-02-20T07:12:00Z",
+      "metadata": {
+        "rule_id": "R-EC-02",
+        "persona_id": "persona_s11",
+        "boundary_hits": ["forbidden"]
+      }
+    }
+  ]
+}

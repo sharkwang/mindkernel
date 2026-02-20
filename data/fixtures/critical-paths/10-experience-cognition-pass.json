@@ -1,0 +1,82 @@
+{
+  "scenario_id": "S10-experience-cognition-pass",
+  "persona": {
+    "id": "persona_s10",
+    "identity": {
+      "name": "MindKernel Assistant",
+      "role": "assistant",
+      "tone": "calm"
+    },
+    "values": ["helpful", "truthful", "safe"],
+    "boundaries": ["do not leak secrets", "no harmful execution"],
+    "status": "active",
+    "manual_update_only": true,
+    "created_at": "2026-02-20T07:00:00Z",
+    "review_due_at": "2026-03-20T07:00:00Z",
+    "next_action_at": "2026-03-20T07:00:00Z"
+  },
+  "experience": {
+    "id": "exp_s10_001",
+    "memory_refs": ["mem_s10_001"],
+    "episode_summary": "Consistent positive outcome in planning assistance.",
+    "action_taken": "derive_from_memory",
+    "outcome": "planning quality improved",
+    "confidence": 0.83,
+    "status": "active",
+    "created_at": "2026-02-20T07:01:00Z",
+    "review_due_at": "2026-02-27T07:01:00Z",
+    "next_action_at": "2026-02-27T07:01:00Z"
+  },
+  "cognition": {
+    "id": "cg_s10_001",
+    "rule": "Derived from experience: consistent planning assistance pattern.",
+    "scope": {
+      "domains": ["experience-derived"],
+      "channels": ["webchat"],
+      "risk_tier_max": "medium"
+    },
+    "epistemic_state": "uncertain",
+    "unknown_type": "multipath",
+    "confidence": 0.75,
+    "falsify_if": "Repeated contradictory outcomes appear in similar context.",
+    "review_interval": "P7D",
+    "decision_mode_if_uncertain": "conservative",
+    "risk_tier": "medium",
+    "impact_tier": "medium",
+    "auto_verify_budget": 2,
+    "status": "candidate",
+    "evidence_refs": ["exp_s10_001"],
+    "created_at": "2026-02-20T07:02:00Z",
+    "review_due_at": "2026-02-27T07:02:00Z",
+    "next_action_at": "2026-02-27T07:02:00Z",
+    "uncertainty_ttl": "P7D"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s10_001",
+      "event_type": "decision_gate",
+      "actor": { "type": "system", "id": "mk-ec-pipeline" },
+      "object_type": "cognition",
+      "object_id": "cg_s10_001",
+      "before": { "persona_conflict_gate": "pending" },
+      "after": { "persona_conflict_gate": "pass" },
+      "reason": "Persona gate passed for Experience->Cognition promotion.",
+      "evidence_refs": ["exp_s10_001"],
+      "timestamp": "2026-02-20T07:02:05Z",
+      "metadata": { "rule_id": "R-EC-01", "persona_id": "persona_s10" }
+    },
+    {
+      "id": "aud_s10_002",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-ec-pipeline" },
+      "object_type": "cognition",
+      "object_id": "cg_s10_001",
+      "before": { "status": null },
+      "after": { "status": "candidate", "epistemic_state": "uncertain" },
+      "reason": "Cognition candidate created from experience via R-EC-01.",
+      "evidence_refs": ["exp_s10_001"],
+      "timestamp": "2026-02-20T07:02:06Z",
+      "metadata": { "rule_id": "R-EC-01" }
+    }
+  ]
+}

@@ -130,36 +130,37 @@ def validate(schema: dict, data, path: str, schema_file: str):
 
 def validate_scenario_assertions(scenario: dict, source_path: Path):
     sid = scenario.get("scenario_id", "")
+    sid_prefix = sid.split("-", 1)[0] if sid else ""
 
-    if sid.startswith("S1"):
+    if sid_prefix == "S1":
         assert scenario["cognition"]["epistemic_state"] == "supported", "S1 cognition must be supported"
         assert scenario["decision_trace"]["final_outcome"] in {"executed", "limited"}, "S1 outcome invalid"
 
-    elif sid.startswith("S2"):
+    elif sid_prefix == "S2":
         assert scenario["memory"]["status"] == "rejected_poisoned", "S2 memory status must be rejected_poisoned"
         assert scenario["experience"]["status"] == "invalidated", "S2 experience must be invalidated"
         assert scenario["cognition"]["epistemic_state"] == "refuted", "S2 cognition must be refuted"
         assert any(e.get("event_type") == "rollback" for e in scenario.get("audit_events", [])), "S2 must include rollback event"
 
-    elif sid.startswith("S3"):
+    elif sid_prefix == "S3":
         cg = scenario["cognition"]
         assert cg["status"] == "stale" and cg["epistemic_state"] == "uncertain", "S3 must enter stale+uncertain"
         assert cg.get("auto_verify_budget") == 0, "S3 budget must be exhausted"
         assert any(e.get("event_type") == "scheduler_job" for e in scenario.get("audit_events", [])), "S3 needs scheduler event"
 
-    elif sid.startswith("S4"):
+    elif sid_prefix == "S4":
         dt = scenario["decision_trace"]
         assert dt["risk_tier"] == "high", "S4 must be high risk"
         assert dt["final_outcome"] != "executed", "S4 high-risk must not execute directly"
         assert dt["gates"]["risk_gate"] in {"block", "limit"}, "S4 risk gate invalid"
 
-    elif sid.startswith("S5"):
+    elif sid_prefix == "S5":
         before = scenario["cognition_before"]
         after = scenario["cognition_after"]
         assert before["status"] == "stale" and before["epistemic_state"] == "uncertain", "S5 before state invalid"
         assert after["status"] == "active" and after["epistemic_state"] == "supported", "S5 after state invalid"
 
-    elif sid.startswith("S6"):
+    elif sid_prefix == "S6":
         events = scenario.get("audit_events", [])
         assert len(events) >= 2, "S6 must include pull + retry events"
         assert any(e.get("after", {}).get("status") == "running" for e in events), "S6 missing running transition"
@@ -168,18 +169,45 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
             for e in events
         ), "S6 missing re-queue retry transition"
 
-    elif sid.startswith("S7"):
+    elif sid_prefix == "S7":
         events = scenario.get("audit_events", [])
         assert len(events) >= 1, "S7 must include dead-letter event"
         assert any(e.get("after", {}).get("status") == "dead_letter" for e in events), "S7 must reach dead_letter"
 
-    elif sid.startswith("S8"):
+    elif sid_prefix == "S8":
         mem = scenario["memory"]
         exp = scenario["experience"]
         assert mem["status"] == "active", "S8 memory should be active"
         assert exp["status"] == "candidate", "S8 experience should be candidate"
         assert mem["id"] in exp.get("memory_refs", []), "S8 experience must reference memory id"
         assert any(e.get("object_type") == "experience" for e in scenario.get("audit_events", [])), "S8 must include experience audit event"
+
+    elif sid_prefix == "S10":
+        persona = scenario["persona"]
+        exp = scenario["experience"]
+        cg = scenario["cognition"]
+        assert persona["status"] == "active", "S10 persona must be active"
+        assert exp["status"] in {"active", "candidate"}, "S10 experience status invalid"
+        assert cg["status"] == "candidate", "S10 cognition should be candidate"
+        assert exp["id"] in cg.get("evidence_refs", []), "S10 cognition must reference experience"
+        assert any(
+            e.get("event_type") == "decision_gate"
+            and e.get("after", {}).get("persona_conflict_gate") == "pass"
+            for e in scenario.get("audit_events", [])
+        ), "S10 must include persona gate pass event"
+
+    elif sid_prefix == "S11":
+        persona = scenario["persona"]
+        exp = scenario["experience"]
+        assert persona["status"] == "active", "S11 persona must be active"
+        assert exp["status"] in {"active", "candidate"}, "S11 experience status invalid"
+        assert "cognition" not in scenario, "S11 blocked path should not include cognition object"
+        assert any(
+            e.get("event_type") == "decision_gate"
+            and e.get("after", {}).get("persona_conflict_gate") == "block"
+            and len(e.get("metadata", {}).get("boundary_hits", [])) >= 1
+            for e in scenario.get("audit_events", [])
+        ), "S11 must include persona gate block event with boundary hits"
 
     else:
         raise AssertionError(f"Unknown scenario id in {source_path.name}: {sid}")
@@ -189,6 +217,7 @@ def main():
     schema_map = {
         "memory": "memory.schema.json",
         "experience": "experience.schema.json",
+        "persona": "persona.schema.json",
         "cognition": "cognition.schema.json",
         "cognition_before": "cognition.schema.json",
         "cognition_after": "cognition.schema.json",

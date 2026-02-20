@@ -4,7 +4,7 @@
 
 ## 1. 资产位置
 
-- Fixtures：`data/fixtures/critical-paths/*.json`
+- Fixtures：`data/fixtures/critical-paths/*.{json,md}`
 - 校验脚本：`tools/validate_scenarios_v0_1.py`
 
 ## 2. 覆盖的关键路径
@@ -36,13 +36,19 @@
 9. **S9 Markdown Memory Input**
    - 文件：`09-memory-markdown.md`
    - 覆盖：Markdown（front matter + 正文）转换为合法 Memory 对象
+10. **S10 Experience→Cognition Pass**
+   - 文件：`10-experience-cognition-pass.json`
+   - 覆盖：Experience 通过 Persona Gate 后生成 Cognition candidate（R-EC-01）
+11. **S11 Experience→Cognition Block**
+   - 文件：`11-experience-cognition-block.json`
+   - 覆盖：Persona 边界冲突触发阻断（R-EC-02）
 
 ## 3. 校验内容
 
 脚本执行两层校验：
 
 - **Schema 层**：
-  - `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
+  - `memory` / `experience` / `persona` / `cognition` / `decision-trace` / `audit-event`
 - **业务断言层**：
   - S2 必须出现 `rejected_poisoned` + rollback 事件
   - S3 必须出现 `status=stale + epistemic_state=uncertain`
@@ -52,6 +58,8 @@
   - S7 必须出现 `dead_letter` 终态
   - S8 必须体现 Memory 与 Experience 的引用链一致
   - S9 Markdown 输入必须转化为合法 Memory（含 content 与 evidence_refs）
+  - S10 必须出现 Persona Gate `pass` 且 Cognition candidate 被创建
+  - S11 必须出现 Persona Gate `block` 且带 boundary_hits
 
 ## 4. 运行方式
 
@@ -65,7 +73,9 @@ python3 tools/validate_scenarios_v0_1.py
 - `PASS 01-happy-path.json`
 - ...
 - `PASS 09-memory-markdown.md`
-- `All good. Validated objects/events: 33`
+- `PASS 10-experience-cognition-pass.json`
+- `PASS 11-experience-cognition-block.json`
+- `All good. Validated objects/events: 41`
 
 ## 5. CI 自动校验
 

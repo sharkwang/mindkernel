@@ -292,3 +292,20 @@
 - 校验增强：
   - `tools/validate_scenarios_v0_1.py` 新增 Markdown fixture 校验（S9）。
 - 结果：关键路径覆盖从 8 条扩展到 9 条。
+
+### 6.13 Experience→Cognition 最小升格链路（含 Persona Gate）（2026-02-20）
+
+- 决策：推进 Experience→Cognition 最小可运行实现，并引入 Persona Gate 的可解释阻断路径。
+- 新增原型：
+  - `tools/experience_cognition_v0_1.py`
+  - `docs/experience-cognition-prototype-v0.1.md`
+- 核心能力：
+  - `upsert-persona` / `ingest-experience` / `experience-to-cognition` / `run-path`
+  - Persona Gate 最小策略：`boundaries` 关键词与 `episode_summary/outcome/action_taken` 匹配
+  - `pass` -> 生成 Cognition candidate（R-EC-01）
+  - `block` -> 拒绝升格并记录 gate 事件（R-EC-02）
+- 验证覆盖扩展：
+  - 新增 `data/fixtures/critical-paths/10-experience-cognition-pass.json`
+  - 新增 `data/fixtures/critical-paths/11-experience-cognition-block.json`
+  - `tools/validate_scenarios_v0_1.py` 新增 S10/S11 断言
+- 结果：关键路径覆盖从 9 条扩展到 11 条。
