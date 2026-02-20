@@ -1,0 +1,59 @@
+{
+  "scenario_id": "S8-memory-experience-path",
+  "memory": {
+    "id": "mem_s8_001",
+    "kind": "event",
+    "content": "New memory enters pipeline and should produce an experience candidate.",
+    "source": {
+      "source_type": "session",
+      "source_ref": "msg://s8/001"
+    },
+    "evidence_refs": ["ev://s8/001"],
+    "confidence": 0.82,
+    "risk_tier": "low",
+    "impact_tier": "medium",
+    "status": "active",
+    "investigation_status": "none",
+    "created_at": "2026-02-20T06:20:00Z",
+    "review_due_at": "2026-02-27T06:20:00Z",
+    "next_action_at": "2026-02-27T06:20:00Z"
+  },
+  "experience": {
+    "id": "exp_s8_001",
+    "memory_refs": ["mem_s8_001"],
+    "episode_summary": "Experience created from memory ingestion path.",
+    "outcome": "candidate generated",
+    "confidence": 0.74,
+    "status": "candidate",
+    "created_at": "2026-02-20T06:21:00Z",
+    "review_due_at": "2026-02-27T06:21:00Z",
+    "next_action_at": "2026-02-27T06:21:00Z"
+  },
+  "audit_events": [
+    {
+      "id": "aud_s8_001",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-me-pipeline" },
+      "object_type": "memory",
+      "object_id": "mem_s8_001",
+      "before": { "status": null },
+      "after": { "status": "active" },
+      "reason": "Memory ingested into v0.1 pipeline.",
+      "evidence_refs": ["ev://s8/001"],
+      "timestamp": "2026-02-20T06:20:10Z"
+    },
+    {
+      "id": "aud_s8_002",
+      "event_type": "state_transition",
+      "actor": { "type": "system", "id": "mk-me-pipeline" },
+      "object_type": "experience",
+      "object_id": "exp_s8_001",
+      "before": { "status": null },
+      "after": { "status": "candidate", "memory_refs": ["mem_s8_001"] },
+      "reason": "Experience created from memory via R-ME-01.",
+      "evidence_refs": ["ev://s8/001"],
+      "timestamp": "2026-02-20T06:21:00Z",
+      "metadata": { "rule_id": "R-ME-01" }
+    }
+  ]
+}

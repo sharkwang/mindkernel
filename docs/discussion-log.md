@@ -260,3 +260,22 @@
 - 校验脚本更新：
   - `tools/validate_scenarios_v0_1.py` 新增 S6/S7 业务断言（retry 回队与 dead_letter 终态）。
 - 结果：关键路径覆盖从 5 条扩展到 7 条。
+
+### 6.11 运行时契约校验 + Memory→Experience 先跑通（2026-02-20）
+
+- 决策：在原型层引入“运行时 schema 校验”，避免实现偏离契约定义。
+- 调度器增强：
+  - 新增 `tools/schema_runtime.py` 作为轻量校验模块。
+  - `tools/scheduler_v0_1.py` 的审计写入前强制校验 `audit-event.schema.json`。
+- 新增前半链路原型：
+  - `tools/memory_experience_v0_1.py`
+  - `docs/memory-experience-prototype-v0.1.md`
+- 关键能力：
+  - `ingest-memory`（Memory 入库 + schema 校验）
+  - `memory-to-experience`（基于 R-ME-01 生成 Experience candidate）
+  - `run-path`（一键跑通 Memory→Experience）
+  - 全流程写入并校验 `audit-event`。
+- 验证覆盖扩展：
+  - 新增 `data/fixtures/critical-paths/08-memory-experience-path.json`
+  - `tools/validate_scenarios_v0_1.py` 增加 S8 断言
+- 结果：关键路径覆盖从 7 条扩展到 8 条。

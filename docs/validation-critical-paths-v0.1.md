@@ -30,6 +30,9 @@
 7. **S7 Scheduler Dead Letter**
    - 文件：`07-scheduler-dead-letter.json`
    - 覆盖：超过重试上限后进入 `dead_letter`
+8. **S8 Memory→Experience Path**
+   - 文件：`08-memory-experience-path.json`
+   - 覆盖：记忆入库到经验候选生成（R-ME-01）
 
 ## 3. 校验内容
 
@@ -44,6 +47,7 @@
   - S5 必须体现前后状态回升
   - S6 必须出现 retry 回队（`queued` 且 `attempt=1`）
   - S7 必须出现 `dead_letter` 终态
+  - S8 必须体现 Memory 与 Experience 的引用链一致
 
 ## 4. 运行方式
 
@@ -56,7 +60,7 @@ python3 tools/validate_scenarios_v0_1.py
 
 - `PASS 01-happy-path.json`
 - ...
-- `All good. Validated objects/events: 28`
+- `All good. Validated objects/events: 32`
 
 ## 5. CI 自动校验
 

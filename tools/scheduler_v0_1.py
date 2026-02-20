@@ -21,6 +21,8 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from schema_runtime import SchemaValidationError, validate_payload
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = ROOT / "data" / "mindkernel_v0_1.sqlite"
 
@@ -141,6 +143,11 @@ def write_audit_event(
         payload["correlation_id"] = correlation_id
     if metadata is not None:
         payload["metadata"] = metadata
+
+    try:
+        validate_payload("audit-event.schema.json", payload)
+    except SchemaValidationError as e:
+        raise ValueError(f"audit event schema validation failed: {e}") from e
 
     c.execute(
         """

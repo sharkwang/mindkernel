@@ -1,4 +1,4 @@
-# Contents Map (v5)
+# Contents Map (v6)
 
 本文件用于整理 `mindkernel/docs` 文档结构，避免信息分散。
 
@@ -36,19 +36,21 @@
    - v0.1 fixtures + 校验脚本的关键路径覆盖说明
 13. `scheduler-prototype-v0.1.md`
    - 调度器接口的本地可运行原型说明
+14. `memory-experience-prototype-v0.1.md`
+   - 记忆到经验路径的本地可运行原型说明
 
 ## 数据契约草案（与主规范配套）
 
-14. `../schemas/README.md`
+15. `../schemas/README.md`
     - schema 草案索引与维护说明
-15. `../schemas/*.schema.json`
+16. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-16. `../archive/requirements-and-architecture.legacy.md`
-17. `../archive/design.legacy.md`
-18. `../archive/memory-entry.schema.legacy.json`
+17. `../archive/requirements-and-architecture.legacy.md`
+18. `../archive/design.legacy.md`
+19. `../archive/memory-entry.schema.legacy.json`
 
 ## 维护规则
 

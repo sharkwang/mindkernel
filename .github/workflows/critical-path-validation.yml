@@ -7,14 +7,14 @@ on:
       - "schemas/**"
       - "docs/**"
       - "data/fixtures/**"
-      - "tools/validate_scenarios_v0_1.py"
+      - "tools/**"
       - ".github/workflows/critical-path-validation.yml"
   pull_request:
     paths:
       - "schemas/**"
       - "docs/**"
       - "data/fixtures/**"
-      - "tools/validate_scenarios_v0_1.py"
+      - "tools/**"
       - ".github/workflows/critical-path-validation.yml"
   workflow_dispatch:
 

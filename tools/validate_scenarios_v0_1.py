@@ -171,6 +171,14 @@ def validate_scenario_assertions(scenario: dict, source_path: Path):
         assert len(events) >= 1, "S7 must include dead-letter event"
         assert any(e.get("after", {}).get("status") == "dead_letter" for e in events), "S7 must reach dead_letter"
 
+    elif sid.startswith("S8"):
+        mem = scenario["memory"]
+        exp = scenario["experience"]
+        assert mem["status"] == "active", "S8 memory should be active"
+        assert exp["status"] == "candidate", "S8 experience should be candidate"
+        assert mem["id"] in exp.get("memory_refs", []), "S8 experience must reference memory id"
+        assert any(e.get("object_type") == "experience" for e in scenario.get("audit_events", [])), "S8 must include experience audit event"
+
     else:
         raise AssertionError(f"Unknown scenario id in {source_path.name}: {sid}")
 
