@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-21 11:00 (Asia/Shanghai)_
+_Last updated: 2026-02-21 11:10 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -36,6 +36,6 @@ _Last updated: 2026-02-21 11:00 (Asia/Shanghai)_
 
 ## 风险追踪
 
-- **发布风险（中）**：新增迁移/解析脚本尚未纳入 CI 校验矩阵，回归暴露仍可能滞后。
+- **发布风险（低）**：关键验证已纳入 CI（含 ingest tooling），主线回归暴露时延已下降。
 - **一致性风险（中）**：Reflect/Opinion evolution 仍属 Partial，治理闭环未完全自动化。
 - **数据风险（中）**：迁移链路当前以 dry-run 为主，缺正式导入与错误隔离流水线。

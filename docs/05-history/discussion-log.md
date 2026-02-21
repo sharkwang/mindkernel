@@ -505,7 +505,8 @@
 - S2 对齐动作：
   - `TODO.md` 同步为“P0 已完成，下一步转 P1”。
   - 风险从“CI 缺位”切换为“新增 ingest 工具尚未纳入门禁”。
-- S3 门禁扩展（进行中）：
+- S3 门禁扩展（已完成）：
   - 新增 `tools/validate_ingest_tools_v0_1.py`（迁移 dry-run + session 解析 + schema 校验）。
   - 新增 fixture：`data/fixtures/session-logs/sample-session.jsonl`。
-  - 计划并入 `.github/workflows/critical-path-validation.yml`。
+  - 已并入 `.github/workflows/critical-path-validation.yml`。
+  - CI 通过：GitHub Actions run `22249216541`。
