@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-21 11:10 (Asia/Shanghai)_
+_Last updated: 2026-02-21 11:24 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -8,6 +8,7 @@ _Last updated: 2026-02-21 11:10 (Asia/Shanghai)_
 - [x] 为 memory-index 增加 CI 校验步骤（并入现有 `critical-path-validation` workflow）
 - [x] 增补 RTM：把 retain/recall/reflect + opinion evolution 的实现映射进 MR/CR/FR/NFR
 - [x] 设计并实现 `memory.md` -> memory objects 的安全迁移脚本（行级 source_ref + 敏感项分级）
+- [x] 建立外部 LLM 记忆处理核心对象 `LLMMemoryProcessor`（含 mock 验证与 CI 门禁）
 
 ## P1（稳定性与治理）
 
@@ -24,8 +25,9 @@ _Last updated: 2026-02-21 11:10 (Asia/Shanghai)_
 ## 今日巡检（2026-02-21）
 
 - [x] 已完成 P0 四项落地（CI 接入、RTM 补齐、memory-index 可用性增强、`memory.md -> objects` dry-run）。
-- [x] 本地回归通过：`validate_scenarios_v0_1.py` + `validate_memory_index_v0_1.py` + `system_smoke_report_v0_1.py`。
+- [x] 本地回归通过：`validate_scenarios_v0_1.py` + `validate_memory_index_v0_1.py` + `validate_ingest_tools_v0_1.py` + `validate_llm_memory_processor_v0_1.py` + `system_smoke_report_v0_1.py`。
 - [x] 新增 session 解析与 memory JSONL 输出脚本，为后续“会话 -> 结构化记忆”导入链路打底。
+- [x] 新增外部 LLM 记忆处理核心对象 `LLMMemoryProcessor`，支持 OpenAI-compatible 调用与 mock 模式。
 
 ## 下一步（建议按顺序执行）
 
@@ -39,3 +41,4 @@ _Last updated: 2026-02-21 11:10 (Asia/Shanghai)_
 - **发布风险（低）**：关键验证已纳入 CI（含 ingest tooling），主线回归暴露时延已下降。
 - **一致性风险（中）**：Reflect/Opinion evolution 仍属 Partial，治理闭环未完全自动化。
 - **数据风险（中）**：迁移链路当前以 dry-run 为主，缺正式导入与错误隔离流水线。
+- **外部依赖风险（中）**：LLM 线上调用受 API 可用性/成本影响，尚未接入熔断与降级策略。

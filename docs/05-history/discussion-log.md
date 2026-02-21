@@ -530,3 +530,15 @@
 - 新增原型文档：
   - `docs/04-prototypes/llm-memory-processor-v0.1.md`
 - 结果：项目具备“可插拔外部模型记忆处理核心对象”，可作为后续导入链路与 reflect 增强的基础组件。
+
+### 6.26 项目整理与交接冻结（2026-02-21）
+
+- 已完成全项目整理快照：
+  - `docs/06-execution/project-consolidation-2026-02-21.md`
+- 统一了：
+  1. 目录职责分层（foundation/design/validation/prototypes/execution）；
+  2. 门禁脚本清单与标准执行命令；
+  3. S4 启动输入、动作、输出定义。
+- TODO 与风险口径同步：
+  - 补充 LLM 核心对象已落地项；
+  - 明确新增“外部依赖风险（中）”。
