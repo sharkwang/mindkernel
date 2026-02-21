@@ -39,3 +39,7 @@ jobs:
       - name: Run memory-index validation
         run: |
           python3 tools/validate_memory_index_v0_1.py
+
+      - name: Run ingest tooling validation
+        run: |
+          python3 tools/validate_ingest_tools_v0_1.py

@@ -31,6 +31,8 @@
   - `memory.md` 到 memory objects 的安全迁移 dry-run（行级 source_ref + 敏感项分级）
 - `parse_session_jsonl_v0_1.py`
   - 解析 OpenClaw session JSONL，产出 memory-event 候选（directive/request/milestone/discovery，可选 tool_call）
+- `validate_ingest_tools_v0_1.py`
+  - 校验迁移与会话解析链路（`memory.md` dry-run + session->memory JSONL + schema 校验）
 
 ## 备注
 

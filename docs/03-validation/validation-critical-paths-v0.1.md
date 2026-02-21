@@ -104,7 +104,10 @@ python3 tools/validate_scenarios_v0_1.py
   - push 到 `main`（当 schemas/docs/fixtures/validator/workflow 变更时）
   - pull request（同上路径）
   - 手动触发（workflow_dispatch）
-- 执行动作：运行 `python3 tools/validate_scenarios_v0_1.py`
+- 执行动作：
+  - `python3 tools/validate_scenarios_v0_1.py`
+  - `python3 tools/validate_memory_index_v0_1.py`
+  - `python3 tools/validate_ingest_tools_v0_1.py`
 
 ## 6. 维护规则
 

@@ -1,0 +1,7 @@
+{"type":"session","version":3,"id":"sample-session-001","timestamp":"2026-02-21T00:00:00.000Z","cwd":"/Users/zhengwang/projects/mindkernel"}
+{"type":"model_change","id":"m1","parentId":null,"timestamp":"2026-02-21T00:00:00.001Z","provider":"openai-codex","modelId":"gpt-5.3-codex"}
+{"type":"thinking_level_change","id":"t1","parentId":"m1","timestamp":"2026-02-21T00:00:00.002Z","thinkingLevel":"low"}
+{"type":"message","id":"u1","parentId":"t1","timestamp":"2026-02-21T00:00:01.000Z","message":{"role":"user","timestamp":"2026-02-21T00:00:01.000Z","content":[{"type":"text","text":"一步一步开始做。"}]}}
+{"type":"message","id":"a1","parentId":"u1","timestamp":"2026-02-21T00:00:02.000Z","message":{"role":"assistant","timestamp":"2026-02-21T00:00:02.000Z","content":[{"type":"text","text":"[[reply_to_current]] P0-1 完成：memory-index 已接入 CI 并验证通过。"}]}}
+{"type":"message","id":"u2","parentId":"a1","timestamp":"2026-02-21T00:00:03.000Z","message":{"role":"user","timestamp":"2026-02-21T00:00:03.000Z","content":[{"type":"text","text":"我想看看从session解析出来是什么样子的记忆事件。"}]}}
+{"type":"message","id":"a2","parentId":"u2","timestamp":"2026-02-21T00:00:04.000Z","message":{"role":"assistant","timestamp":"2026-02-21T00:00:04.000Z","content":[{"type":"text","text":"sessions 目录的格式概览：主会话日志是 *.jsonl，索引文件是 sessions.json。"}]}}
