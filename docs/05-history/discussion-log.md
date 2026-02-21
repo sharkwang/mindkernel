@@ -492,3 +492,20 @@
 **结论**：
 - MindKernel 已从“设计规范主导”进入“规范 + 原型并行且可验证”的稳定阶段。
 - 主闭环（M→E→C→D）可运行，记忆层（retain/recall/reflect）具备继续演进基础。
+
+### 6.24 可用版执行计划启动（2026-02-21）
+
+- 已创建执行计划：
+  - `docs/06-execution/v0.1.0-usable-execution-plan.md`
+  - 覆盖 S1~S11，定义 DoD（本地绿 + CI 绿 + 数据入口可复现 + 报告可审计）。
+- 已完成 S1（基线固化）：
+  - `ef913a6` 文档与 CI 对齐 + 计划落档
+  - `3c7ca7b` memory-index 可用性增强（增量 reindex / 幂等 / 失败重试）
+  - `2d45476` 新增迁移/会话解析链路
+- S2 对齐动作：
+  - `TODO.md` 同步为“P0 已完成，下一步转 P1”。
+  - 风险从“CI 缺位”切换为“新增 ingest 工具尚未纳入门禁”。
+- S3 门禁扩展（进行中）：
+  - 新增 `tools/validate_ingest_tools_v0_1.py`（迁移 dry-run + session 解析 + schema 校验）。
+  - 新增 fixture：`data/fixtures/session-logs/sample-session.jsonl`。
+  - 计划并入 `.github/workflows/critical-path-validation.yml`。
