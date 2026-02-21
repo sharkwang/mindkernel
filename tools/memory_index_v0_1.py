@@ -8,6 +8,7 @@ import hashlib
 import json
 import re
 import sqlite3
+import traceback
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -130,9 +131,19 @@ def init_db(c: sqlite3.Connection):
             UNIQUE(signature, entities)
         );
 
+        CREATE TABLE IF NOT EXISTS reindex_failures (
+            path TEXT PRIMARY KEY,
+            last_error TEXT NOT NULL,
+            retry_count INTEGER NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'pending',
+            last_failed_at TEXT NOT NULL,
+            last_retry_at TEXT
+        );
+
         CREATE INDEX IF NOT EXISTS idx_facts_kind ON facts(kind);
         CREATE INDEX IF NOT EXISTS idx_facts_observed_date ON facts(observed_date);
         CREATE INDEX IF NOT EXISTS idx_opinions_sig_entities ON opinions_state(signature, entities);
+        CREATE INDEX IF NOT EXISTS idx_reindex_failures_status ON reindex_failures(status);
         """
     )
     c.commit()
@@ -246,6 +257,42 @@ def parse_retain_facts(md_text: str, rel_path: str):
     return out
 
 
+def clear_document_facts(c: sqlite3.Connection, rel_path: str):
+    fact_rows = c.execute("SELECT id FROM facts WHERE source_path=?", (rel_path,)).fetchall()
+    for r in fact_rows:
+        c.execute("DELETE FROM facts_fts WHERE fact_id=?", (r["id"],))
+    c.execute("DELETE FROM facts WHERE source_path=?", (rel_path,))
+
+
+def remove_document(c: sqlite3.Connection, rel_path: str):
+    clear_document_facts(c, rel_path)
+    c.execute("DELETE FROM documents WHERE path=?", (rel_path,))
+
+
+def mark_reindex_failure(c: sqlite3.Connection, rel_path: str, err: str, max_retries: int):
+    row = c.execute("SELECT retry_count FROM reindex_failures WHERE path=?", (rel_path,)).fetchone()
+    retry_count = int(row["retry_count"]) + 1 if row else 1
+    status = "failed" if retry_count >= max_retries else "pending"
+    now = now_iso()
+    c.execute(
+        """
+        INSERT INTO reindex_failures(path, last_error, retry_count, status, last_failed_at, last_retry_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(path) DO UPDATE SET
+            last_error=excluded.last_error,
+            retry_count=excluded.retry_count,
+            status=excluded.status,
+            last_failed_at=excluded.last_failed_at,
+            last_retry_at=excluded.last_retry_at
+        """,
+        (rel_path, err, retry_count, status, now, now),
+    )
+
+
+def clear_reindex_failure(c: sqlite3.Connection, rel_path: str):
+    c.execute("DELETE FROM reindex_failures WHERE path=?", (rel_path,))
+
+
 def upsert_document_and_facts(c: sqlite3.Connection, workspace: Path, path: Path):
     text = path.read_text(errors="ignore")
     rel_path = str(path.relative_to(workspace))
@@ -259,17 +306,14 @@ def upsert_document_and_facts(c: sqlite3.Connection, workspace: Path, path: Path
     )
 
     # replace facts for this doc
-    fact_rows = c.execute("SELECT id FROM facts WHERE source_path=?", (rel_path,)).fetchall()
-    for r in fact_rows:
-        c.execute("DELETE FROM facts_fts WHERE fact_id=?", (r["id"],))
-    c.execute("DELETE FROM facts WHERE source_path=?", (rel_path,))
+    clear_document_facts(c, rel_path)
 
     facts = parse_retain_facts(text, rel_path)
     for f in facts:
         fid = f"fact_{sha1_text(f['source_ref'] + '|' + f['content'])[:16]}"
-        entities_str = " ".join(sorted(f["entities"]))
+        entities_str = " ".join(sorted(set(f["entities"])))
         c.execute(
-            "INSERT INTO facts(id, kind, content, entities, confidence, source_path, line_no, source_ref, observed_date, indexed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT OR REPLACE INTO facts(id, kind, content, entities, confidence, source_path, line_no, source_ref, observed_date, indexed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 fid,
                 f["kind"],
@@ -288,17 +332,71 @@ def upsert_document_and_facts(c: sqlite3.Connection, workspace: Path, path: Path
             (fid, f["content"], entities_str, f["kind"]),
         )
 
-    return {"path": rel_path, "facts_indexed": len(facts)}
+    clear_reindex_failure(c, rel_path)
+    return {"path": rel_path, "facts_indexed": len(facts), "mode": "updated"}
 
 
-def cmd_reindex(c: sqlite3.Connection, workspace: Path):
+def cmd_reindex(
+    c: sqlite3.Connection,
+    workspace: Path,
+    incremental: bool = True,
+    retry_failures: bool = True,
+    max_retries: int = 3,
+):
     init_db(c)
-    stats = {"docs": 0, "facts": 0, "items": []}
-    for p in iter_md_files(workspace):
-        r = upsert_document_and_facts(c, workspace, p)
-        stats["docs"] += 1
-        stats["facts"] += r["facts_indexed"]
-        stats["items"].append(r)
+    stats = {
+        "docs": 0,
+        "facts": 0,
+        "items": [],
+        "skipped": 0,
+        "deleted": 0,
+        "failed": 0,
+        "retried": 0,
+        "incremental": incremental,
+    }
+
+    files = list(iter_md_files(workspace))
+    rel_map = {str(p.relative_to(workspace)): p for p in files}
+
+    # clean removed docs
+    existing = c.execute("SELECT path FROM documents").fetchall()
+    for r in existing:
+        rel_path = r["path"]
+        if rel_path not in rel_map:
+            remove_document(c, rel_path)
+            clear_reindex_failure(c, rel_path)
+            stats["deleted"] += 1
+
+    pending_failures = {}
+    if retry_failures:
+        for r in c.execute("SELECT path, retry_count FROM reindex_failures WHERE status='pending'").fetchall():
+            pending_failures[r["path"]] = int(r["retry_count"])
+
+    for rel_path, p in rel_map.items():
+        try:
+            st = p.stat()
+            doc_row = c.execute("SELECT mtime FROM documents WHERE path=?", (rel_path,)).fetchone()
+            should_retry = rel_path in pending_failures
+
+            if should_retry:
+                stats["retried"] += 1
+
+            if incremental and doc_row and (not should_retry):
+                old_mtime = float(doc_row["mtime"])
+                if abs(old_mtime - float(st.st_mtime)) < 1e-6:
+                    stats["skipped"] += 1
+                    continue
+
+            r = upsert_document_and_facts(c, workspace, p)
+            stats["docs"] += 1
+            stats["facts"] += r["facts_indexed"]
+            stats["items"].append(r)
+        except Exception as e:
+            err = f"{type(e).__name__}: {e}\n{traceback.format_exc(limit=1)}"
+            mark_reindex_failure(c, rel_path, err, max_retries=max_retries)
+            stats["failed"] += 1
+            stats["items"].append({"path": rel_path, "error": str(e), "mode": "failed"})
+
     c.commit()
     return stats
 
@@ -637,7 +735,10 @@ def main():
     sub = p.add_subparsers(dest="cmd", required=True)
 
     sub.add_parser("init-db")
-    sub.add_parser("reindex")
+    rx = sub.add_parser("reindex")
+    rx.add_argument("--full", action="store_true", help="force full reindex (disable incremental skip)")
+    rx.add_argument("--no-retry-failures", action="store_true", help="do not retry pending failed documents")
+    rx.add_argument("--max-retries", type=int, default=3, help="max retries before marking a document as failed")
 
     rc = sub.add_parser("recall")
     rc.add_argument("--query")
@@ -668,7 +769,19 @@ def main():
         return
 
     if args.cmd == "reindex":
-        print(json.dumps(cmd_reindex(c, workspace), ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                cmd_reindex(
+                    c,
+                    workspace,
+                    incremental=not args.full,
+                    retry_failures=not args.no_retry_failures,
+                    max_retries=max(1, int(args.max_retries)),
+                ),
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return
 
     if args.cmd == "recall":
