@@ -509,4 +509,24 @@
   - 新增 `tools/validate_ingest_tools_v0_1.py`（迁移 dry-run + session 解析 + schema 校验）。
   - 新增 fixture：`data/fixtures/session-logs/sample-session.jsonl`。
   - 已并入 `.github/workflows/critical-path-validation.yml`。
-  - CI 通过：GitHub Actions run `22249216541`。
+  - CI 通过：GitHub Actions runs `22249216541`、`22249230818`、`22249239698`。
+
+### 6.25 外部 LLM 记忆处理核心对象（2026-02-21）
+
+- 新增核心对象：
+  - `tools/llm_memory_processor_v0_1.py`
+  - 对象名：`LLMMemoryProcessor`（配置对象：`LLMProcessorConfig`）
+- 能力：
+  1. 调用外部 LLM（OpenAI-compatible）抽取记忆候选；
+  2. 自动补齐 `memory.schema` 必需字段；
+  3. 逐条 schema 校验；
+  4. 稳定 ID + 去重（`sha1(source_ref|content)`）。
+- 后端模式：
+  - `mock`（本地可测）
+  - `openai_compatible`（外部模型调用）
+- 新增验证资产：
+  - `tools/validate_llm_memory_processor_v0_1.py`
+  - `data/fixtures/llm-memory/sample-memory-input.txt`
+- 新增原型文档：
+  - `docs/04-prototypes/llm-memory-processor-v0.1.md`
+- 结果：项目具备“可插拔外部模型记忆处理核心对象”，可作为后续导入链路与 reflect 增强的基础组件。

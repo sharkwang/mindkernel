@@ -52,23 +52,25 @@
     - Cognition→DecisionTrace 最小链路说明
 21. `04-prototypes/full-path-prototype-v0.1.md`
     - Memory→Experience→Cognition→Decision 一体化最小闭环说明
+22. `04-prototypes/llm-memory-processor-v0.1.md`
+    - 外部 LLM 记忆处理核心对象（抽取为 memory.schema 兼容对象）
 
 ## 数据契约草案（与主规范配套）
 
-22. `../schemas/README.md`
+23. `../schemas/README.md`
     - schema 草案索引与维护说明
-23. `../schemas/*.schema.json`
+24. `../schemas/*.schema.json`
     - `common-temporal` / `persona` / `memory` / `experience` / `cognition` / `decision-trace` / `audit-event`
 
 ## 归档文档（只读）
 
-24. `../archive/requirements-and-architecture.legacy.md`
-25. `../archive/design.legacy.md`
-26. `../archive/memory-entry.schema.legacy.json`
+25. `../archive/requirements-and-architecture.legacy.md`
+26. `../archive/design.legacy.md`
+27. `../archive/memory-entry.schema.legacy.json`
 
 ## 执行计划
 
-27. `06-execution/v0.1.0-usable-execution-plan.md`
+28. `06-execution/v0.1.0-usable-execution-plan.md`
     - v0.1.0-usable 从原型到可交付版本的执行规划（S1~S11）
 
 ## 维护规则
