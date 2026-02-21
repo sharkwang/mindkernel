@@ -14,8 +14,13 @@
   - `docs/03-validation/e2e-scenarios-v0.1.md`
   - `docs/02-design/state-machines-v0.1.md`
   - `docs/02-design/scheduler-interface-v0.1.md`
+  - `docs/02-design/retain-recall-reflect-spec-v0.1.md`
+  - `docs/02-design/memory-index-architecture-v0.1.md`
+  - `docs/04-prototypes/memory-index-prototype-v0.1.md`
   - `schemas/decision-trace.schema.json`
   - `schemas/audit-event.schema.json`
+  - `tools/memory_index_v0_1.py`
+  - `tools/validate_memory_index_v0_1.py`
 
 ## 2. MR 覆盖
 
@@ -92,15 +97,32 @@
 | NFR-14 遗忘作业效率 | Full | 到期拉取，不走全量扫描 |
 | NFR-15 遗忘质量可逆可解释 | Partial | reinstate 已有，误归档指标待补 |
 
-## 6. v0.1 剩余缺口（进入下轮）
+## 6. 记忆层专项追踪（retain / recall / reflect / opinion evolution）
+
+> 目的：把 memory-index 原型能力显式挂到 MR/CR/FR/NFR，避免“有实现、无追踪”。
+
+| 能力 | 覆盖需求 | Coverage | 设计/实现落点 | 验证证据 |
+|---|---|---|---|---|
+| Retain（`## Retain` 解析 + 入库） | MR-2, CR-2, FR-3, FR-18, NFR-1 | Full | `retain-recall-reflect-spec-v0.1.md` §1；`tools/memory_index_v0_1.py reindex` | `memory-index-prototype-v0.1.md` 用例 + `validate_memory_index_v0_1.py` |
+| Recall（fact-pack + source_ref） | MR-2, CR-2, FR-3, FR-17, NFR-1, NFR-2 | Full | `retain-recall-reflect-spec-v0.1.md` §2；`tools/memory_index_v0_1.py recall` | 原型命令回放（`memory-index-prototype-v0.1.md`） |
+| Reflect（建议包 + 可选 writeback） | MR-5, FR-10, FR-12, FR-21, NFR-8, NFR-15 | Partial | `retain-recall-reflect-spec-v0.1.md` §3；`tools/memory_index_v0_1.py reflect --writeback` | `validate_memory_index_v0_1.py` 校验 entities/opinions 写回 |
+| Opinion 置信度演化（support/contradict） | MR-7, CR-3, FR-12, FR-15, NFR-2, NFR-8 | Partial | `retain-recall-reflect-spec-v0.1.md` §5；`tools/memory_index_v0_1.py` opinions_state 更新 | `validate_memory_index_v0_1.py` 校验 `support_count/contradict_count/confidence` |
+
+专项结论（v0.1）：
+- Retain / Recall：可作为“记忆证据层”进入主链路，具备最小可验收能力。
+- Reflect / Opinion evolution：原型可运行并可校验，但自动调度、回写治理与质量指标尚未闭环，因此维持 Partial。
+
+## 7. v0.1 剩余缺口（进入下轮）
 
 1. 红队偏执监控（FR-9 / CR-6 / NFR-9）
 2. 显著性评分与闭环率指标（FR-11 / NFR-7）
 3. 高风险四重闸门中的社会闸门细则（FR-6）
 4. 探索预算周期统计与“学习停滞事件”告警（CR-8）
 5. 调度器实现层的吞吐与延迟基准（NFR-14）
+6. Reflect 自动作业接入 scheduler（默认 dry-run + 人工确认写回）
+7. Recall 对 M→E 输入质量的回放评估基线（准确率/召回率/噪声率）
 
-## 7. 维护方式
+## 8. 维护方式
 
 - 新增规则时：必须同时更新本 RTM 表与对应 E2E 场景。
 - 任何条款从 Partial -> Full：需要附带“可执行证据”（脚本/日志/测试报告）。

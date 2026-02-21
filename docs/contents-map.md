@@ -66,6 +66,11 @@
 25. `../archive/design.legacy.md`
 26. `../archive/memory-entry.schema.legacy.json`
 
+## 执行计划
+
+27. `06-execution/v0.1.0-usable-execution-plan.md`
+    - v0.1.0-usable 从原型到可交付版本的执行规划（S1~S11）
+
 ## 维护规则
 
 - 新决策：先写入 `05-history/discussion-log.md`，达成共识后再写入主规范。

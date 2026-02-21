@@ -32,6 +32,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run critical-path validation
+      - name: Run critical-path scenario validation
         run: |
           python3 tools/validate_scenarios_v0_1.py
+
+      - name: Run memory-index validation
+        run: |
+          python3 tools/validate_memory_index_v0_1.py
