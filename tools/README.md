@@ -27,6 +27,10 @@
   - 离线记忆索引草案（retain/recall/reflect，含 opinion 置信度演化）
 - `validate_memory_index_v0_1.py`
   - 记忆索引演化与写回验证脚本
+- `migrate_memory_md_to_objects_v0_1.py`
+  - `memory.md` 到 memory objects 的安全迁移 dry-run（行级 source_ref + 敏感项分级）
+- `parse_session_jsonl_v0_1.py`
+  - 解析 OpenClaw session JSONL，产出 memory-event 候选（directive/request/milestone/discovery，可选 tool_call）
 
 ## 备注
 
