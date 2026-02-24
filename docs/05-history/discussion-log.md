@@ -213,7 +213,7 @@
   - `data/fixtures/critical-paths/03-uncertain-ttl-routing.json`
   - `data/fixtures/critical-paths/04-high-risk-block.json`
   - `data/fixtures/critical-paths/05-reinstate.json`
-  - `tools/validate_scenarios_v0_1.py`
+  - `tools/validation/validate_scenarios_v0_1.py`
   - `docs/03-validation/validation-critical-paths-v0.1.md`
 - 覆盖关键路径：
   1. 正常闭环（Memory→Experience→Cognition→Decision）
@@ -231,7 +231,7 @@
   - push 到 `main`（当 `schemas/**`、`docs/**`、`data/fixtures/**`、校验脚本或工作流本身变更时）
   - pull request（同路径过滤）
   - `workflow_dispatch` 手动触发
-- 执行命令：`python3 tools/validate_scenarios_v0_1.py`
+- 执行命令：`python3 tools/validation/validate_scenarios_v0_1.py`
 - 目标：把 v0.1 关键路径从“可手动验证”升级为“默认自动守护”。
 
 ### 6.9 最小调度器原型落地（2026-02-20）
@@ -258,7 +258,7 @@
   - `data/fixtures/critical-paths/06-scheduler-retry.json`
   - `data/fixtures/critical-paths/07-scheduler-dead-letter.json`
 - 校验脚本更新：
-  - `tools/validate_scenarios_v0_1.py` 新增 S6/S7 业务断言（retry 回队与 dead_letter 终态）。
+  - `tools/validation/validate_scenarios_v0_1.py` 新增 S6/S7 业务断言（retry 回队与 dead_letter 终态）。
 - 结果：关键路径覆盖从 5 条扩展到 7 条。
 
 ### 6.11 运行时契约校验 + Memory→Experience 先跑通（2026-02-20）
@@ -277,7 +277,7 @@
   - 全流程写入并校验 `audit-event`。
 - 验证覆盖扩展：
   - 新增 `data/fixtures/critical-paths/08-memory-experience-path.json`
-  - `tools/validate_scenarios_v0_1.py` 增加 S8 断言
+  - `tools/validation/validate_scenarios_v0_1.py` 增加 S8 断言
 - 结果：关键路径覆盖从 7 条扩展到 8 条。
 
 ### 6.12 Markdown 记忆输入支持（2026-02-20）
@@ -290,7 +290,7 @@
 - 新增样例：
   - `data/fixtures/critical-paths/09-memory-markdown.md`
 - 校验增强：
-  - `tools/validate_scenarios_v0_1.py` 新增 Markdown fixture 校验（S9）。
+  - `tools/validation/validate_scenarios_v0_1.py` 新增 Markdown fixture 校验（S9）。
 - 结果：关键路径覆盖从 8 条扩展到 9 条。
 
 ### 6.13 Experience→Cognition 最小升格链路（含 Persona Gate）（2026-02-20）
@@ -307,7 +307,7 @@
 - 验证覆盖扩展：
   - 新增 `data/fixtures/critical-paths/10-experience-cognition-pass.json`
   - 新增 `data/fixtures/critical-paths/11-experience-cognition-block.json`
-  - `tools/validate_scenarios_v0_1.py` 新增 S10/S11 断言
+  - `tools/validation/validate_scenarios_v0_1.py` 新增 S10/S11 断言
 - 结果：关键路径覆盖从 9 条扩展到 11 条。
 
 ### 6.14 一体化链路串联（Memory→Experience→Cognition）（2026-02-20）
@@ -321,7 +321,7 @@
 - 验证覆盖扩展：
   - `data/fixtures/critical-paths/12-full-path-pass.json`
   - `data/fixtures/critical-paths/13-full-path-block.json`
-  - `tools/validate_scenarios_v0_1.py` 新增 S12/S13 断言。
+  - `tools/validation/validate_scenarios_v0_1.py` 新增 S12/S13 断言。
 - 结果：关键路径覆盖从 11 条扩展到 13 条。
 
 ### 6.15 Cognition→Decision 最小链路（2026-02-20）
@@ -338,7 +338,7 @@
 - 验证覆盖扩展：
   - `data/fixtures/critical-paths/14-cognition-decision-pass.json`
   - `data/fixtures/critical-paths/15-cognition-decision-high-risk-block.json`
-  - `tools/validate_scenarios_v0_1.py` 新增 S14/S15 断言。
+  - `tools/validation/validate_scenarios_v0_1.py` 新增 S14/S15 断言。
 - 结果：关键路径覆盖从 13 条扩展到 15 条。
 
 ### 6.16 Full Path 升级为 M→E→C→D 闭环（2026-02-20）
@@ -350,7 +350,7 @@
   - Gate block：调用 `gate_block_to_decision` 产出 blocked DecisionTrace（保留 boundary_hits）。
 - 对齐调整：
   - `12-full-path-pass.json` 与 `13-full-path-block.json` 增补 `decision_trace` 与决策审计事件。
-  - `tools/validate_scenarios_v0_1.py` 同步强化 S12/S13 断言（检查 decision 层行为）。
+  - `tools/validation/validate_scenarios_v0_1.py` 同步强化 S12/S13 断言（检查 decision 层行为）。
 - 结果：全链路闭环可一键执行，关键路径总覆盖维持 15 条，但校验对象/事件提升到 62。
 
 ### 6.17 项目整理（2026-02-20）
@@ -449,7 +449,7 @@
   - 反向证据：`-0.08`（下限 0.05）
 - 新增验证资产：
   - `data/fixtures/memory-workspace-evolution/*`
-  - `tools/validate_memory_index_v0_1.py`
+  - `tools/validation/validate_memory_index_v0_1.py`
 - 文档同步：
   - `docs/02-design/retain-recall-reflect-spec-v0.1.md`
   - `docs/02-design/memory-index-architecture-v0.1.md`
@@ -506,7 +506,7 @@
   - `TODO.md` 同步为“P0 已完成，下一步转 P1”。
   - 风险从“CI 缺位”切换为“新增 ingest 工具尚未纳入门禁”。
 - S3 门禁扩展（已完成）：
-  - 新增 `tools/validate_ingest_tools_v0_1.py`（迁移 dry-run + session 解析 + schema 校验）。
+  - 新增 `tools/validation/validate_ingest_tools_v0_1.py`（迁移 dry-run + session 解析 + schema 校验）。
   - 新增 fixture：`data/fixtures/session-logs/sample-session.jsonl`。
   - 已并入 `.github/workflows/critical-path-validation.yml`。
   - CI 通过：GitHub Actions runs `22249216541`、`22249230818`、`22249239698`。
@@ -525,7 +525,7 @@
   - `mock`（本地可测）
   - `openai_compatible`（外部模型调用）
 - 新增验证资产：
-  - `tools/validate_llm_memory_processor_v0_1.py`
+  - `tools/validation/validate_llm_memory_processor_v0_1.py`
   - `data/fixtures/llm-memory/sample-memory-input.txt`
 - 新增原型文档：
   - `docs/04-prototypes/llm-memory-processor-v0.1.md`

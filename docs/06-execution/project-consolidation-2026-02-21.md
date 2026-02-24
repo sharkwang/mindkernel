@@ -50,11 +50,11 @@
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/validate_scenarios_v0_1.py
-python3 tools/validate_memory_index_v0_1.py
-python3 tools/validate_ingest_tools_v0_1.py
-python3 tools/validate_llm_memory_processor_v0_1.py
-python3 tools/system_smoke_report_v0_1.py
+python3 tools/validation/validate_scenarios_v0_1.py
+python3 tools/validation/validate_memory_index_v0_1.py
+python3 tools/validation/validate_ingest_tools_v0_1.py
+python3 tools/validation/validate_llm_memory_processor_v0_1.py
+python3 tools/validation/system_smoke_report_v0_1.py
 ```
 
 ## 5) 下一步交接点（S4 起步）

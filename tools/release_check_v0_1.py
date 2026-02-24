@@ -70,16 +70,16 @@ def main():
 
     checks = [
         CheckItem("unit-tests", ["python3", "-m", "unittest", "discover", "-s", "test", "-p", "test_*_v0_1.py", "-v"]),
-        CheckItem("validate-scenarios", ["python3", "tools/validate_scenarios_v0_1.py"]),
-        CheckItem("validate-memory-index", ["python3", "tools/validate_memory_index_v0_1.py"]),
-        CheckItem("validate-opinion-conflicts", ["python3", "tools/validate_opinion_conflicts_v0_1.py"]),
-        CheckItem("validate-recall-quality", ["python3", "tools/validate_recall_quality_v0_1.py"]),
-        CheckItem("validate-memory-import", ["python3", "tools/validate_memory_import_v0_1.py"]),
-        CheckItem("validate-scheduler-worker", ["python3", "tools/validate_scheduler_worker_v0_1.py"]),
-        CheckItem("validate-apply-compensation", ["python3", "tools/validate_apply_compensation_v0_1.py"]),
-        CheckItem("validate-ingest-tools", ["python3", "tools/validate_ingest_tools_v0_1.py"]),
-        CheckItem("validate-llm-memory-processor", ["python3", "tools/validate_llm_memory_processor_v0_1.py"]),
-        CheckItem("system-smoke", ["python3", "tools/system_smoke_report_v0_1.py"]),
+        CheckItem("validate-scenarios", ["python3", "tools/validation/validate_scenarios_v0_1.py"]),
+        CheckItem("validate-memory-index", ["python3", "tools/validation/validate_memory_index_v0_1.py"]),
+        CheckItem("validate-opinion-conflicts", ["python3", "tools/validation/validate_opinion_conflicts_v0_1.py"]),
+        CheckItem("validate-recall-quality", ["python3", "tools/validation/validate_recall_quality_v0_1.py"]),
+        CheckItem("validate-memory-import", ["python3", "tools/validation/validate_memory_import_v0_1.py"]),
+        CheckItem("validate-scheduler-worker", ["python3", "tools/validation/validate_scheduler_worker_v0_1.py"]),
+        CheckItem("validate-apply-compensation", ["python3", "tools/validation/validate_apply_compensation_v0_1.py"]),
+        CheckItem("validate-ingest-tools", ["python3", "tools/validation/validate_ingest_tools_v0_1.py"]),
+        CheckItem("validate-llm-memory-processor", ["python3", "tools/validation/validate_llm_memory_processor_v0_1.py"]),
+        CheckItem("system-smoke", ["python3", "tools/validation/system_smoke_report_v0_1.py"]),
     ]
 
     if args.quick:

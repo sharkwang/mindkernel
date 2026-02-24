@@ -61,7 +61,7 @@ python3 tools/memory_index_v0_1.py --db data/memory_index_demo.sqlite list-opini
 ## 5. 验证脚本
 
 ```bash
-python3 tools/validate_memory_index_v0_1.py
+python3 tools/validation/validate_memory_index_v0_1.py
 ```
 
 > v0.1 仍是可解释规则版本，暂不引入复杂冲突合并。

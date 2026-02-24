@@ -5,9 +5,13 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS_DIR = ROOT / "tools"
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
+
 from memory_experience_v0_1 import _extract_memory_payload
 
-ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS_DIR = ROOT / "schemas"
 FIXTURES_DIR = ROOT / "data" / "fixtures" / "critical-paths"
 

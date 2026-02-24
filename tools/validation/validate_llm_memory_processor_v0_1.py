@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
 FIXTURE = ROOT / "data" / "fixtures" / "llm-memory" / "sample-memory-input.txt"
 

@@ -59,7 +59,7 @@ python3 tools/llm_memory_processor_v0_1.py \
 ## 5. 校验脚本
 
 ```bash
-python3 tools/validate_llm_memory_processor_v0_1.py
+python3 tools/validation/validate_llm_memory_processor_v0_1.py
 ```
 
 校验内容：

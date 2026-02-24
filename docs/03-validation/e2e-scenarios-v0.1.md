@@ -110,4 +110,4 @@
 - 场景 4 -> `data/fixtures/critical-paths/04-high-risk-block.json`
 - 场景 5 -> `data/fixtures/critical-paths/05-reinstate.json`
 
-运行校验：`python3 tools/validate_scenarios_v0_1.py`
+运行校验：`python3 tools/validation/validate_scenarios_v0_1.py`

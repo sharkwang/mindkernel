@@ -79,6 +79,6 @@ python3 tools/import_memory_objects_v0_1.py \
 
 ## 8. 验证与门禁
 
-- 回放验证：`tools/validate_memory_import_v0_1.py`
+- 回放验证：`tools/validation/validate_memory_import_v0_1.py`
 - 单测：`test/test_validate_memory_import_v0_1.py`
 - CI：`critical-path-validation.yml` 应执行回放验证脚本

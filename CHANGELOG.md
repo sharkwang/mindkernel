@@ -3,9 +3,9 @@
 ## v0.1.0-usable (draft)
 
 ### Added
-- Reflect scheduler worker loop (`tools/reflect_scheduler_worker_v0_1.py`) and validation (`tools/validate_scheduler_worker_v0_1.py`).
+- Reflect scheduler worker loop (`tools/reflect_scheduler_worker_v0_1.py`) and validation (`tools/validation/validate_scheduler_worker_v0_1.py`).
 - Opinion conflict clustering + polarity enhancements in `memory_index_v0_1.py`.
-- Recall quality baseline replay validation (`tools/validate_recall_quality_v0_1.py`).
+- Recall quality baseline replay validation (`tools/validation/validate_recall_quality_v0_1.py`).
 - Memory JSONL importer (`tools/import_memory_objects_v0_1.py`, `core/memory_importer_v0_1.py`) with idempotent replay validation.
 - Apply compensation flow (`reflect_apply_compensations`) and CLI management commands.
 - Release check aggregator (`tools/release_check_v0_1.py`) and release runbook.

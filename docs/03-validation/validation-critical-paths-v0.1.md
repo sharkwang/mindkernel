@@ -5,7 +5,7 @@
 ## 1. 资产位置
 
 - Fixtures：`data/fixtures/critical-paths/*.{json,md}`
-- 校验脚本：`tools/validate_scenarios_v0_1.py`
+- 校验脚本：`tools/validation/validate_scenarios_v0_1.py`
 
 ## 2. 覆盖的关键路径
 
@@ -81,7 +81,7 @@
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/validate_scenarios_v0_1.py
+python3 tools/validation/validate_scenarios_v0_1.py
 ```
 
 成功输出示例：
@@ -105,15 +105,15 @@ python3 tools/validate_scenarios_v0_1.py
   - pull request（同上路径）
   - 手动触发（workflow_dispatch）
 - 执行动作：
-  - `python3 tools/validate_scenarios_v0_1.py`
-  - `python3 tools/validate_memory_index_v0_1.py`
-  - `python3 tools/validate_opinion_conflicts_v0_1.py`
-  - `python3 tools/validate_recall_quality_v0_1.py`
-  - `python3 tools/validate_memory_import_v0_1.py`
-  - `python3 tools/validate_scheduler_worker_v0_1.py`
-  - `python3 tools/validate_apply_compensation_v0_1.py`
-  - `python3 tools/validate_ingest_tools_v0_1.py`
-  - `python3 tools/validate_llm_memory_processor_v0_1.py`（mock）
+  - `python3 tools/validation/validate_scenarios_v0_1.py`
+  - `python3 tools/validation/validate_memory_index_v0_1.py`
+  - `python3 tools/validation/validate_opinion_conflicts_v0_1.py`
+  - `python3 tools/validation/validate_recall_quality_v0_1.py`
+  - `python3 tools/validation/validate_memory_import_v0_1.py`
+  - `python3 tools/validation/validate_scheduler_worker_v0_1.py`
+  - `python3 tools/validation/validate_apply_compensation_v0_1.py`
+  - `python3 tools/validation/validate_ingest_tools_v0_1.py`
+  - `python3 tools/validation/validate_llm_memory_processor_v0_1.py`（mock）
 
 ## 6. 维护规则
 

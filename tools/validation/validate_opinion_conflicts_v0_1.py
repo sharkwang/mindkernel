@@ -5,12 +5,16 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
-import memory_index_v0_1 as mi
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS_DIR = ROOT / "tools"
+if str(TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(TOOLS_DIR))
 
-ROOT = Path(__file__).resolve().parents[1]
+import memory_index_v0_1 as mi
 FIXTURE = ROOT / "data" / "fixtures" / "memory-workspace-evolution"
 
 

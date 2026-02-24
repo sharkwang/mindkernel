@@ -11,7 +11,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
 FIXTURE_WS = ROOT / "data" / "fixtures" / "memory-workspace-evolution"
 

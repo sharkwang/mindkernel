@@ -10,8 +10,9 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
+VALIDATION = TOOLS / "validation"
 REPORTS = ROOT / "reports"
 DATA = ROOT / "data"
 
@@ -49,7 +50,7 @@ def main() -> int:
     steps.append(
         run_step(
             "validate-critical-paths",
-            ["python3", str(TOOLS / "validate_scenarios_v0_1.py")],
+            ["python3", str(VALIDATION / "validate_scenarios_v0_1.py")],
         )
     )
 

@@ -4,13 +4,13 @@
 
 ## 脚本
 
-- `tools/system_smoke_report_v0_1.py`
+- `tools/validation/system_smoke_report_v0_1.py`
 
 ## 执行
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/system_smoke_report_v0_1.py
+python3 tools/validation/system_smoke_report_v0_1.py
 ```
 
 ## 输出

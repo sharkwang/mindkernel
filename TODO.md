@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-24 13:43 (Asia/Shanghai)_
+_Last updated: 2026-02-24 14:38 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -46,11 +46,12 @@ _Last updated: 2026-02-24 13:43 (Asia/Shanghai)_
 1. 补一轮真实 workspace 的 reflect worker 回放报告（非 fixture），验证吞吐与异常恢复路径。
 2. 评估并接入多 worker 租约/锁机制，降低并发执行冲突风险。
 3. 准备 `v0.1.0-usable` 正式标签与发布说明（基于 `v0.1.0-usable-rc1` 验证结果）。
+4. 完成遗忘执行层补齐：为 `decay/archive/reinstate-check` 增加 worker 执行器（当前自动化主要覆盖 `reflect`）。
 
 ## 风险追踪
 
 - **发布风险（低）**：关键验证与 ingest 门禁已接入 CI，主线回归可持续。
-- **一致性风险（中）**：Reflect/Opinion evolution 仍属 Partial，治理闭环未完全自动化。
+- **一致性风险（中）**：Reflect/Opinion evolution 仍属 Partial，治理闭环未完全自动化（遗忘执行层 `decay/archive/reinstate-check` 尚未接入 worker）。
 - **数据风险（中-低）**：已补导入器与回放验证；剩余风险在于线上真实数据规模下的吞吐与异常恢复策略。
 - **外部依赖风险（中）**：LLM 线上调用受 API 可用性/成本影响，尚未接入熔断与降级策略。
 - **节奏风险（中-低）**：今日计划项已完成并产出 `v0.1.0-usable-rc1`；剩余为真实流量回放与正式发布收口。

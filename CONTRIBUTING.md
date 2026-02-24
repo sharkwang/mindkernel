@@ -83,8 +83,8 @@
 
 ```bash
 # schema + 关键路径
-python3 tools/validate_scenarios_v0_1.py
+python3 tools/validation/validate_scenarios_v0_1.py
 
 # 系统烟测报告
-python3 tools/system_smoke_report_v0_1.py
+python3 tools/validation/system_smoke_report_v0_1.py
 ```

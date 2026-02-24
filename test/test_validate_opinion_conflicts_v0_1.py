@@ -9,7 +9,7 @@ from pathlib import Path
 class ValidateOpinionConflictsV01Test(unittest.TestCase):
     def test_validate_opinion_conflicts_script(self):
         root = Path(__file__).resolve().parents[1]
-        cmd = ["python3", "tools/validate_opinion_conflicts_v0_1.py"]
+        cmd = ["python3", "tools/validation/validate_opinion_conflicts_v0_1.py"]
         p = subprocess.run(cmd, cwd=str(root), text=True, capture_output=True)
         self.assertEqual(p.returncode, 0, msg=f"stderr: {p.stderr}\nstdout: {p.stdout}")
 

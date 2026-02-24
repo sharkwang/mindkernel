@@ -20,7 +20,7 @@
   - `schemas/decision-trace.schema.json`
   - `schemas/audit-event.schema.json`
   - `tools/memory_index_v0_1.py`
-  - `tools/validate_memory_index_v0_1.py`
+  - `tools/validation/validate_memory_index_v0_1.py`
 
 ## 2. MR 覆盖
 

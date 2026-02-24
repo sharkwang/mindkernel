@@ -30,16 +30,16 @@
 cd ./mindkernel
 
 # 1) 全量关键路径校验
-python3 tools/validate_scenarios_v0_1.py
+python3 tools/validation/validate_scenarios_v0_1.py
 
 # 1.1) recall 质量基线回放
-python3 tools/validate_recall_quality_v0_1.py
+python3 tools/validation/validate_recall_quality_v0_1.py
 
 # 1.2) memory 导入器回放（幂等 + 错误隔离）
-python3 tools/validate_memory_import_v0_1.py
+python3 tools/validation/validate_memory_import_v0_1.py
 
 # 1.3) reflect 调度 worker 回放（S7）
-python3 tools/validate_scheduler_worker_v0_1.py
+python3 tools/validation/validate_scheduler_worker_v0_1.py
 
 # 2) 一键全链路（M→E→C→D）
 python3 tools/full_path_v0_1.py run-full-path \
@@ -50,7 +50,7 @@ python3 tools/full_path_v0_1.py run-full-path \
   --request-ref req://demo/full
 
 # 3) 产出烟测报告（JSON + Markdown）
-python3 tools/system_smoke_report_v0_1.py
+python3 tools/validation/system_smoke_report_v0_1.py
 
 # 4) 发布前总检（S10）
 python3 tools/release_check_v0_1.py --quick --no-strict

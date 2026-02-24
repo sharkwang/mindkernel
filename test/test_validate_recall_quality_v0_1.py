@@ -11,7 +11,7 @@ class ValidateRecallQualityV01Test(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         cmd = [
             "python3",
-            "tools/validate_recall_quality_v0_1.py",
+            "tools/validation/validate_recall_quality_v0_1.py",
             "--no-strict",
         ]
         p = subprocess.run(cmd, cwd=str(root), text=True, capture_output=True)

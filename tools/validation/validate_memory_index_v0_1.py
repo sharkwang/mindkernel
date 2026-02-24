@@ -9,7 +9,7 @@ import sqlite3
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "data" / "fixtures" / "memory-workspace-evolution"
 TOOL = ROOT / "tools" / "memory_index_v0_1.py"
 
