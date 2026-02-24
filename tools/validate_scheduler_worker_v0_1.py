@@ -7,7 +7,8 @@ import json
 import shutil
 import subprocess
 import tempfile
-from datetime import datetime, timezone
+import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,8 +27,8 @@ def run(cmd: list[str], cwd: Path = ROOT):
     return p.stdout
 
 
-def now_iso() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+def now_iso(offset_sec: int = 0) -> str:
+    return (datetime.now(timezone.utc) + timedelta(seconds=offset_sec)).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
 def main():
@@ -42,7 +43,7 @@ def main():
     index_db = tmp / "index.sqlite"
     reports = tmp / "reports"
 
-    # enqueue one due reflect job
+    # enqueue one due reflect job (avoid race by scheduling shortly in future)
     run(
         [
             "python3",
@@ -57,13 +58,15 @@ def main():
             "--action",
             "reflect",
             "--run-at",
-            now_iso(),
+            now_iso(offset_sec=2),
             "--priority",
             "high",
             "--idempotency-key",
             "reflect:test:worker:v0_1",
         ]
     )
+
+    time.sleep(2.2)
 
     worker_out = run(
         [
