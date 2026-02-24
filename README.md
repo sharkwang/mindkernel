@@ -57,7 +57,9 @@ python3 tools/system_smoke_report_v0_1.py
 
 - `docs/`：规范、原型说明、讨论记录
 - `schemas/`：数据契约草案
-- `tools/`：v0.1 原型与验证脚本
+- `core/`：验证通过后的核心逻辑模块（可复用，保持干净）
+- `tools/`：CLI 与原型入口（尽量薄壳）
+- `test/`：关键用例回归测试
 - `data/fixtures/`：关键路径样例
 - `archive/`：历史草案（只读）
 

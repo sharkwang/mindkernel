@@ -6,6 +6,7 @@
 
 - `memory_experience_v0_1.py`
   - Memory ingest + Memory→Experience
+  - 核心逻辑已抽取到 `core/memory_experience_core_v0_1.py`
 - `experience_cognition_v0_1.py`
   - Experience→Cognition + Persona Gate（最小实现）
 - `cognition_decision_v0_1.py`
@@ -17,6 +18,8 @@
 
 - `scheduler_v0_1.py`
   - 到期调度原型（enqueue/pull/ack/fail/stats）
+  - Agent-first 提案闸门路由（`route-proposals`，支持 low/medium/high 分流与 medium 抽检）
+  - `route-proposals` 的核心逻辑已抽取到 `core/reflect_gate_v0_1.py`
 - `validate_scenarios_v0_1.py`
   - fixtures + 业务断言校验
 - `system_smoke_report_v0_1.py`
@@ -31,6 +34,11 @@
   - `memory.md` 到 memory objects 的安全迁移 dry-run（行级 source_ref + 敏感项分级）
 - `parse_session_jsonl_v0_1.py`
   - 解析 OpenClaw session JSONL，产出 memory-event 候选（directive/request/milestone/discovery，可选 tool_call）
+  - 核心解析逻辑已抽取到 `core/session_memory_parser_v0_1.py`
+- `persona_confirmation_queue_v0_1.py`
+  - 人格冲突确认队列 CLI（enqueue/list/ask/resolve/timeout-scan/apply-plan/apply-exec）
+  - `apply-exec` 写回时会同步产出 DecisionTrace + AuditEvent，并写入幂等账本
+  - 核心逻辑在 `core/persona_confirmation_queue_v0_1.py`
 - `llm_memory_processor_v0_1.py`
   - 核心对象 `LLMMemoryProcessor`：调用外部 LLM（OpenAI-compatible）做记忆抽取，输出 memory.schema 兼容对象
 - `validate_ingest_tools_v0_1.py`

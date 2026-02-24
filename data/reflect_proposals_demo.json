@@ -1,0 +1,51 @@
+[
+  {
+    "proposal_id": "p_low_001",
+    "job_id": "j_demo_001",
+    "operation": "upsert",
+    "target_type": "opinion",
+    "target_id": "demo_opinion_1",
+    "risk_score": 22,
+    "evidence_refs": ["session://demo#1", "session://demo#2"],
+    "confidence_before": 0.62,
+    "confidence_after": 0.68,
+    "payload": {
+      "path": "bank/demo/opinion_low_001.md",
+      "content": "# Opinion Demo\n\n- auto apply: p_low_001\n",
+      "write_mode": "replace"
+    }
+  },
+  {
+    "proposal_id": "p_medium_001",
+    "job_id": "j_demo_001",
+    "operation": "upsert",
+    "target_type": "entity",
+    "risk_score": 52,
+    "evidence_refs": ["session://demo#3"],
+    "confidence_before": 0.50,
+    "confidence_after": 0.74
+  },
+  {
+    "proposal_id": "p_high_001",
+    "job_id": "j_demo_001",
+    "operation": "delete",
+    "target_type": "core_memory",
+    "risk_score": 35,
+    "evidence_refs": ["session://demo#4", "session://demo#5"]
+  },
+  {
+    "proposal_id": "p_medium_002",
+    "job_id": "j_demo_001",
+    "operation": "upsert",
+    "target_type": "opinion",
+    "target_id": "demo_opinion_2",
+    "risk_score": 48,
+    "evidence_refs": ["session://demo#6", "session://demo#7"],
+    "source_quality": "low",
+    "payload": {
+      "path": "bank/demo/opinion_medium_002.md",
+      "content": "# Opinion Demo\n\n- auto apply: p_medium_002\n",
+      "write_mode": "replace"
+    }
+  }
+]

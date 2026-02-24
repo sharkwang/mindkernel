@@ -5,6 +5,7 @@
 ## 1. 实现位置
 
 - 脚本：`tools/memory_experience_v0_1.py`
+- 核心模块：`core/memory_experience_core_v0_1.py`
 - 存储：`data/mindkernel_v0_1.sqlite`
 
 ## 2. 支持命令

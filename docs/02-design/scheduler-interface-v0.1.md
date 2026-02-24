@@ -5,17 +5,17 @@
 ## 1. 设计边界
 
 - v0.1 范围：单实例、单队列、按到期拉取
-- 触发对象：Memory / Experience / Cognition
-- 触发动作：verify / revalidate / decay / archive / reinstate-check
+- 触发对象：Memory / Experience / Cognition / ReflectJob（Agent-first 批处理）
+- 触发动作：verify / revalidate / decay / archive / reinstate-check / reflect
 
 ## 2. 核心对象
 
 ```json
 {
   "job_id": "job_xxx",
-  "object_type": "memory|experience|cognition",
+  "object_type": "memory|experience|cognition|reflect_job",
   "object_id": "...",
-  "action": "verify|revalidate|decay|archive|reinstate-check",
+  "action": "verify|revalidate|decay|archive|reinstate-check|reflect",
   "run_at": "2026-02-20T03:00:00Z",
   "priority": "low|medium|high",
   "attempt": 0,

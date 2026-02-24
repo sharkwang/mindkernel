@@ -15,8 +15,10 @@ Also records scheduler audit events aligned with schemas/audit-event.schema.json
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sqlite3
+import sys
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -24,12 +26,26 @@ from pathlib import Path
 from schema_runtime import SchemaValidationError, validate_payload
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from core.reflect_gate_v0_1 import route_proposals as core_route_proposals
+
 DEFAULT_DB = ROOT / "data" / "mindkernel_v0_1.sqlite"
 
-ALLOWED_OBJECT_TYPES = {"memory", "experience", "cognition"}
-ALLOWED_ACTIONS = {"verify", "revalidate", "decay", "archive", "reinstate-check"}
+ALLOWED_OBJECT_TYPES = {"memory", "experience", "cognition", "reflect_job"}
+ALLOWED_ACTIONS = {"verify", "revalidate", "decay", "archive", "reinstate-check", "reflect"}
 ALLOWED_PRIORITIES = {"low", "medium", "high"}
-ALLOWED_STATUS = {"queued", "running", "succeeded", "failed", "dead_letter"}
+ALLOWED_STATUS = {"queued", "running", "succeeded", "failed", "dead_letter", "partial_success", "quarantined"}
+
+DEFAULT_GATE_CONFIG = {
+    "thresholds": {"low_max": 39, "medium_max": 69, "high_min": 70},
+    "sampling": {"medium_ratio": 0.20},
+    "hard_rules": {
+        "always_high_operations": {"delete", "overwrite", "merge_conflict"},
+        "always_high_targets": {"core_memory", "persona_trait"},
+    },
+}
 
 
 def now_iso() -> str:
@@ -401,6 +417,8 @@ def list_audits(c: sqlite3.Connection, limit: int):
     return [json.loads(r["payload_json"]) for r in rows]
 
 
+
+
 def main():
     p = argparse.ArgumentParser(description="MindKernel v0.1 scheduler prototype")
     p.add_argument("--db", default=str(DEFAULT_DB), help="SQLite file path")
@@ -436,6 +454,11 @@ def main():
 
     audits_p = sub.add_parser("list-audits")
     audits_p.add_argument("--limit", type=int, default=20)
+
+    route_p = sub.add_parser("route-proposals")
+    route_p.add_argument("--input", required=True, help="proposal JSON/JSONL path")
+    route_p.add_argument("--config", help="optional JSON config path for gate thresholds")
+    route_p.add_argument("--output", help="optional output JSON path")
 
     args = p.parse_args()
 
@@ -481,6 +504,16 @@ def main():
 
     if args.cmd == "stats":
         print(json.dumps(stats(c), ensure_ascii=False, indent=2))
+        return
+
+    if args.cmd == "route-proposals":
+        print(
+            json.dumps(
+                core_route_proposals(args.input, config_path=args.config, output_path=args.output),
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return
 
     if args.cmd == "list-audits":

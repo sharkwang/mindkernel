@@ -1,0 +1,14 @@
+{
+  "thresholds": {
+    "low_max": 39,
+    "medium_max": 69,
+    "high_min": 70
+  },
+  "sampling": {
+    "medium_ratio": 0.2
+  },
+  "hard_rules": {
+    "always_high_operations": ["delete", "overwrite", "merge_conflict"],
+    "always_high_targets": ["core_memory", "persona_trait"]
+  }
+}

@@ -5,6 +5,7 @@
 ## 1. 实现位置
 
 - 脚本：`tools/scheduler_v0_1.py`
+- 核心闸门模块：`core/reflect_gate_v0_1.py`
 - 存储：`data/mindkernel_v0_1.sqlite`（运行时生成）
 
 ## 2. 支持命令
@@ -16,6 +17,7 @@
 - `fail`
 - `stats`
 - `list-audits`
+- `route-proposals`（Agent-first 风险分流：auto_apply / sample_review / mandatory_review）
 
 ## 3. 快速开始
 
@@ -44,6 +46,34 @@ python3 tools/scheduler_v0_1.py stats
 
 # 6) 查看最近审计事件
 python3 tools/scheduler_v0_1.py list-audits --limit 10
+
+# 7) Agent-first 提案分流（machine-readable 输出）
+python3 tools/scheduler_v0_1.py route-proposals \
+  --input data/reflect_proposals_demo.json \
+  --output reports/reflect_proposals_routed_demo.json
+
+# 8) 高风险人格冲突入确认队列（异步人审）
+python3 tools/persona_confirmation_queue_v0_1.py \
+  --db data/mindkernel_v0_1.sqlite \
+  enqueue-from-routed \
+  --routed-file reports/reflect_proposals_routed_demo.json
+
+# 9) 生成 reflect apply 计划（仅 auto_applied + human approved）
+python3 tools/persona_confirmation_queue_v0_1.py \
+  --db data/mindkernel_v0_1.sqlite \
+  apply-plan \
+  --routed-file reports/reflect_proposals_routed_demo.json \
+  --apply-out reports/reflect_apply_candidates_demo.jsonl \
+  --blocked-out reports/reflect_apply_blocked_demo.jsonl \
+  --output reports/reflect_apply_plan_demo.json
+
+# 10) 执行 apply 写回（带幂等账本 + DecisionTrace/AuditEvent）
+python3 tools/persona_confirmation_queue_v0_1.py \
+  --db data/mindkernel_v0_1.sqlite \
+  apply-exec \
+  --plan-file reports/reflect_apply_plan_demo.json \
+  --workspace /Users/zhengwang/projects/mindkernel \
+  --output reports/reflect_apply_exec_demo.json
 ```
 
 ## 4. 对齐点（与设计文档）
@@ -54,6 +84,7 @@ python3 tools/scheduler_v0_1.py list-audits --limit 10
 - 重试：`fail` 后按 `retry_delay_sec` 重新入队
 - 死信：超过 `max_attempts` -> `dead_letter`
 - 审计：enqueue/pull/ack/fail 自动写 `audit_events`（`event_type=scheduler_job`）
+- Agent-first 闸门：`route-proposals` 按 `risk_score + hard_rules` 分流（low 自动、medium 抽检、high 必审）
 
 ## 5. 当前边界（v0.1）
 
