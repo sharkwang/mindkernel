@@ -42,7 +42,7 @@ python3 tools/validation/validate_memory_import_v0_1.py
 python3 tools/validation/validate_scheduler_worker_v0_1.py
 
 # 2) 一键全链路（M→E→C→D）
-python3 tools/full_path_v0_1.py run-full-path \
+python3 tools/pipeline/full_path_v0_1.py run-full-path \
   --memory-file data/fixtures/critical-paths/12-full-path-pass.json \
   --persona-file data/fixtures/critical-paths/12-full-path-pass.json \
   --episode-summary "Planning support signal appears stable and useful." \
@@ -53,7 +53,7 @@ python3 tools/full_path_v0_1.py run-full-path \
 python3 tools/validation/system_smoke_report_v0_1.py
 
 # 4) 发布前总检（S10）
-python3 tools/release_check_v0_1.py --quick --no-strict
+python3 tools/release/release_check_v0_1.py --quick --no-strict
 ```
 
 ## 推荐阅读顺序

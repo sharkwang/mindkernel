@@ -4,7 +4,7 @@
 
 ## 1. 实现位置
 
-- 脚本：`tools/cognition_decision_v0_1.py`
+- 脚本：`tools/pipeline/cognition_decision_v0_1.py`
 - 存储：`data/mindkernel_v0_1.sqlite`
 
 ## 2. 支持命令
@@ -34,8 +34,8 @@
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/cognition_decision_v0_1.py init-db
-python3 tools/cognition_decision_v0_1.py run-path \
+python3 tools/pipeline/cognition_decision_v0_1.py init-db
+python3 tools/pipeline/cognition_decision_v0_1.py run-path \
   --file data/fixtures/critical-paths/14-cognition-decision-pass.json \
   --request-ref req://demo/pass
 ```
@@ -43,7 +43,7 @@ python3 tools/cognition_decision_v0_1.py run-path \
 ### 4.2 High-risk 路径（uncertain）
 
 ```bash
-python3 tools/cognition_decision_v0_1.py run-path \
+python3 tools/pipeline/cognition_decision_v0_1.py run-path \
   --file data/fixtures/critical-paths/15-cognition-decision-high-risk-block.json \
   --request-ref req://demo/high-risk
 ```

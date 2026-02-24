@@ -12,7 +12,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS = ROOT / "tools"
+TOOLS_SCHED = ROOT / "tools" / "scheduler"
 FIXTURE_WS = ROOT / "data" / "fixtures" / "memory-workspace-evolution"
 
 
@@ -47,7 +47,7 @@ def main():
     run(
         [
             "python3",
-            str(TOOLS / "scheduler_v0_1.py"),
+            str(TOOLS_SCHED / "scheduler_v0_1.py"),
             "--db",
             str(db),
             "enqueue",
@@ -71,7 +71,7 @@ def main():
     worker_out = run(
         [
             "python3",
-            str(TOOLS / "reflect_scheduler_worker_v0_1.py"),
+            str(TOOLS_SCHED / "reflect_scheduler_worker_v0_1.py"),
             "--db",
             str(db),
             "--workspace",
@@ -90,7 +90,7 @@ def main():
 
     stats_out = run([
         "python3",
-        str(TOOLS / "scheduler_v0_1.py"),
+        str(TOOLS_SCHED / "scheduler_v0_1.py"),
         "--db",
         str(db),
         "stats",

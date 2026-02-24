@@ -8,13 +8,18 @@ from __future__ import annotations
 import argparse
 import json
 import sqlite3
+import sys
 import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS_ROOT = ROOT / "tools"
+if str(TOOLS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TOOLS_ROOT))
+
 from schema_runtime import SchemaValidationError, validate_payload
 
-ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DB = ROOT / "data" / "mindkernel_v0_1.sqlite"
 
 

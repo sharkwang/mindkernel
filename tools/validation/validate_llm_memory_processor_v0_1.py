@@ -9,7 +9,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS = ROOT / "tools"
+TOOLS_ROOT = ROOT / "tools"
+TOOLS_MEMORY = TOOLS_ROOT / "memory"
 FIXTURE = ROOT / "data" / "fixtures" / "llm-memory" / "sample-memory-input.txt"
 
 
@@ -35,7 +36,7 @@ def main():
     run(
         [
             "python3",
-            str(TOOLS / "llm_memory_processor_v0_1.py"),
+            str(TOOLS_MEMORY / "llm_memory_processor_v0_1.py"),
             "--backend",
             "mock",
             "--model",
@@ -61,7 +62,7 @@ def main():
     # schema validation
     import sys
 
-    sys.path.insert(0, str(TOOLS))
+    sys.path.insert(0, str(TOOLS_ROOT))
     from schema_runtime import validate_payload  # noqa: WPS433
 
     rows = [json.loads(x) for x in out_jsonl.read_text().splitlines() if x.strip()]

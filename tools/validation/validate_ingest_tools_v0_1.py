@@ -9,7 +9,8 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS = ROOT / "tools"
+TOOLS_ROOT = ROOT / "tools"
+TOOLS_MEMORY = TOOLS_ROOT / "memory"
 FIXTURE_WS = ROOT / "data" / "fixtures" / "memory-workspace"
 FIXTURE_SESSION = ROOT / "data" / "fixtures" / "session-logs" / "sample-session.jsonl"
 
@@ -39,7 +40,7 @@ def main():
     run(
         [
             "python3",
-            str(TOOLS / "migrate_memory_md_to_objects_v0_1.py"),
+            str(TOOLS_MEMORY / "migrate_memory_md_to_objects_v0_1.py"),
             "--workspace",
             str(FIXTURE_WS),
             "--input",
@@ -56,7 +57,7 @@ def main():
     run(
         [
             "python3",
-            str(TOOLS / "parse_session_jsonl_v0_1.py"),
+            str(TOOLS_MEMORY / "parse_session_jsonl_v0_1.py"),
             "--session-file",
             str(FIXTURE_SESSION),
             "--out",
@@ -81,7 +82,7 @@ def main():
     # Validate emitted memory rows against memory schema
     import sys
 
-    sys.path.insert(0, str(TOOLS))
+    sys.path.insert(0, str(TOOLS_ROOT))
     from schema_runtime import validate_payload  # noqa: WPS433
 
     rows = [json.loads(x) for x in memory_jsonl.read_text().splitlines() if x.strip()]

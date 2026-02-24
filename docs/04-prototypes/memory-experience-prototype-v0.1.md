@@ -4,7 +4,7 @@
 
 ## 1. 实现位置
 
-- 脚本：`tools/memory_experience_v0_1.py`
+- 脚本：`tools/pipeline/memory_experience_v0_1.py`
 - 核心模块：`core/memory_experience_core_v0_1.py`
 - 存储：`data/mindkernel_v0_1.sqlite`
 
@@ -25,16 +25,16 @@
 ```bash
 cd /Users/zhengwang/projects/mindkernel
 
-python3 tools/memory_experience_v0_1.py init-db
+python3 tools/pipeline/memory_experience_v0_1.py init-db
 
-python3 tools/memory_experience_v0_1.py run-path \
+python3 tools/pipeline/memory_experience_v0_1.py run-path \
   --file data/fixtures/critical-paths/08-memory-experience-path.json \
   --episode-summary "Memory converted into experience candidate" \
   --outcome "candidate generated"
 
-python3 tools/memory_experience_v0_1.py list-memory --limit 5
-python3 tools/memory_experience_v0_1.py list-experience --limit 5
-python3 tools/memory_experience_v0_1.py list-audits --limit 10
+python3 tools/pipeline/memory_experience_v0_1.py list-memory --limit 5
+python3 tools/pipeline/memory_experience_v0_1.py list-experience --limit 5
+python3 tools/pipeline/memory_experience_v0_1.py list-audits --limit 10
 ```
 
 ### 3.2 使用 Markdown 输入（新增）

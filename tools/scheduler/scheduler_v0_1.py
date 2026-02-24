@@ -23,12 +23,14 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from schema_runtime import SchemaValidationError, validate_payload
-
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS_ROOT = ROOT / "tools"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+if str(TOOLS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TOOLS_ROOT))
 
+from schema_runtime import SchemaValidationError, validate_payload
 from core.reflect_gate_v0_1 import route_proposals as core_route_proposals
 
 DEFAULT_DB = ROOT / "data" / "mindkernel_v0_1.sqlite"

@@ -238,7 +238,7 @@
 
 - 决策：进入实现前半步，先交付 `next_action_at` 调度器可运行原型（SQLite）。
 - 新增：
-  - `tools/scheduler_v0_1.py`
+  - `tools/scheduler/scheduler_v0_1.py`
   - `docs/04-prototypes/scheduler-prototype-v0.1.md`
 - 支持能力：
   - `init-db / enqueue / pull / ack / fail / stats`
@@ -251,7 +251,7 @@
 
 - 决策：将调度器原型直接接入 `audit-event`，并把重试/死信纳入关键路径验证。
 - 调度器增强：
-  - `tools/scheduler_v0_1.py` 新增 `audit_events` 表写入。
+  - `tools/scheduler/scheduler_v0_1.py` 新增 `audit_events` 表写入。
   - `enqueue/pull/ack/fail` 自动产出 `event_type=scheduler_job` 审计事件。
   - 新增 `list-audits` 命令用于快速查看审计流。
 - 新增验证场景：
@@ -266,9 +266,9 @@
 - 决策：在原型层引入“运行时 schema 校验”，避免实现偏离契约定义。
 - 调度器增强：
   - 新增 `tools/schema_runtime.py` 作为轻量校验模块。
-  - `tools/scheduler_v0_1.py` 的审计写入前强制校验 `audit-event.schema.json`。
+  - `tools/scheduler/scheduler_v0_1.py` 的审计写入前强制校验 `audit-event.schema.json`。
 - 新增前半链路原型：
-  - `tools/memory_experience_v0_1.py`
+  - `tools/pipeline/memory_experience_v0_1.py`
   - `docs/04-prototypes/memory-experience-prototype-v0.1.md`
 - 关键能力：
   - `ingest-memory`（Memory 入库 + schema 校验）
@@ -284,7 +284,7 @@
 
 - 需求：Memory 输入形式增加 Markdown。
 - 实现：
-  - `tools/memory_experience_v0_1.py` 新增 Markdown 解析路径（`.md/.markdown`）。
+  - `tools/pipeline/memory_experience_v0_1.py` 新增 Markdown 解析路径（`.md/.markdown`）。
   - 支持可选 front matter（`key: value`），正文自动映射到 `content`。
   - 对缺省字段自动补全（`id/source/evidence_refs/时间轴字段` 等），再走 `memory.schema.json` 强校验。
 - 新增样例：
@@ -297,7 +297,7 @@
 
 - 决策：推进 Experience→Cognition 最小可运行实现，并引入 Persona Gate 的可解释阻断路径。
 - 新增原型：
-  - `tools/experience_cognition_v0_1.py`
+  - `tools/pipeline/experience_cognition_v0_1.py`
   - `docs/04-prototypes/experience-cognition-prototype-v0.1.md`
 - 核心能力：
   - `upsert-persona` / `ingest-experience` / `experience-to-cognition` / `run-path`
@@ -314,7 +314,7 @@
 
 - 决策：将前两段原型串联为单命令全链路，降低联调成本。
 - 新增：
-  - `tools/full_path_v0_1.py`
+  - `tools/pipeline/full_path_v0_1.py`
   - `docs/04-prototypes/full-path-prototype-v0.1.md`
 - 能力：
   - `run-full-path` 一次执行：Memory ingest -> Experience candidate -> Persona gate -> Cognition promotion/block。
@@ -328,7 +328,7 @@
 
 - 决策：补齐闭环最后一跳，交付 Cognition→DecisionTrace 原型。
 - 新增：
-  - `tools/cognition_decision_v0_1.py`
+  - `tools/pipeline/cognition_decision_v0_1.py`
   - `docs/04-prototypes/cognition-decision-prototype-v0.1.md`
 - 最小策略：
   - supported + low/medium -> normal/executed
@@ -343,7 +343,7 @@
 
 ### 6.16 Full Path 升级为 M→E→C→D 闭环（2026-02-20）
 
-- 决策：将 `tools/full_path_v0_1.py` 从 M→E→C 升级为 M→E→C→D 一键闭环。
+- 决策：将 `tools/pipeline/full_path_v0_1.py` 从 M→E→C 升级为 M→E→C→D 一键闭环。
 - 关键更新：
   - 引入 `cognition_decision_v0_1` 依赖，`run-full-path` 新增 `--request-ref` 与可选 `--risk-tier`。
   - Gate pass：调用 `cognition_to_decision` 产出 DecisionTrace。
@@ -413,7 +413,7 @@
   - `docs/02-design/memory-index-architecture-v0.1.md`
   - `docs/02-design/retain-recall-reflect-spec-v0.1.md`
 - 已新增原型骨架：
-  - `tools/memory_index_v0_1.py`
+  - `tools/memory/memory_index_v0_1.py`
 - 当前能力（draft）：
   - `init-db`：初始化 `.memory/index.sqlite`
   - `reindex`：扫描 `memory.md`、`memory/*.md`、`bank/**/*.md`，抽取 `## Retain`
@@ -514,7 +514,7 @@
 ### 6.25 外部 LLM 记忆处理核心对象（2026-02-21）
 
 - 新增核心对象：
-  - `tools/llm_memory_processor_v0_1.py`
+  - `tools/memory/llm_memory_processor_v0_1.py`
   - 对象名：`LLMMemoryProcessor`（配置对象：`LLMProcessorConfig`）
 - 能力：
   1. 调用外部 LLM（OpenAI-compatible）抽取记忆候选；

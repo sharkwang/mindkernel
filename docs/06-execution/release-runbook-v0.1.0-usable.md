@@ -10,7 +10,7 @@
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/release_check_v0_1.py \
+python3 tools/release/release_check_v0_1.py \
   --release-target v0.1.0-usable \
   --out-json reports/release_check_v0_1.json \
   --out-md reports/release_check_v0_1.md

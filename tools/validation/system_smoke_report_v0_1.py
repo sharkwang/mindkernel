@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS = ROOT / "tools"
+PIPELINE = TOOLS / "pipeline"
 VALIDATION = TOOLS / "validation"
 REPORTS = ROOT / "reports"
 DATA = ROOT / "data"
@@ -60,7 +61,7 @@ def main() -> int:
             "full-path-pass",
             [
                 "python3",
-                str(TOOLS / "full_path_v0_1.py"),
+                str(PIPELINE / "full_path_v0_1.py"),
                 "--db",
                 str(db_path),
                 "run-full-path",
@@ -84,7 +85,7 @@ def main() -> int:
             "full-path-block",
             [
                 "python3",
-                str(TOOLS / "full_path_v0_1.py"),
+                str(PIPELINE / "full_path_v0_1.py"),
                 "--db",
                 str(db_path),
                 "run-full-path",

@@ -31,4 +31,4 @@
   - memory JSONL 导入核心逻辑
   - 支持 upsert/insert-only、payload_sha1 幂等 NOOP、错误隔离、导入 run 统计
 
-> CLI 入口仍在 `tools/scheduler_v0_1.py route-proposals`、`tools/parse_session_jsonl_v0_1.py`、`tools/memory_experience_v0_1.py`、`tools/persona_confirmation_queue_v0_1.py`、`tools/import_memory_objects_v0_1.py`，内部已调用本目录核心模块。
+> CLI 入口仍在 `tools/scheduler/scheduler_v0_1.py route-proposals`、`tools/memory/parse_session_jsonl_v0_1.py`、`tools/pipeline/memory_experience_v0_1.py`、`tools/scheduler/persona_confirmation_queue_v0_1.py`、`tools/memory/import_memory_objects_v0_1.py`，内部已调用本目录核心模块。

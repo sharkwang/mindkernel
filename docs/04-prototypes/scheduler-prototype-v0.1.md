@@ -4,7 +4,7 @@
 
 ## 1. 实现位置
 
-- 脚本：`tools/scheduler_v0_1.py`
+- 脚本：`tools/scheduler/scheduler_v0_1.py`
 - 核心闸门模块：`core/reflect_gate_v0_1.py`
 - 存储：`data/mindkernel_v0_1.sqlite`（运行时生成）
 
@@ -25,10 +25,10 @@
 cd /Users/zhengwang/projects/mindkernel
 
 # 1) 初始化数据库
-python3 tools/scheduler_v0_1.py init-db
+python3 tools/scheduler/scheduler_v0_1.py init-db
 
 # 2) 入队一个到期任务
-python3 tools/scheduler_v0_1.py enqueue \
+python3 tools/scheduler/scheduler_v0_1.py enqueue \
   --object-type cognition \
   --object-id cg_demo_001 \
   --action revalidate \
@@ -36,30 +36,30 @@ python3 tools/scheduler_v0_1.py enqueue \
   --priority high
 
 # 3) 拉取到期任务（会标记 running）
-python3 tools/scheduler_v0_1.py pull --worker-id worker-1 --now 2026-02-20T12:01:00Z --limit 10
+python3 tools/scheduler/scheduler_v0_1.py pull --worker-id worker-1 --now 2026-02-20T12:01:00Z --limit 10
 
 # 4) 成功确认
-python3 tools/scheduler_v0_1.py ack --job-id <job_id>
+python3 tools/scheduler/scheduler_v0_1.py ack --job-id <job_id>
 
 # 5) 查看统计
-python3 tools/scheduler_v0_1.py stats
+python3 tools/scheduler/scheduler_v0_1.py stats
 
 # 6) 查看最近审计事件
-python3 tools/scheduler_v0_1.py list-audits --limit 10
+python3 tools/scheduler/scheduler_v0_1.py list-audits --limit 10
 
 # 7) Agent-first 提案分流（machine-readable 输出）
-python3 tools/scheduler_v0_1.py route-proposals \
+python3 tools/scheduler/scheduler_v0_1.py route-proposals \
   --input data/reflect_proposals_demo.json \
   --output reports/reflect_proposals_routed_demo.json
 
 # 8) 高风险人格冲突入确认队列（异步人审）
-python3 tools/persona_confirmation_queue_v0_1.py \
+python3 tools/scheduler/persona_confirmation_queue_v0_1.py \
   --db data/mindkernel_v0_1.sqlite \
   enqueue-from-routed \
   --routed-file reports/reflect_proposals_routed_demo.json
 
 # 9) 生成 reflect apply 计划（仅 auto_applied + human approved）
-python3 tools/persona_confirmation_queue_v0_1.py \
+python3 tools/scheduler/persona_confirmation_queue_v0_1.py \
   --db data/mindkernel_v0_1.sqlite \
   apply-plan \
   --routed-file reports/reflect_proposals_routed_demo.json \
@@ -68,7 +68,7 @@ python3 tools/persona_confirmation_queue_v0_1.py \
   --output reports/reflect_apply_plan_demo.json
 
 # 10) 执行 apply 写回（带幂等账本 + DecisionTrace/AuditEvent）
-python3 tools/persona_confirmation_queue_v0_1.py \
+python3 tools/scheduler/persona_confirmation_queue_v0_1.py \
   --db data/mindkernel_v0_1.sqlite \
   apply-exec \
   --plan-file reports/reflect_apply_plan_demo.json \
@@ -76,11 +76,11 @@ python3 tools/persona_confirmation_queue_v0_1.py \
   --output reports/reflect_apply_exec_demo.json
 
 # 10.1) 查看/处理补偿队列（C4）
-python3 tools/persona_confirmation_queue_v0_1.py --db data/mindkernel_v0_1.sqlite compensations --status pending
-python3 tools/persona_confirmation_queue_v0_1.py --db data/mindkernel_v0_1.sqlite resolve-compensation --compensation-id <id> --note "manual handled"
+python3 tools/scheduler/persona_confirmation_queue_v0_1.py --db data/mindkernel_v0_1.sqlite compensations --status pending
+python3 tools/scheduler/persona_confirmation_queue_v0_1.py --db data/mindkernel_v0_1.sqlite resolve-compensation --compensation-id <id> --note "manual handled"
 
 # 11) worker loop（S7，默认 dry-run）
-python3 tools/reflect_scheduler_worker_v0_1.py \
+python3 tools/scheduler/reflect_scheduler_worker_v0_1.py \
   --db data/mindkernel_v0_1.sqlite \
   --workspace /Users/zhengwang/projects/mindkernel \
   --memory-index-db .memory/index.sqlite \

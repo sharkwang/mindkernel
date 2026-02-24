@@ -8,11 +8,17 @@ import hashlib
 import json
 import os
 import re
+import sys
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS_ROOT = ROOT / "tools"
+if str(TOOLS_ROOT) not in sys.path:
+    sys.path.insert(0, str(TOOLS_ROOT))
 
 from schema_runtime import validate_payload
 

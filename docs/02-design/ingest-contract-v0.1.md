@@ -70,7 +70,7 @@
 ## 7. CLI 约定
 
 ```bash
-python3 tools/import_memory_objects_v0_1.py \
+python3 tools/memory/import_memory_objects_v0_1.py \
   --db data/mindkernel_v0_1.sqlite \
   --input /path/to/memory.jsonl \
   --mode upsert \

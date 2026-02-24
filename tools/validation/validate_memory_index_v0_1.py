@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE = ROOT / "data" / "fixtures" / "memory-workspace-evolution"
-TOOL = ROOT / "tools" / "memory_index_v0_1.py"
+TOOL = ROOT / "tools" / "memory" / "memory_index_v0_1.py"
 
 
 def run(cmd: str):

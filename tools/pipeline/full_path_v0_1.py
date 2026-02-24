@@ -29,7 +29,7 @@ from memory_experience_v0_1 import (
     memory_to_experience,
 )
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_DB = ROOT / "data" / "mindkernel_v0_1.sqlite"
 
 

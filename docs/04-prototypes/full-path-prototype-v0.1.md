@@ -4,11 +4,11 @@
 
 ## 1. 实现位置
 
-- 脚本：`tools/full_path_v0_1.py`
+- 脚本：`tools/pipeline/full_path_v0_1.py`
 - 依赖：
-  - `tools/memory_experience_v0_1.py`
-  - `tools/experience_cognition_v0_1.py`
-  - `tools/cognition_decision_v0_1.py`
+  - `tools/pipeline/memory_experience_v0_1.py`
+  - `tools/pipeline/experience_cognition_v0_1.py`
+  - `tools/pipeline/cognition_decision_v0_1.py`
 
 ## 2. 支持命令
 
@@ -21,8 +21,8 @@
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/full_path_v0_1.py init-db
-python3 tools/full_path_v0_1.py run-full-path \
+python3 tools/pipeline/full_path_v0_1.py init-db
+python3 tools/pipeline/full_path_v0_1.py run-full-path \
   --memory-file data/fixtures/critical-paths/12-full-path-pass.json \
   --persona-file data/fixtures/critical-paths/12-full-path-pass.json \
   --episode-summary "Planning support signal appears stable and useful." \
@@ -33,7 +33,7 @@ python3 tools/full_path_v0_1.py run-full-path \
 ### 3.2 Block 路径（Gate block -> Decision blocked）
 
 ```bash
-python3 tools/full_path_v0_1.py run-full-path \
+python3 tools/pipeline/full_path_v0_1.py run-full-path \
   --memory-file data/fixtures/critical-paths/13-full-path-block.json \
   --persona-file data/fixtures/critical-paths/13-full-path-block.json \
   --episode-summary "User asks for forbidden behavior in repeated attempts." \

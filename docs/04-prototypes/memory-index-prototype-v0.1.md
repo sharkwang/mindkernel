@@ -4,7 +4,7 @@
 
 ## 1. 脚本
 
-- `tools/memory_index_v0_1.py`
+- `tools/memory/memory_index_v0_1.py`
 
 ## 2. 支持命令
 
@@ -19,17 +19,17 @@
 ```bash
 cd /Users/zhengwang/projects/mindkernel
 
-python3 tools/memory_index_v0_1.py \
+python3 tools/memory/memory_index_v0_1.py \
   --workspace data/fixtures/memory-workspace \
   --db data/memory_index_demo.sqlite \
   reindex
 
-python3 tools/memory_index_v0_1.py \
+python3 tools/memory/memory_index_v0_1.py \
   --workspace data/fixtures/memory-workspace \
   --db data/memory_index_demo.sqlite \
   recall --query "MindKernel" --limit 10
 
-python3 tools/memory_index_v0_1.py \
+python3 tools/memory/memory_index_v0_1.py \
   --workspace data/fixtures/memory-workspace \
   --db data/memory_index_demo.sqlite \
   reflect --since-days 30 --writeback
@@ -55,7 +55,7 @@ python3 tools/memory_index_v0_1.py \
 可查看状态：
 
 ```bash
-python3 tools/memory_index_v0_1.py --db data/memory_index_demo.sqlite list-opinions-state
+python3 tools/memory/memory_index_v0_1.py --db data/memory_index_demo.sqlite list-opinions-state
 ```
 
 ## 5. 验证脚本

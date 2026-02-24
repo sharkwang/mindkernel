@@ -4,7 +4,7 @@
 
 ## 1. 实现位置
 
-- 脚本：`tools/experience_cognition_v0_1.py`
+- 脚本：`tools/pipeline/experience_cognition_v0_1.py`
 - 存储：`data/mindkernel_v0_1.sqlite`
 
 ## 2. 支持命令
@@ -33,8 +33,8 @@
 
 ```bash
 cd /Users/zhengwang/projects/mindkernel
-python3 tools/experience_cognition_v0_1.py init-db
-python3 tools/experience_cognition_v0_1.py run-path \
+python3 tools/pipeline/experience_cognition_v0_1.py init-db
+python3 tools/pipeline/experience_cognition_v0_1.py run-path \
   --persona-file data/fixtures/critical-paths/10-experience-cognition-pass.json \
   --experience-file data/fixtures/critical-paths/10-experience-cognition-pass.json
 ```
@@ -42,7 +42,7 @@ python3 tools/experience_cognition_v0_1.py run-path \
 ### 4.2 阻断路径（Block）
 
 ```bash
-python3 tools/experience_cognition_v0_1.py run-path \
+python3 tools/pipeline/experience_cognition_v0_1.py run-path \
   --persona-file data/fixtures/critical-paths/11-experience-cognition-block.json \
   --experience-file data/fixtures/critical-paths/11-experience-cognition-block.json
 ```

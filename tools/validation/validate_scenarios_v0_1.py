@@ -6,9 +6,9 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS_DIR = ROOT / "tools"
-if str(TOOLS_DIR) not in sys.path:
-    sys.path.insert(0, str(TOOLS_DIR))
+TOOLS_PIPELINE = ROOT / "tools" / "pipeline"
+if str(TOOLS_PIPELINE) not in sys.path:
+    sys.path.insert(0, str(TOOLS_PIPELINE))
 
 from memory_experience_v0_1 import _extract_memory_payload
 

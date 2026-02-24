@@ -10,9 +10,9 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS_DIR = ROOT / "tools"
-if str(TOOLS_DIR) not in sys.path:
-    sys.path.insert(0, str(TOOLS_DIR))
+TOOLS_MEMORY = ROOT / "tools" / "memory"
+if str(TOOLS_MEMORY) not in sys.path:
+    sys.path.insert(0, str(TOOLS_MEMORY))
 
 import memory_index_v0_1 as mi
 FIXTURE = ROOT / "data" / "fixtures" / "memory-workspace-evolution"

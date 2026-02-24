@@ -10,11 +10,15 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
+TOOLS_SCHED = Path(__file__).resolve().parent
+TOOLS_MEMORY = ROOT / "tools" / "memory"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-if str(Path(__file__).resolve().parent) not in sys.path:
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
+if str(TOOLS_SCHED) not in sys.path:
+    sys.path.insert(0, str(TOOLS_SCHED))
+if str(TOOLS_MEMORY) not in sys.path:
+    sys.path.insert(0, str(TOOLS_MEMORY))
 
 import memory_index_v0_1 as mi  # noqa: E402
 import scheduler_v0_1 as sch  # noqa: E402

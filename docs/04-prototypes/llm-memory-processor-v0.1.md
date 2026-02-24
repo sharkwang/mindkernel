@@ -4,7 +4,7 @@
 
 ## 1. 实现位置
 
-- 核心对象：`tools/llm_memory_processor_v0_1.py`
+- 核心对象：`tools/memory/llm_memory_processor_v0_1.py`
 - 类名：`LLMMemoryProcessor`
 - 配置对象：`LLMProcessorConfig`
 
@@ -35,7 +35,7 @@
 ```bash
 cd /Users/zhengwang/projects/mindkernel
 
-python3 tools/llm_memory_processor_v0_1.py \
+python3 tools/memory/llm_memory_processor_v0_1.py \
   --backend mock \
   --model mock-v0 \
   --source-ref session://sample-session-001#msg:u1 \
@@ -49,7 +49,7 @@ python3 tools/llm_memory_processor_v0_1.py \
 ```bash
 export OPENAI_API_KEY=...  # 或自定义 --api-key-env
 
-python3 tools/llm_memory_processor_v0_1.py \
+python3 tools/memory/llm_memory_processor_v0_1.py \
   --backend openai_compatible \
   --model gpt-4o-mini \
   --source-ref session://prod-session#msg:123 \

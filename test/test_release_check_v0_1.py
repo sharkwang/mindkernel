@@ -11,7 +11,7 @@ class ReleaseCheckV01Test(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         cmd = [
             "python3",
-            "tools/release_check_v0_1.py",
+            "tools/release/release_check_v0_1.py",
             "--quick",
             "--no-strict",
             "--out-json",
