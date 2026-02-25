@@ -20,6 +20,7 @@
 ### `tools/scheduler/`（调度与确认队列）
 - `scheduler_v0_1.py`
 - `reflect_scheduler_worker_v0_1.py`
+- `temporal_governance_worker_v0_1.py`
 - `persona_confirmation_queue_v0_1.py`
 
 ### `tools/release/`（发布门禁）
@@ -32,6 +33,9 @@
 - `validate_recall_quality_v0_1.py`
 - `validate_memory_import_v0_1.py`
 - `validate_scheduler_worker_v0_1.py`
+- `validate_scheduler_multi_worker_lock_v0_1.py`
+- `validate_temporal_governance_worker_v0_1.py`
+- `validate_scheduler_workspace_replay_v0_1.py`
 - `validate_apply_compensation_v0_1.py`
 - `validate_ingest_tools_v0_1.py`
 - `validate_llm_memory_processor_v0_1.py`

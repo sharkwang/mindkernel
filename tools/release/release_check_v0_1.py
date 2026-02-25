@@ -76,6 +76,9 @@ def main():
         CheckItem("validate-recall-quality", ["python3", "tools/validation/validate_recall_quality_v0_1.py"]),
         CheckItem("validate-memory-import", ["python3", "tools/validation/validate_memory_import_v0_1.py"]),
         CheckItem("validate-scheduler-worker", ["python3", "tools/validation/validate_scheduler_worker_v0_1.py"]),
+        CheckItem("validate-scheduler-multi-worker-lock", ["python3", "tools/validation/validate_scheduler_multi_worker_lock_v0_1.py"]),
+        CheckItem("validate-temporal-governance-worker", ["python3", "tools/validation/validate_temporal_governance_worker_v0_1.py"]),
+        CheckItem("validate-workspace-replay", ["python3", "tools/validation/validate_scheduler_workspace_replay_v0_1.py"]),
         CheckItem("validate-apply-compensation", ["python3", "tools/validation/validate_apply_compensation_v0_1.py"]),
         CheckItem("validate-ingest-tools", ["python3", "tools/validation/validate_ingest_tools_v0_1.py"]),
         CheckItem("validate-llm-memory-processor", ["python3", "tools/validation/validate_llm_memory_processor_v0_1.py"]),
@@ -83,7 +86,11 @@ def main():
     ]
 
     if args.quick:
-        checks = [c for c in checks if c.name not in {"unit-tests", "system-smoke"}]
+        checks = [
+            c
+            for c in checks
+            if c.name not in {"unit-tests", "system-smoke", "validate-workspace-replay"}
+        ]
 
     results = [run_check(c, timeout_sec=max(30, int(args.timeout_sec))) for c in checks]
     passed = sum(1 for r in results if r["ok"])

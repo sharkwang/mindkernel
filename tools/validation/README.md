@@ -20,6 +20,9 @@ python3 tools/validation/validate_memory_import_v0_1.py
 
 # 调度与补偿
 python3 tools/validation/validate_scheduler_worker_v0_1.py
+python3 tools/validation/validate_scheduler_multi_worker_lock_v0_1.py
+python3 tools/validation/validate_temporal_governance_worker_v0_1.py
+python3 tools/validation/validate_scheduler_workspace_replay_v0_1.py
 python3 tools/validation/validate_apply_compensation_v0_1.py
 
 # 其它验证

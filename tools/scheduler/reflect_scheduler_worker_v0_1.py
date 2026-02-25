@@ -248,7 +248,14 @@ def run_loop(args):
 
     while True:
         loops += 1
-        jobs = sch.pull_due(c, worker_id=args.worker_id, now=now_iso(), limit=max(1, int(args.pull_limit)))
+        jobs = sch.pull_due(
+            c,
+            worker_id=args.worker_id,
+            now=now_iso(),
+            limit=max(1, int(args.pull_limit)),
+            lease_sec=max(1, int(args.lease_sec)),
+            actions={"reflect"},
+        )
 
         if not jobs and args.run_once:
             break
@@ -280,10 +287,22 @@ def run_loop(args):
                     queue_deadline_minutes=max(1, int(args.queue_deadline_minutes)),
                     queue_fallback_policy=args.queue_fallback_policy,
                 )
-                sch.ack(c, job_id)
+                sch.ack(
+                    c,
+                    job_id,
+                    worker_id=args.worker_id,
+                    lease_token=str(job.get("lease_token") or ""),
+                )
                 succeeded += 1
             except Exception as e:
-                sch.fail(c, job_id, error=str(e), retry_delay_sec=max(1, int(args.retry_delay_sec)))
+                sch.fail(
+                    c,
+                    job_id,
+                    error=str(e),
+                    retry_delay_sec=max(1, int(args.retry_delay_sec)),
+                    worker_id=args.worker_id,
+                    lease_token=str(job.get("lease_token") or ""),
+                )
                 failed += 1
 
         if args.run_once:
@@ -316,6 +335,7 @@ def main():
     p.add_argument("--reports-dir", default=str(ROOT / "reports" / "reflect_scheduler"), help="artifacts output dir")
     p.add_argument("--worker-id", default="reflect-worker-1")
     p.add_argument("--pull-limit", type=int, default=20)
+    p.add_argument("--lease-sec", type=int, default=120)
     p.add_argument("--since-days", type=int, default=30)
     p.add_argument("--gate-config", help="optional reflect gate config json path")
     p.add_argument("--queue-deadline-minutes", type=int, default=60)

@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-25 12:06 (Asia/Shanghai)_
+_Last updated: 2026-02-25 13:19 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -39,23 +39,26 @@ _Last updated: 2026-02-25 12:06 (Asia/Shanghai)_
 
 - [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），暂无新增讨论条目。
 - [x] 核对代码基线增量：存在 2 个新提交（`019d899` 校验脚本归档到 `tools/validation`；`c530efb` 工具分层重构并修复引用），主线推进恢复。
-- [x] P0 保持全部完成且无回退；发布候选已推进到 `v0.1.0-usable-rc3`，进入正式发布收口阶段。
-- [x] 已完成 `v0.1.0-usable` 全量发布前总检（含 critical paths + ingest + release check 聚合）：`11/11 PASS`，结果已冻结到 `reports/release_check_v0_1.json` 与 `reports/release_check_v0_1.md`。
+- [x] P0 保持全部完成且无回退；已完成正式版本收口（本地 tag：`v0.1.0-usable`）。
+- [x] 已完成 `v0.1.0-usable` 全量发布前总检（含新增治理门禁）：`14/14 PASS`，结果已冻结到 `reports/release_check_v0_1.json` 与 `reports/release_check_v0_1.md`。
+- [x] 已完成真实 workspace 回放验证（`validate_scheduler_workspace_replay_v0_1.py`）：覆盖失败恢复路径，产物可审计。
+- [x] 已完成多 worker 租约/锁机制（`scheduler_v0_1.py` 新增 `lease_token/lease_expires_at` + 过期回收 + action filter）并通过多 worker 验证。
+- [x] 已完成遗忘执行层 worker 化（`temporal_governance_worker_v0_1.py`：decay/archive/reinstate-check），并通过状态迁移验证。
 
 ## 下一步（建议按顺序执行）
 
-1. **P0 收口（进行中）**：产出 `v0.1.0-usable` 发布说明（对比 rc1~rc3 关键变更、兼容性说明、回滚指引），并完成最终版本冻结。
-2. 打正式 tag：`v0.1.0-usable`（基于通过总检的代码基线），并记录发布证据链。
-3. 补一轮真实 workspace 的 reflect worker 回放报告（非 fixture），验证吞吐与异常恢复路径。
-4. 评估并接入多 worker 租约/锁机制，降低并发执行冲突风险。
-5. 完成遗忘执行层补齐：为 `decay/archive/reinstate-check` 增加 worker 执行器（当前自动化主要覆盖 `reflect`）。
+1. 汇总本轮治理收口提交并推送 `main` + `v0.1.0-usable` 到远端（待用户确认外部操作）。
+2. 补充一版 weekly governance report（质量指标、回滚率、升级率、学习收益）。
+3. 为多 worker 租约机制补心跳续约（lease renew）与长任务保护。
+4. 扩展 temporal worker 执行动作（`verify/revalidate`），统一治理执行器。
+5. 按规模阈值启动向量检索补充评估（P2）。
 
 ## 风险追踪
 
-- **发布风险（中-低）**：已到 `rc3` 且 CI 门禁齐备；剩余风险集中在最终总检与发布包完整性（说明、回滚、版本冻结）。
-- **重构回归风险（中）**：近期发生工具分层与路径引用调整，需重点关注脚本路径/调用链兼容性。
-- **一致性风险（中）**：Reflect/Opinion evolution 仍属 Partial，治理闭环未完全自动化（遗忘执行层 `decay/archive/reinstate-check` 尚未接入 worker）。
-- **数据风险（中-低）**：已补导入器与回放验证；剩余风险在于线上真实数据规模下的吞吐与异常恢复策略。
+- **发布风险（低）**：正式总检 14/14 已通过；剩余风险主要在远端发布动作（推送/tag 可见性）与发布说明同步。
+- **并发治理风险（中-低）**：已落地 lease 锁与过期回收；长任务 lease 续约（heartbeat）尚未接入。
+- **重构回归风险（中）**：近期工具分层与路径引用调整较多，需持续关注脚本路径/调用链兼容性。
+- **数据风险（中-低）**：workspace 回放与恢复路径已覆盖；剩余风险在真实规模下的持续吞吐与抖动表现。
 - **外部依赖风险（中）**：LLM 线上调用受 API 可用性/成本影响，尚未接入熔断与降级策略。
 
 MindKernel 记忆治理验收清单 v1（20 条）

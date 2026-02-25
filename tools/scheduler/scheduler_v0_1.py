@@ -15,7 +15,6 @@ Also records scheduler audit events aligned with schemas/audit-event.schema.json
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sqlite3
 import sys
@@ -60,6 +59,11 @@ def parse_dt(v: str) -> datetime:
     return datetime.fromisoformat(v)
 
 
+def in_seconds_iso(seconds: int, base: str | None = None) -> str:
+    base_dt = parse_dt(base) if base else datetime.now(timezone.utc)
+    return (base_dt + timedelta(seconds=max(0, int(seconds)))).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
 def priority_rank(p: str) -> int:
     return {"high": 3, "medium": 2, "low": 1}[p]
 
@@ -68,6 +72,19 @@ def conn(db_path: Path) -> sqlite3.Connection:
     c = sqlite3.connect(str(db_path))
     c.row_factory = sqlite3.Row
     return c
+
+
+def _table_columns(c: sqlite3.Connection, table: str) -> set[str]:
+    rows = c.execute(f"PRAGMA table_info({table})").fetchall()
+    return {str(r[1]) for r in rows}
+
+
+def _ensure_scheduler_lease_columns(c: sqlite3.Connection):
+    cols = _table_columns(c, "scheduler_jobs")
+    if "lease_token" not in cols:
+        c.execute("ALTER TABLE scheduler_jobs ADD COLUMN lease_token TEXT")
+    if "lease_expires_at" not in cols:
+        c.execute("ALTER TABLE scheduler_jobs ADD COLUMN lease_expires_at TEXT")
 
 
 def init_db(c: sqlite3.Connection):
@@ -91,7 +108,9 @@ def init_db(c: sqlite3.Connection):
             last_error TEXT,
             correlation_id TEXT,
             created_at TEXT NOT NULL,
-            updated_at TEXT NOT NULL
+            updated_at TEXT NOT NULL,
+            lease_token TEXT,
+            lease_expires_at TEXT
         );
 
         CREATE INDEX IF NOT EXISTS idx_scheduler_jobs_status_runat
@@ -111,6 +130,7 @@ def init_db(c: sqlite3.Connection):
         ON audit_events(timestamp DESC);
         """
     )
+    _ensure_scheduler_lease_columns(c)
     c.commit()
 
 
@@ -217,8 +237,8 @@ def enqueue(
         INSERT INTO scheduler_jobs(
             job_id, object_type, object_id, action, run_at, priority, priority_rank,
             attempt, max_attempts, idempotency_key, status, worker_id, last_error,
-            correlation_id, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, 'queued', NULL, NULL, ?, ?, ?)
+            correlation_id, created_at, updated_at, lease_token, lease_expires_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, 'queued', NULL, NULL, ?, ?, ?, NULL, NULL)
         """,
         (
             job_id,
@@ -264,67 +284,177 @@ def enqueue(
     return {"deduplicated": False, "job_id": job_id, "status": "queued", "idempotency_key": idem}
 
 
-def pull_due(c: sqlite3.Connection, worker_id: str, now: str, limit: int):
-    if limit < 1:
-        raise ValueError("limit must be >= 1")
-
-    jobs = c.execute(
+def _recover_expired_running_leases(c: sqlite3.Connection, now: str, max_rows: int = 200):
+    rows = c.execute(
         """
-        SELECT * FROM scheduler_jobs
-        WHERE status='queued' AND run_at <= ?
-        ORDER BY run_at ASC, priority_rank DESC
+        SELECT job_id, attempt, worker_id, correlation_id, lease_expires_at
+        FROM scheduler_jobs
+        WHERE status='running' AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?
+        ORDER BY lease_expires_at ASC
         LIMIT ?
         """,
-        (now, limit),
+        (now, max_rows),
     ).fetchall()
 
-    out = []
-    for job in jobs:
-        c.execute(
-            "UPDATE scheduler_jobs SET status='running', worker_id=?, updated_at=? WHERE job_id=? AND status='queued'",
-            (worker_id, now_iso(), job["job_id"]),
+    recovered = 0
+    for row in rows:
+        cur = c.execute(
+            """
+            UPDATE scheduler_jobs
+            SET status='queued', worker_id=NULL, lease_token=NULL, lease_expires_at=NULL, run_at=?, updated_at=?
+            WHERE job_id=? AND status='running'
+            """,
+            (now, now_iso(), row["job_id"]),
         )
-        row = dict(job)
-        row["status"] = "running"
-        row["worker_id"] = worker_id
-        out.append(row)
-
+        if cur.rowcount != 1:
+            continue
+        recovered += 1
         write_audit_event(
             c,
             event_type="scheduler_job",
-            actor_type="worker",
-            actor_id=worker_id,
+            actor_type="system",
+            actor_id="scheduler-lease-reaper",
             object_type="scheduler_job",
-            object_id=job["job_id"],
-            before={"status": "queued", "attempt": job["attempt"]},
-            after={"status": "running", "attempt": job["attempt"]},
-            reason="Worker pulled due job.",
-            evidence_refs=[f"scheduler_job:{job['job_id']}"],
-            job_id=job["job_id"],
-            correlation_id=job["correlation_id"],
+            object_id=row["job_id"],
+            before={"status": "running", "attempt": row["attempt"], "worker_id": row["worker_id"]},
+            after={"status": "queued", "attempt": row["attempt"], "run_at": now},
+            reason="Lease expired; job re-queued for recovery.",
+            evidence_refs=[f"scheduler_job:{row['job_id']}"],
+            job_id=row["job_id"],
+            correlation_id=row["correlation_id"],
+            metadata={"lease_expires_at": row["lease_expires_at"]},
         )
 
-    c.commit()
-    return out
+    return recovered
 
 
-def ack(c: sqlite3.Connection, job_id: str):
+def _build_action_filter(actions: set[str] | None) -> tuple[str, list[str]]:
+    if not actions:
+        return "", []
+    invalid = [a for a in actions if a not in ALLOWED_ACTIONS]
+    if invalid:
+        raise ValueError(f"invalid actions filter: {sorted(invalid)}")
+    ordered = sorted(actions)
+    placeholders = ",".join(["?"] * len(ordered))
+    return f" AND action IN ({placeholders})", ordered
+
+
+def pull_due(
+    c: sqlite3.Connection,
+    worker_id: str,
+    now: str,
+    limit: int,
+    lease_sec: int = 120,
+    actions: set[str] | None = None,
+):
+    if limit < 1:
+        raise ValueError("limit must be >= 1")
+    if lease_sec < 1:
+        raise ValueError("lease_sec must be >= 1")
+
+    action_sql, action_params = _build_action_filter(actions)
+
+    out = []
+    try:
+        c.execute("BEGIN IMMEDIATE")
+        recovered = _recover_expired_running_leases(c, now)
+
+        sql = (
+            "SELECT * FROM scheduler_jobs "
+            "WHERE status='queued' AND run_at <= ?"
+            f"{action_sql} "
+            "ORDER BY run_at ASC, priority_rank DESC LIMIT ?"
+        )
+        params: list = [now, *action_params, limit]
+        jobs = c.execute(sql, params).fetchall()
+
+        for job in jobs:
+            lease_token = f"lease_{uuid.uuid4().hex[:16]}"
+            lease_expires_at = in_seconds_iso(lease_sec, base=now)
+            updated_at = now_iso()
+            cur = c.execute(
+                """
+                UPDATE scheduler_jobs
+                SET status='running', worker_id=?, lease_token=?, lease_expires_at=?, updated_at=?
+                WHERE job_id=? AND status='queued'
+                """,
+                (worker_id, lease_token, lease_expires_at, updated_at, job["job_id"]),
+            )
+            if cur.rowcount != 1:
+                continue
+
+            row = dict(job)
+            row["status"] = "running"
+            row["worker_id"] = worker_id
+            row["lease_token"] = lease_token
+            row["lease_expires_at"] = lease_expires_at
+            out.append(row)
+
+            write_audit_event(
+                c,
+                event_type="scheduler_job",
+                actor_type="worker",
+                actor_id=worker_id,
+                object_type="scheduler_job",
+                object_id=job["job_id"],
+                before={"status": "queued", "attempt": job["attempt"]},
+                after={
+                    "status": "running",
+                    "attempt": job["attempt"],
+                    "lease_expires_at": lease_expires_at,
+                },
+                reason="Worker pulled due job.",
+                evidence_refs=[f"scheduler_job:{job['job_id']}"],
+                job_id=job["job_id"],
+                correlation_id=job["correlation_id"],
+            )
+
+        c.commit()
+        if recovered > 0:
+            # commit already done; keep return payload concise for callers
+            pass
+        return out
+    except Exception:
+        c.rollback()
+        raise
+
+
+def _validate_running_owner(cur: sqlite3.Row, worker_id: str | None, lease_token: str | None):
+    if worker_id and cur["worker_id"] and str(cur["worker_id"]) != str(worker_id):
+        raise ValueError(
+            f"job owner mismatch: expected worker_id={worker_id}, actual={cur['worker_id']}"
+        )
+    if lease_token and cur["lease_token"] and str(cur["lease_token"]) != str(lease_token):
+        raise ValueError("lease token mismatch for running job")
+
+    lease_expires_at = cur["lease_expires_at"]
+    if lease_expires_at and parse_dt(str(lease_expires_at)) < parse_dt(now_iso()):
+        raise ValueError("lease expired for running job; please re-pull")
+
+
+def ack(c: sqlite3.Connection, job_id: str, worker_id: str | None = None, lease_token: str | None = None):
     cur = c.execute("SELECT * FROM scheduler_jobs WHERE job_id=?", (job_id,)).fetchone()
     if not cur:
         raise ValueError(f"job not found: {job_id}")
     if cur["status"] != "running":
         raise ValueError(f"job {job_id} must be running to ack, current={cur['status']}")
 
+    _validate_running_owner(cur, worker_id, lease_token)
+
     c.execute(
-        "UPDATE scheduler_jobs SET status='succeeded', updated_at=?, last_error=NULL WHERE job_id=?",
+        """
+        UPDATE scheduler_jobs
+        SET status='succeeded', updated_at=?, last_error=NULL, worker_id=NULL, lease_token=NULL, lease_expires_at=NULL
+        WHERE job_id=?
+        """,
         (now_iso(), job_id),
     )
 
     write_audit_event(
         c,
         event_type="scheduler_job",
-        actor_type="worker" if cur["worker_id"] else "system",
-        actor_id=cur["worker_id"] or "scheduler-cli",
+        actor_type="worker" if (worker_id or cur["worker_id"]) else "system",
+        actor_id=worker_id or cur["worker_id"] or "scheduler-cli",
         object_type="scheduler_job",
         object_id=job_id,
         before={"status": "running", "attempt": cur["attempt"]},
@@ -338,15 +468,24 @@ def ack(c: sqlite3.Connection, job_id: str):
     c.commit()
 
 
-def fail(c: sqlite3.Connection, job_id: str, error: str, retry_delay_sec: int):
+def fail(
+    c: sqlite3.Connection,
+    job_id: str,
+    error: str,
+    retry_delay_sec: int,
+    worker_id: str | None = None,
+    lease_token: str | None = None,
+):
     row = c.execute(
-        "SELECT attempt, max_attempts, status, correlation_id, worker_id FROM scheduler_jobs WHERE job_id=?",
+        "SELECT attempt, max_attempts, status, correlation_id, worker_id, lease_token, lease_expires_at FROM scheduler_jobs WHERE job_id=?",
         (job_id,),
     ).fetchone()
     if not row:
         raise ValueError(f"job not found: {job_id}")
     if row["status"] != "running":
         raise ValueError(f"job {job_id} must be running to fail, current={row['status']}")
+
+    _validate_running_owner(row, worker_id, lease_token)
 
     attempt = row["attempt"] + 1
     max_attempts = row["max_attempts"]
@@ -356,13 +495,13 @@ def fail(c: sqlite3.Connection, job_id: str, error: str, retry_delay_sec: int):
         run_at = None
     else:
         status = "queued"
-        run_at = (datetime.now(timezone.utc) + timedelta(seconds=retry_delay_sec)).replace(microsecond=0)
-        run_at = run_at.isoformat().replace("+00:00", "Z")
+        run_at = in_seconds_iso(retry_delay_sec)
 
     c.execute(
         """
         UPDATE scheduler_jobs
-        SET status=?, attempt=?, run_at=COALESCE(?, run_at), last_error=?, updated_at=?, worker_id=NULL
+        SET status=?, attempt=?, run_at=COALESCE(?, run_at), last_error=?, updated_at=?,
+            worker_id=NULL, lease_token=NULL, lease_expires_at=NULL
         WHERE job_id=?
         """,
         (status, attempt, run_at, error, now_iso(), job_id),
@@ -375,8 +514,8 @@ def fail(c: sqlite3.Connection, job_id: str, error: str, retry_delay_sec: int):
     write_audit_event(
         c,
         event_type="scheduler_job",
-        actor_type="worker" if row["worker_id"] else "system",
-        actor_id=row["worker_id"] or "scheduler-cli",
+        actor_type="worker" if (worker_id or row["worker_id"]) else "system",
+        actor_id=worker_id or row["worker_id"] or "scheduler-cli",
         object_type="scheduler_job",
         object_id=job_id,
         before={"status": "running", "attempt": row["attempt"]},
@@ -405,6 +544,18 @@ def stats(c: sqlite3.Connection):
     ).fetchone()
     out["oldest_queued_run_at"] = oldest["run_at"] if oldest else None
 
+    out["leased_running_count"] = int(
+        c.execute(
+            "SELECT COUNT(*) FROM scheduler_jobs WHERE status='running' AND lease_token IS NOT NULL"
+        ).fetchone()[0]
+    )
+    out["expired_running_count"] = int(
+        c.execute(
+            "SELECT COUNT(*) FROM scheduler_jobs WHERE status='running' AND lease_expires_at IS NOT NULL AND lease_expires_at <= ?",
+            (now_iso(),),
+        ).fetchone()[0]
+    )
+
     out["audit_event_count"] = c.execute("SELECT COUNT(*) FROM audit_events").fetchone()[0]
     return out
 
@@ -419,6 +570,16 @@ def list_audits(c: sqlite3.Connection, limit: int):
     return [json.loads(r["payload_json"]) for r in rows]
 
 
+def _parse_actions_arg(raw: str | None) -> set[str] | None:
+    if not raw:
+        return None
+    items = {x.strip() for x in raw.split(",") if x.strip()}
+    if not items:
+        return None
+    invalid = [x for x in items if x not in ALLOWED_ACTIONS]
+    if invalid:
+        raise ValueError(f"invalid actions: {sorted(invalid)}")
+    return items
 
 
 def main():
@@ -443,14 +604,20 @@ def main():
     pull.add_argument("--worker-id", required=True)
     pull.add_argument("--now", default=now_iso())
     pull.add_argument("--limit", type=int, default=100)
+    pull.add_argument("--lease-sec", type=int, default=120)
+    pull.add_argument("--actions", help="optional comma-separated action filter, e.g. reflect,decay")
 
     ack_p = sub.add_parser("ack")
     ack_p.add_argument("--job-id", required=True)
+    ack_p.add_argument("--worker-id")
+    ack_p.add_argument("--lease-token")
 
     fail_p = sub.add_parser("fail")
     fail_p.add_argument("--job-id", required=True)
     fail_p.add_argument("--error", required=True)
     fail_p.add_argument("--retry-delay-sec", type=int, default=300)
+    fail_p.add_argument("--worker-id")
+    fail_p.add_argument("--lease-token")
 
     sub.add_parser("stats")
 
@@ -490,17 +657,31 @@ def main():
         return
 
     if args.cmd == "pull":
-        jobs = pull_due(c, args.worker_id, args.now, args.limit)
+        jobs = pull_due(
+            c,
+            args.worker_id,
+            args.now,
+            args.limit,
+            lease_sec=max(1, int(args.lease_sec)),
+            actions=_parse_actions_arg(args.actions),
+        )
         print(json.dumps(jobs, ensure_ascii=False, indent=2))
         return
 
     if args.cmd == "ack":
-        ack(c, args.job_id)
+        ack(c, args.job_id, worker_id=args.worker_id, lease_token=args.lease_token)
         print(json.dumps({"ok": True, "job_id": args.job_id, "status": "succeeded"}))
         return
 
     if args.cmd == "fail":
-        result = fail(c, args.job_id, args.error, args.retry_delay_sec)
+        result = fail(
+            c,
+            args.job_id,
+            args.error,
+            args.retry_delay_sec,
+            worker_id=args.worker_id,
+            lease_token=args.lease_token,
+        )
         print(json.dumps(result, ensure_ascii=False))
         return
 

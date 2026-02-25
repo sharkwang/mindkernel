@@ -27,6 +27,10 @@ python3 -m unittest discover -s test -p "test_*_v0_1.py" -v
   - memory JSONL 导入器回放验证脚本可运行性断言
 - `test_validate_scheduler_worker_v0_1.py`
   - reflect scheduler worker 验证脚本可运行性断言
+- `test_validate_scheduler_multi_worker_lock_v0_1.py`
+  - 多 worker 租约/锁验证脚本可运行性与无重复领取断言
+- `test_validate_temporal_governance_worker_v0_1.py`
+  - 遗忘执行层 worker（decay/archive/reinstate-check）验证脚本可运行性断言
 - `test_validate_apply_compensation_v0_1.py`
   - apply 失败补偿验证脚本可运行性断言
 - `test_release_check_v0_1.py`
