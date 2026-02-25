@@ -1,7 +1,7 @@
 # Release Runbook — v0.1.0-usable（S11）
 
 ## 1) 目标
-发布一个可复现的 `v0.1.0-usable` 候选版本，满足：
+发布一个可复现的 `v0.1.0-usable` 正式版本，满足：
 - 关键验证与 smoke 全绿
 - reflect 调度 worker 与补偿机制可用
 - 文档、脚本、测试一致
@@ -20,17 +20,17 @@ python3 tools/release/release_check_v0_1.py \
 - `ok=true`
 - `passed == total`
 
-## 3) 候选标签流程（手动）
+## 3) 正式标签流程（手动）
 
 ```bash
 git status --short
-# 确保工作区干净
+# 确保工作区干净（无未提交改动）
 
 git log --oneline -n 10
-# 确认最新提交包含 S7/C4/S10 交付
+# 确认最新提交包含 rc3 后的收口变更（发布说明/运行手册/验证证据）
 
-git tag -a v0.1.0-usable-rc1 -m "MindKernel v0.1.0-usable rc1"
-# 可选：git push origin v0.1.0-usable-rc1
+git tag -a v0.1.0-usable -m "MindKernel v0.1.0-usable"
+# 可选：git push origin v0.1.0-usable
 ```
 
 ## 4) 发布包最小清单
@@ -43,8 +43,8 @@ git tag -a v0.1.0-usable-rc1 -m "MindKernel v0.1.0-usable rc1"
 ## 5) 回滚策略
 - 如发现回归：
   1. 定位失败检查项（release_check report）
-  2. 回退到上一稳定 tag（`v0.1.0-usable-rcN-1`）
-  3. 重新执行 `release_check_v0_1.py`
+  2. 优先回退到 `v0.1.0-usable-rc3`；必要时再回退到 `v0.1.0-usable-rc2`
+  3. 重新执行 `release_check_v0_1.py`，确认回退基线可复现
 
 ## 6) 发布后动作
 - 更新 CHANGELOG
