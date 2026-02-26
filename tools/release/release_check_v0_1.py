@@ -79,6 +79,7 @@ def main():
         CheckItem("validate-scheduler-multi-worker-lock", ["python3", "tools/validation/validate_scheduler_multi_worker_lock_v0_1.py"]),
         CheckItem("validate-temporal-governance-worker", ["python3", "tools/validation/validate_temporal_governance_worker_v0_1.py"]),
         CheckItem("validate-workspace-replay", ["python3", "tools/validation/validate_scheduler_workspace_replay_v0_1.py"]),
+        CheckItem("validate-weekly-governance-report", ["python3", "tools/validation/validate_weekly_governance_report_v0_1.py"]),
         CheckItem("validate-apply-compensation", ["python3", "tools/validation/validate_apply_compensation_v0_1.py"]),
         CheckItem("validate-ingest-tools", ["python3", "tools/validation/validate_ingest_tools_v0_1.py"]),
         CheckItem("validate-llm-memory-processor", ["python3", "tools/validation/validate_llm_memory_processor_v0_1.py"]),

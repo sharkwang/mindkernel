@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-25 16:03 (Asia/Shanghai)_
+_Last updated: 2026-02-26 12:52 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -33,35 +33,32 @@ _Last updated: 2026-02-25 16:03 (Asia/Shanghai)_
 ## P2（后续演进）
 
 - [ ] 评估向量检索作为 FTS 的补充（仅在规模达到阈值后）
-- [ ] 形成 weekly governance report（质量指标、回滚率、升级率、学习收益）
+- [x] 形成 weekly governance report（质量指标、回滚率、升级率、学习收益）
 
-## 今日巡检（2026-02-25）
+## 今日巡检（2026-02-26）
 
-- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），暂无新增讨论条目。
-- [x] 核对代码基线增量：存在 2 个新提交（`019d899` 校验脚本归档到 `tools/validation`；`c530efb` 工具分层重构并修复引用），主线推进恢复。
-- [x] P0 保持全部完成且无回退；已完成正式版本收口（本地 tag：`v0.1.0-usable`）。
-- [x] 已完成 `v0.1.0-usable` 全量发布前总检（含新增治理门禁）：`14/14 PASS`，结果已冻结到 `reports/release_check_v0_1.json` 与 `reports/release_check_v0_1.md`。
-- [x] 已完成真实 workspace 回放验证（`validate_scheduler_workspace_replay_v0_1.py`）：覆盖失败恢复路径，产物可审计。
-- [x] 已完成多 worker 租约/锁机制（`scheduler_v0_1.py` 新增 `lease_token/lease_expires_at` + 过期回收 + action filter）并通过多 worker 验证。
-- [x] 已完成遗忘执行层 worker 化（`temporal_governance_worker_v0_1.py`：decay/archive/reinstate-check），并通过状态迁移验证。
-- [x] 已完成远端发布动作：`main` 与 `v0.1.0-usable` tag 已推送至 origin。
-- [x] 项目复盘复核完成：`release_check_v0_1.py --release-target v0.1.1-review-full` 结果 `14/14 PASS`。
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：自昨日以来新增 1 个提交（`f8e823d`，v0.1.1 稳定化路线评审与计划落档）；治理实现提交（`c3c16c6`）已在主线。
+- [x] P0 任务保持全部完成且无回退；`v0.1.0-usable` 发布基线稳定。
+- [x] 已完成复盘与稳定化计划落档，`docs/06-execution/v0.1.1-stabilization-plan.md` 作为后续执行主参考。
+- [x] 风险画像未恶化：当前主要风险集中在 CI 主 workflow 覆盖不足、lease 长任务续约缺口、外部 LLM 依赖波动。
+- [x] R1 已完成：新增 weekly governance report 生成脚本（JSON + Markdown）与验证脚本。
+- [x] R4 已完成：主 CI workflow 已纳入 multi-worker lock / temporal worker / weekly-report 验证；workspace replay 拆分至夜间/手动 workflow。
 
 ## 下一步（建议按顺序执行）
 
 > 参考：`docs/06-execution/v0.1.1-stabilization-plan.md`（R1~R6）
 
-1. R1：落地 weekly governance report（首版 JSON + Markdown，形成周维度趋势基线）。
-2. R4：CI 门禁对齐（把 multi-worker lock / temporal worker 验证纳入主 workflow；workspace replay 走 nightly/手动）。
-3. R2：为 lease 增加续约（renew）与长任务保护，降低误回收风险。
-4. R3：扩展 temporal worker 支持 `verify/revalidate`，补齐治理执行器覆盖面。
-5. R5 + R6：建立吞吐/延迟 benchmark，并完成向量检索补充评估（给出 go/no-go 结论）。
+1. R2：为 lease 增加续约（renew）与长任务保护，降低误回收风险。
+2. R3：扩展 temporal worker 支持 `verify/revalidate`，补齐治理执行器覆盖面。
+3. R5：建立吞吐/延迟 benchmark（jobs/min、lag p95、retry rate）。
+4. R6：完成向量检索补充评估（给出 go/no-go 结论）。
 
 ## 风险追踪
 
 - **发布风险（低）**：`main` 与 `v0.1.0-usable` 已推送远端，当前以稳定化治理风险为主。
 - **并发治理风险（中-低）**：已落地 lease 锁与过期回收；长任务 lease 续约（heartbeat）尚未接入。
-- **CI 覆盖风险（中）**：新增治理验证已在 release_check 中，但尚未全部进入主 workflow。
+- **CI 覆盖风险（低）**：新增治理验证已并入主 workflow；workspace replay 已按时长分层到夜间/手动 workflow。
 - **数据风险（中-低）**：workspace 回放与恢复路径已覆盖；剩余风险在真实规模下的持续吞吐与抖动表现。
 - **外部依赖风险（中）**：LLM 线上调用受 API 可用性/成本影响，尚未接入熔断与降级策略。
 

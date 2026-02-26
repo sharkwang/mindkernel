@@ -36,6 +36,8 @@
 - `validate_scheduler_multi_worker_lock_v0_1.py`
 - `validate_temporal_governance_worker_v0_1.py`
 - `validate_scheduler_workspace_replay_v0_1.py`
+- `validate_weekly_governance_report_v0_1.py`
+- `generate_weekly_governance_report_v0_1.py`
 - `validate_apply_compensation_v0_1.py`
 - `validate_ingest_tools_v0_1.py`
 - `validate_llm_memory_processor_v0_1.py`

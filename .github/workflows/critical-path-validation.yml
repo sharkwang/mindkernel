@@ -60,6 +60,18 @@ jobs:
         run: |
           python3 tools/validation/validate_scheduler_worker_v0_1.py
 
+      - name: Run scheduler multi-worker lock validation
+        run: |
+          python3 tools/validation/validate_scheduler_multi_worker_lock_v0_1.py
+
+      - name: Run temporal governance worker validation
+        run: |
+          python3 tools/validation/validate_temporal_governance_worker_v0_1.py
+
+      - name: Run weekly governance report validation
+        run: |
+          python3 tools/validation/validate_weekly_governance_report_v0_1.py
+
       - name: Run apply compensation validation
         run: |
           python3 tools/validation/validate_apply_compensation_v0_1.py
