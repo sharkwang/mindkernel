@@ -34,10 +34,16 @@
 - `validate_memory_import_v0_1.py`
 - `validate_scheduler_worker_v0_1.py`
 - `validate_scheduler_multi_worker_lock_v0_1.py`
+- `validate_scheduler_lease_renew_v0_1.py`
 - `validate_temporal_governance_worker_v0_1.py`
+- `validate_temporal_verify_revalidate_v0_1.py`
 - `validate_scheduler_workspace_replay_v0_1.py`
 - `validate_weekly_governance_report_v0_1.py`
 - `generate_weekly_governance_report_v0_1.py`
+- `benchmark_scheduler_throughput_v0_1.py`
+- `validate_scheduler_benchmark_v0_1.py`
+- `evaluate_vector_retrieval_readiness_v0_1.py`
+- `validate_vector_readiness_v0_1.py`
 - `validate_apply_compensation_v0_1.py`
 - `validate_ingest_tools_v0_1.py`
 - `validate_llm_memory_processor_v0_1.py`

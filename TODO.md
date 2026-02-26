@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-26 12:52 (Asia/Shanghai)_
+_Last updated: 2026-02-26 13:03 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -32,7 +32,7 @@ _Last updated: 2026-02-26 12:52 (Asia/Shanghai)_
 
 ## P2（后续演进）
 
-- [ ] 评估向量检索作为 FTS 的补充（仅在规模达到阈值后）
+- [x] 评估向量检索作为 FTS 的补充（当前结论：`NO_GO_KEEP_FTS`，达到规模阈值后再启动 pilot）
 - [x] 形成 weekly governance report（质量指标、回滚率、升级率、学习收益）
 
 ## 今日巡检（2026-02-26）
@@ -44,22 +44,26 @@ _Last updated: 2026-02-26 12:52 (Asia/Shanghai)_
 - [x] 风险画像未恶化：当前主要风险集中在 CI 主 workflow 覆盖不足、lease 长任务续约缺口、外部 LLM 依赖波动。
 - [x] R1 已完成：新增 weekly governance report 生成脚本（JSON + Markdown）与验证脚本。
 - [x] R4 已完成：主 CI workflow 已纳入 multi-worker lock / temporal worker / weekly-report 验证；workspace replay 拆分至夜间/手动 workflow。
+- [x] R2 已完成：scheduler 增加 lease renew 接口（CLI + 函数）并通过 `validate_scheduler_lease_renew_v0_1.py`。
+- [x] R3 已完成：temporal worker 扩展 `verify/revalidate` 并通过 `validate_temporal_verify_revalidate_v0_1.py`。
+- [x] R5 已完成：新增吞吐/延迟 benchmark 脚本（`benchmark_scheduler_throughput_v0_1.py`）与验证脚本。
+- [x] R6 已完成：新增向量检索就绪度评估脚本（`evaluate_vector_retrieval_readiness_v0_1.py`），当前决策 `NO_GO_KEEP_FTS`。
 
 ## 下一步（建议按顺序执行）
 
 > 参考：`docs/06-execution/v0.1.1-stabilization-plan.md`（R1~R6）
 
-1. R2：为 lease 增加续约（renew）与长任务保护，降低误回收风险。
-2. R3：扩展 temporal worker 支持 `verify/revalidate`，补齐治理执行器覆盖面。
-3. R5：建立吞吐/延迟 benchmark（jobs/min、lag p95、retry rate）。
-4. R6：完成向量检索补充评估（给出 go/no-go 结论）。
+1. 汇总并推送本轮 R2~R6 代码到远端（待用户确认外部动作）。
+2. 在真实负载上连续跑 1 周 weekly governance report，建立趋势基线（含异常阈值）。
+3. 按 `NO_GO_KEEP_FTS` 结论固化向量检索触发条件（规模/QPS/质量退化）到运行手册。
+4. 准备 v0.1.1 稳定化发布说明（对比 v0.1.0-usable 的治理能力增量）。
 
 ## 风险追踪
 
 - **发布风险（低）**：`main` 与 `v0.1.0-usable` 已推送远端，当前以稳定化治理风险为主。
-- **并发治理风险（中-低）**：已落地 lease 锁与过期回收；长任务 lease 续约（heartbeat）尚未接入。
+- **并发治理风险（低）**：lease 锁 + 过期回收 + renew/heartbeat 已接入，剩余风险主要是长时间运行稳定性观察周期不足。
 - **CI 覆盖风险（低）**：新增治理验证已并入主 workflow；workspace replay 已按时长分层到夜间/手动 workflow。
-- **数据风险（中-低）**：workspace 回放与恢复路径已覆盖；剩余风险在真实规模下的持续吞吐与抖动表现。
+- **数据风险（中-低）**：workspace 回放与恢复路径已覆盖，且已有吞吐/lag 基线；剩余风险在真实生产负载波动。
 - **外部依赖风险（中）**：LLM 线上调用受 API 可用性/成本影响，尚未接入熔断与降级策略。
 
 MindKernel 记忆治理验收清单 v1（20 条）

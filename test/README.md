@@ -31,8 +31,16 @@ python3 -m unittest discover -s test -p "test_*_v0_1.py" -v
   - 多 worker 租约/锁验证脚本可运行性与无重复领取断言
 - `test_validate_temporal_governance_worker_v0_1.py`
   - 遗忘执行层 worker（decay/archive/reinstate-check）验证脚本可运行性断言
+- `test_validate_scheduler_lease_renew_v0_1.py`
+  - scheduler lease renew（heartbeat）验证脚本可运行性断言
+- `test_validate_temporal_verify_revalidate_v0_1.py`
+  - temporal worker 的 verify/revalidate 扩展验证脚本可运行性断言
 - `test_validate_weekly_governance_report_v0_1.py`
   - 周治理报告生成验证脚本可运行性断言
+- `test_validate_scheduler_benchmark_v0_1.py`
+  - 调度吞吐基线脚本验证可运行性断言
+- `test_validate_vector_readiness_v0_1.py`
+  - 向量检索就绪度评估脚本验证可运行性断言
 - `test_validate_apply_compensation_v0_1.py`
   - apply 失败补偿验证脚本可运行性断言
 - `test_release_check_v0_1.py`

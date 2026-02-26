@@ -22,7 +22,7 @@ OBJECT_TABLES = {
     "experience": "experience_records",
 }
 
-WORKER_ACTIONS = {"decay", "archive", "reinstate-check"}
+WORKER_ACTIONS = {"verify", "revalidate", "decay", "archive", "reinstate-check"}
 
 
 def now_iso() -> str:
@@ -89,6 +89,44 @@ def _has_reinstate_signal(payload: dict) -> bool:
 
 
 def _decide_target_status(object_type: str, action: str, current_status: str, payload: dict) -> tuple[str | None, str]:
+    conf = float(payload.get("confidence", 0.0) or 0.0)
+
+    if action == "verify":
+        if object_type == "memory":
+            investigation = str(payload.get("investigation_status") or "none")
+            if investigation == "poisoned":
+                return "rejected_poisoned", "memory verify: investigation marked poisoned"
+            if current_status in {"candidate", "quarantine", "stale_uncertain"}:
+                return "verified", "memory verify: evidence/provenance checks passed"
+            return None, f"memory verify noop from status={current_status}"
+
+        if object_type == "experience":
+            if current_status == "candidate":
+                return "active", "experience verify: promoted from candidate"
+            return None, f"experience verify noop from status={current_status}"
+
+    if action == "revalidate":
+        has_signal = _has_reinstate_signal(payload)
+        if object_type == "memory":
+            if current_status in {"stale", "stale_uncertain"}:
+                if has_signal:
+                    return "active", "memory revalidate: new evidence signal detected"
+                return "stale_uncertain", "memory revalidate: insufficient reinforcement signal"
+            if current_status == "verified":
+                return "active" if has_signal else None, (
+                    "memory revalidate: verified promoted to active by reinforcement"
+                    if has_signal
+                    else f"memory revalidate noop from status={current_status}"
+                )
+            return None, f"memory revalidate noop from status={current_status}"
+
+        if object_type == "experience":
+            if current_status in {"needs_review", "invalidated", "candidate"}:
+                if has_signal or conf >= 0.6:
+                    return "active", "experience revalidate: signal/confidence threshold met"
+                return "needs_review", "experience revalidate: keep pending review"
+            return None, f"experience revalidate noop from status={current_status}"
+
     if action == "decay":
         if object_type == "memory":
             if current_status in {"active", "verified"}:
@@ -132,6 +170,10 @@ def _decide_target_status(object_type: str, action: str, current_status: str, pa
 def _next_action(action: str, target_status: str | None, now: str, existing_next: str | None) -> str:
     if action == "archive":
         return in_days_iso(30, base=now)
+    if action == "verify":
+        return in_days_iso(14, base=now)
+    if action == "revalidate":
+        return in_days_iso(7, base=now)
     if action == "reinstate-check" and target_status == "active":
         return in_days_iso(7, base=now)
     if action == "decay":
@@ -272,6 +314,14 @@ def run_loop(args):
             job_id = str(job["job_id"])
             lease_token = str(job.get("lease_token") or "")
             try:
+                if int(args.lease_renew_sec) > 0:
+                    sch.renew_lease(
+                        c,
+                        job_id,
+                        worker_id=args.worker_id,
+                        lease_token=lease_token,
+                        extend_sec=max(1, int(args.lease_renew_sec)),
+                    )
                 res = process_temporal_job(c, job=job, worker_id=args.worker_id, dry_run=args.dry_run)
                 if res.get("transitioned"):
                     transitions += 1
@@ -310,6 +360,8 @@ def run_loop(args):
         "worker_id": args.worker_id,
         "db": str(db),
         "mode": "dry-run" if args.dry_run else "apply",
+        "lease_sec": int(args.lease_sec),
+        "lease_renew_sec": int(args.lease_renew_sec),
         "loops": loops,
         "processed": processed,
         "succeeded": succeeded,
@@ -333,6 +385,7 @@ def main():
     p.add_argument("--worker-id", default="temporal-worker-1")
     p.add_argument("--pull-limit", type=int, default=20)
     p.add_argument("--lease-sec", type=int, default=120)
+    p.add_argument("--lease-renew-sec", type=int, default=90, help="heartbeat renew interval in seconds (0 to disable)")
     p.add_argument("--retry-delay-sec", type=int, default=120)
     p.add_argument("--interval-sec", type=int, default=5)
     p.add_argument("--max-loops", type=int, default=0, help="0 means unlimited")

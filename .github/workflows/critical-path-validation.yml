@@ -25,7 +25,7 @@ on:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -68,9 +68,25 @@ jobs:
         run: |
           python3 tools/validation/validate_temporal_governance_worker_v0_1.py
 
+      - name: Run scheduler lease renew validation
+        run: |
+          python3 tools/validation/validate_scheduler_lease_renew_v0_1.py
+
+      - name: Run temporal verify/revalidate validation
+        run: |
+          python3 tools/validation/validate_temporal_verify_revalidate_v0_1.py
+
       - name: Run weekly governance report validation
         run: |
           python3 tools/validation/validate_weekly_governance_report_v0_1.py
+
+      - name: Run scheduler benchmark validation
+        run: |
+          python3 tools/validation/validate_scheduler_benchmark_v0_1.py
+
+      - name: Run vector readiness validation
+        run: |
+          python3 tools/validation/validate_vector_readiness_v0_1.py
 
       - name: Run apply compensation validation
         run: |

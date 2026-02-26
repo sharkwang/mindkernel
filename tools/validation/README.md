@@ -21,14 +21,22 @@ python3 tools/validation/validate_memory_import_v0_1.py
 # 调度与补偿
 python3 tools/validation/validate_scheduler_worker_v0_1.py
 python3 tools/validation/validate_scheduler_multi_worker_lock_v0_1.py
+python3 tools/validation/validate_scheduler_lease_renew_v0_1.py
 python3 tools/validation/validate_temporal_governance_worker_v0_1.py
+python3 tools/validation/validate_temporal_verify_revalidate_v0_1.py
 python3 tools/validation/validate_scheduler_workspace_replay_v0_1.py
 python3 tools/validation/validate_apply_compensation_v0_1.py
+
+# 稳定化专项（R1/R5/R6）
+python3 tools/validation/validate_weekly_governance_report_v0_1.py
+python3 tools/validation/benchmark_scheduler_throughput_v0_1.py
+python3 tools/validation/validate_scheduler_benchmark_v0_1.py
+python3 tools/validation/evaluate_vector_retrieval_readiness_v0_1.py
+python3 tools/validation/validate_vector_readiness_v0_1.py
 
 # 其它验证
 python3 tools/validation/validate_ingest_tools_v0_1.py
 python3 tools/validation/validate_llm_memory_processor_v0_1.py
-python3 tools/validation/validate_weekly_governance_report_v0_1.py
 python3 tools/validation/system_smoke_report_v0_1.py
 
 # 生成周治理报告（R1）
@@ -39,8 +47,12 @@ python3 tools/validation/generate_weekly_governance_report_v0_1.py
 
 - 主 workflow：`.github/workflows/critical-path-validation.yml`
   - 包含 `validate_scheduler_multi_worker_lock_v0_1.py`
+  - 包含 `validate_scheduler_lease_renew_v0_1.py`
   - 包含 `validate_temporal_governance_worker_v0_1.py`
+  - 包含 `validate_temporal_verify_revalidate_v0_1.py`
   - 包含 `validate_weekly_governance_report_v0_1.py`
+  - 包含 `validate_scheduler_benchmark_v0_1.py`
+  - 包含 `validate_vector_readiness_v0_1.py`
 - 夜间/手动 workflow：`.github/workflows/governance-workspace-replay.yml`
   - 包含 `validate_scheduler_workspace_replay_v0_1.py`
   - 避免 PR 门禁时长膨胀

@@ -93,10 +93,11 @@ python3 tools/scheduler/reflect_scheduler_worker_v0_1.py \
   --lease-sec 120 \
   --run-once
 
-# 12) 遗忘执行层 worker（decay/archive/reinstate-check）
+# 12) 遗忘执行层 worker（verify/revalidate/decay/archive/reinstate-check）
 python3 tools/scheduler/temporal_governance_worker_v0_1.py \
   --db data/mindkernel_v0_1.sqlite \
   --lease-sec 120 \
+  --lease-renew-sec 90 \
   --run-once
 ```
 
@@ -108,7 +109,7 @@ python3 tools/scheduler/temporal_governance_worker_v0_1.py \
 - 重试：`fail` 后按 `retry_delay_sec` 重新入队
 - 死信：超过 `max_attempts` -> `dead_letter`
 - 租约锁：`pull` 领取任务时分配 `lease_token + lease_expires_at`，过期任务自动回收重排
-- 动作过滤：`pull` 支持 action 过滤（reflect/decay/archive/reinstate-check）
+- 动作过滤：`pull` 支持 action 过滤（reflect/verify/revalidate/decay/archive/reinstate-check）
 - 审计：enqueue/pull/ack/fail 自动写 `audit_events`（`event_type=scheduler_job`）
 - Agent-first 闸门：`route-proposals` 按 `risk_score + hard_rules` 分流（low 自动、medium 抽检、high 必审）
 
@@ -121,6 +122,6 @@ python3 tools/scheduler/temporal_governance_worker_v0_1.py \
 
 ## 6. 下一步建议
 
-1. 为 lease 增加心跳续约（long-running 作业）与 worker 崩溃探测
-2. 扩展 temporal 执行器到 `verify/revalidate`（当前覆盖 `decay/archive/reinstate-check`）
+1. 在真实负载下验证 lease renew 的长期稳定性（多小时连续运行 + 崩溃恢复）
+2. 将 benchmark 指标（jobs/min、lag p95、retry rate）纳入 weekly governance trend 报告
 3. 增加调度回放中的失败补偿与回滚演练（含 dead_letter）

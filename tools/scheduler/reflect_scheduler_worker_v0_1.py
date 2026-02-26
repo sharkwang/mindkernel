@@ -153,14 +153,24 @@ def process_reflect_job(
     dry_run_apply: bool,
     queue_deadline_minutes: int,
     queue_fallback_policy: str,
+    renew_lease_fn=None,
 ):
     job_id = str(job["job_id"])
     job_dir = reports_dir / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
 
+    if callable(renew_lease_fn):
+        renew_lease_fn(stage="start")
+
     mi_conn = mi.connect(memory_index_db)
     mi.init_db(mi_conn)
+
+    if callable(renew_lease_fn):
+        renew_lease_fn(stage="before_reindex")
     reindex_stats = mi.cmd_reindex(mi_conn, workspace=workspace, incremental=True, retry_failures=True, max_retries=3)
+
+    if callable(renew_lease_fn):
+        renew_lease_fn(stage="before_reflect")
     reflection = mi.cmd_reflect(
         mi_conn,
         since_days=since_days,
@@ -174,8 +184,12 @@ def process_reflect_job(
     proposals_file = job_dir / "proposals.json"
     _write_json(proposals_file, proposals)
 
+    if callable(renew_lease_fn):
+        renew_lease_fn(stage="before_route")
     routed = route_proposals(str(proposals_file), config_path=gate_config, output_path=str(job_dir / "routed.json"))
 
+    if callable(renew_lease_fn):
+        renew_lease_fn(stage="before_queue")
     queue_result = enqueue_from_routed(
         scheduler_conn,
         routed,
@@ -187,6 +201,8 @@ def process_reflect_job(
     apply_plan = build_apply_plan(scheduler_conn, routed)
     _write_json(job_dir / "apply_plan.json", apply_plan)
 
+    if callable(renew_lease_fn):
+        renew_lease_fn(stage="before_apply")
     apply_exec = execute_apply_plan(
         scheduler_conn,
         workspace=workspace,
@@ -275,6 +291,19 @@ def run_loop(args):
                         f"unsupported job type/action: {job.get('object_type')}:{job.get('action')}"
                     )
 
+                lease_token = str(job.get("lease_token") or "")
+
+                def _renew_lease(stage: str):
+                    if int(args.lease_renew_sec) <= 0:
+                        return
+                    sch.renew_lease(
+                        c,
+                        job_id,
+                        worker_id=args.worker_id,
+                        lease_token=lease_token,
+                        extend_sec=max(1, int(args.lease_renew_sec)),
+                    )
+
                 process_reflect_job(
                     scheduler_conn=c,
                     job=job,
@@ -286,6 +315,7 @@ def run_loop(args):
                     dry_run_apply=not args.apply,
                     queue_deadline_minutes=max(1, int(args.queue_deadline_minutes)),
                     queue_fallback_policy=args.queue_fallback_policy,
+                    renew_lease_fn=_renew_lease,
                 )
                 sch.ack(
                     c,
@@ -319,6 +349,8 @@ def run_loop(args):
         "reports_dir": str(reports_dir),
         "memory_index_db": str(memory_index_db),
         "mode": "apply" if args.apply else "dry-run",
+        "lease_sec": int(args.lease_sec),
+        "lease_renew_sec": int(args.lease_renew_sec),
         "loops": loops,
         "processed": processed,
         "succeeded": succeeded,
@@ -336,6 +368,7 @@ def main():
     p.add_argument("--worker-id", default="reflect-worker-1")
     p.add_argument("--pull-limit", type=int, default=20)
     p.add_argument("--lease-sec", type=int, default=120)
+    p.add_argument("--lease-renew-sec", type=int, default=90, help="heartbeat renew interval in seconds (0 to disable)")
     p.add_argument("--since-days", type=int, default=30)
     p.add_argument("--gate-config", help="optional reflect gate config json path")
     p.add_argument("--queue-deadline-minutes", type=int, default=60)

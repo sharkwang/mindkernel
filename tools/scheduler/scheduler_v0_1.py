@@ -432,6 +432,67 @@ def _validate_running_owner(cur: sqlite3.Row, worker_id: str | None, lease_token
         raise ValueError("lease expired for running job; please re-pull")
 
 
+def renew_lease(
+    c: sqlite3.Connection,
+    job_id: str,
+    worker_id: str | None = None,
+    lease_token: str | None = None,
+    extend_sec: int = 120,
+):
+    if extend_sec < 1:
+        raise ValueError("extend_sec must be >= 1")
+
+    row = c.execute(
+        "SELECT status, attempt, correlation_id, worker_id, lease_token, lease_expires_at FROM scheduler_jobs WHERE job_id=?",
+        (job_id,),
+    ).fetchone()
+    if not row:
+        raise ValueError(f"job not found: {job_id}")
+    if row["status"] != "running":
+        raise ValueError(f"job {job_id} must be running to renew lease, current={row['status']}")
+
+    _validate_running_owner(row, worker_id, lease_token)
+
+    before_lease = row["lease_expires_at"]
+    next_lease = in_seconds_iso(extend_sec)
+    c.execute(
+        "UPDATE scheduler_jobs SET lease_expires_at=?, updated_at=? WHERE job_id=? AND status='running'",
+        (next_lease, now_iso(), job_id),
+    )
+
+    write_audit_event(
+        c,
+        event_type="scheduler_job",
+        actor_type="worker" if (worker_id or row["worker_id"]) else "system",
+        actor_id=worker_id or row["worker_id"] or "scheduler-cli",
+        object_type="scheduler_job",
+        object_id=job_id,
+        before={
+            "status": "running",
+            "attempt": row["attempt"],
+            "lease_expires_at": before_lease,
+        },
+        after={
+            "status": "running",
+            "attempt": row["attempt"],
+            "lease_expires_at": next_lease,
+        },
+        reason="Lease renewed by worker heartbeat.",
+        evidence_refs=[f"scheduler_job:{job_id}"],
+        job_id=job_id,
+        correlation_id=row["correlation_id"],
+        metadata={"extend_sec": int(extend_sec)},
+    )
+
+    c.commit()
+    return {
+        "job_id": job_id,
+        "status": "running",
+        "lease_expires_at": next_lease,
+        "extended_by_sec": int(extend_sec),
+    }
+
+
 def ack(c: sqlite3.Connection, job_id: str, worker_id: str | None = None, lease_token: str | None = None):
     cur = c.execute("SELECT * FROM scheduler_jobs WHERE job_id=?", (job_id,)).fetchone()
     if not cur:
@@ -619,6 +680,12 @@ def main():
     fail_p.add_argument("--worker-id")
     fail_p.add_argument("--lease-token")
 
+    renew_p = sub.add_parser("renew-lease")
+    renew_p.add_argument("--job-id", required=True)
+    renew_p.add_argument("--worker-id")
+    renew_p.add_argument("--lease-token")
+    renew_p.add_argument("--extend-sec", type=int, default=120)
+
     sub.add_parser("stats")
 
     audits_p = sub.add_parser("list-audits")
@@ -681,6 +748,17 @@ def main():
             args.retry_delay_sec,
             worker_id=args.worker_id,
             lease_token=args.lease_token,
+        )
+        print(json.dumps(result, ensure_ascii=False))
+        return
+
+    if args.cmd == "renew-lease":
+        result = renew_lease(
+            c,
+            args.job_id,
+            worker_id=args.worker_id,
+            lease_token=args.lease_token,
+            extend_sec=max(1, int(args.extend_sec)),
         )
         print(json.dumps(result, ensure_ascii=False))
         return
