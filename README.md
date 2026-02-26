@@ -28,6 +28,23 @@
 - 验证层：关键路径 fixtures + 自动化校验 + smoke report
 - 稳定化层：R1~R6 全部完成（weekly report、lease renew、temporal verify/revalidate、benchmark、vector readiness 评估）
 
+## 安装（推荐）
+
+```bash
+cd ./mindkernel
+./scripts/install.sh
+
+# 可选：安装后立即跑一轮快速门禁
+./scripts/install.sh --verify
+
+# 手动激活环境
+source .venv/bin/activate
+```
+
+说明：
+- 项目当前是 stdlib-first；若后续引入 `requirements.txt`，安装脚本会自动安装。
+- 本地建议使用 Python 3.11+。
+
 ## 快速开始
 
 ```bash
@@ -87,6 +104,7 @@ python3 tools/release/release_check_v0_1.py --quick --no-strict
 - `schemas/`：数据契约草案
 - `core/`：验证通过后的核心逻辑模块（可复用，保持干净）
 - `tools/`：CLI 与原型入口（尽量薄壳）
+- `scripts/`：安装与环境初始化脚本
 - `test/`：关键用例回归测试
 - `data/fixtures/`：关键路径样例
 - `archive/`：历史草案（只读）
