@@ -1,0 +1,41 @@
+name: governance-daemon-nightly
+
+on:
+  schedule:
+    # 03:00 Asia/Shanghai (19:00 UTC previous day) daily
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: governance-daemon-nightly
+  cancel-in-progress: false
+
+jobs:
+  daemon-nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run daemon closed-loop validation (nightly)
+        run: |
+          python3 tools/validation/validate_daemon_closed_loop_v0_2.py
+
+      - name: Run workspace replay validation (nightly daemon suite)
+        run: |
+          python3 tools/validation/validate_scheduler_workspace_replay_v0_1.py
+
+      - name: Upload daemon nightly artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: daemon-nightly-reports
+          path: |
+            reports/**
+            data/**

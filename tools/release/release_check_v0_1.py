@@ -87,6 +87,9 @@ def main():
         CheckItem("validate-apply-compensation", ["python3", "tools/validation/validate_apply_compensation_v0_1.py"]),
         CheckItem("validate-ingest-tools", ["python3", "tools/validation/validate_ingest_tools_v0_1.py"]),
         CheckItem("validate-llm-memory-processor", ["python3", "tools/validation/validate_llm_memory_processor_v0_1.py"]),
+        CheckItem("validate-daemon-skeleton-v0_2", ["python3", "tools/validation/validate_daemon_skeleton_v0_2.py"]),
+        CheckItem("validate-daemon-feature-flag-v0_2", ["python3", "tools/validation/validate_daemon_feature_flag_v0_2.py"]),
+        CheckItem("validate-daemon-closed-loop-v0_2", ["python3", "tools/validation/validate_daemon_closed_loop_v0_2.py"]),
         CheckItem("system-smoke", ["python3", "tools/validation/system_smoke_report_v0_1.py"]),
     ]
 
@@ -94,7 +97,7 @@ def main():
         checks = [
             c
             for c in checks
-            if c.name not in {"unit-tests", "system-smoke", "validate-workspace-replay"}
+            if c.name not in {"unit-tests", "system-smoke", "validate-workspace-replay", "validate-daemon-closed-loop-v0_2"}
         ]
 
     results = [run_check(c, timeout_sec=max(30, int(args.timeout_sec))) for c in checks]

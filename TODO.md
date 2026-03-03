@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-02-26 13:19 (Asia/Shanghai)_
+_Last updated: 2026-03-03 10:32 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -52,15 +52,73 @@ _Last updated: 2026-02-26 13:19 (Asia/Shanghai)_
 - [x] 已完成稳定化版本标签：`v0.1.1-stabilized`（已推送远端）。
 - [x] 已新增 v0.1.1 发布手册与周报定时 workflow，进入运行期观测阶段。
 
+## 今日巡检（2026-02-27）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：新增 3 个关键提交（`a9d097a` TODO 收口同步、`bbecca8` v0.2 daemon 执行计划、`8db6643` installer + README 安装指引）。
+- [x] TODO 收口状态一致：v0.1.1 稳定化闭环仍保持完成，运行期观察主线未偏移。
+- [x] v0.2 D1 前置文档已完成，当前主阻塞切换为“D1 代码骨架与 smoke 验证尚未落地”。
+- [x] 风险画像小幅改善：发布/治理风险维持低位；外部依赖风险仍为中；新增“安装流程文档与脚本漂移”中低风险需纳入 CI smoke。
+
+## 今日巡检（2026-02-28）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：`main`/`origin/main` 仍停留在 `8db6643`，自昨日以来无新增提交。
+- [x] TODO 收口状态保持一致：v0.1.1 稳定化闭环完成状态未回退。
+- [x] v0.2 主阻塞未变化：D1 代码骨架与最小 smoke（含 checkpoint/recover）仍未落地。
+- [x] 风险画像总体稳定：外部依赖风险（中）持续，安装流程文档/脚本漂移风险处于中低并待 CI smoke 固化。
+
+## 今日巡检（2026-03-01）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：`main`/`origin/main` 仍停留在 `8db6643`，自昨日以来无新增提交。
+- [x] TODO 收口状态保持一致：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] v0.2 主阻塞未变化：D1 代码骨架与最小 smoke（含 checkpoint/recover）仍未落地。
+- [x] 风险画像保持稳定：外部依赖风险（中）持续；安装流程文档/脚本漂移风险维持中低并待 CI smoke 固化。
+
+## 今日巡检（2026-03-02）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：`main`/`origin/main` 仍停留在 `8db6643`，自昨日以来无新增提交。
+- [x] TODO 收口状态保持一致：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] v0.2 主阻塞未变化：D1 代码骨架与最小 smoke（含 checkpoint/recover）仍未落地。
+- [x] 风险画像保持稳定：外部依赖风险（中）持续；安装流程文档/脚本漂移风险维持中低并待 CI smoke 固化。
+
+## 今日巡检（2026-03-03）
+
+- [x] 已落地 v0.2 D1：`tools/daemon/memory_observer_daemon_v0_2.py`（poll/tail、pid/lock、checkpoint/recover、graceful shutdown）。
+- [x] 已新增验证脚本：`tools/validation/validate_daemon_skeleton_v0_2.py`。
+- [x] 已将 D1 验证接入门禁：`tools/release/release_check_v0_1.py` 与 `.github/workflows/critical-path-validation.yml`。
+- [x] 已完成 D2/D3 最小闭环：event normalize + dedupe/throttle + realtime candidate enqueue（reflect_job）。
+- [x] 已新增闭环验证：`tools/validation/validate_daemon_closed_loop_v0_2.py`（events -> daemon -> scheduler -> reflect worker）。
+- [x] 已完成 D5：feature flag（off/shadow/partial/on）+ 一键回退脚本 `scripts/daemon_v0_2_control.sh` + runbook。
+- [x] 已完成 D6：门禁分层（quick/full）+ 夜间 daemon 回放 workflow（`governance-daemon-nightly.yml`）。
+- [x] 门禁更新后复核：`release_check_v0_1.py --quick` 18/18 PASS；full 22/22 PASS。
+- [x] 已手动补写本日巡检记录（自动更新失败后人工确认）。
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：`main`/`origin/main` 仍停留在 `8db6643`，自昨日以来无新增提交。
+- [x] TODO 收口状态保持一致：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] v0.2 D1~D6 已形成可闭环原型并完成门禁验证（当前主线切换到运行观察 + 外部依赖熔断降级设计）。
+- [x] 风险画像保持稳定：外部依赖风险（中）持续；安装流程文档/脚本漂移风险维持中低并待 CI smoke 固化。
+
 ## 下一步（运行期）
 
 > 参考：`docs/06-execution/release-runbook-v0.1.1-stabilized.md`
 
 1. 连续 1 周运行 weekly governance report，沉淀趋势基线与告警阈值。
 2. 按运行数据复核 `NO_GO_KEEP_FTS` 触发条件（规模/QPS/质量退化）。
-3. 执行 v0.2 daemon 计划 D1（骨架 + checkpoint + graceful shutdown）：
-   - 计划文档：`docs/06-execution/v0.2-daemon-memory-observer-plan.md`
+3. v0.2 daemon 计划 D1~D6（已完成，进入运行观察）：
+   - [x] 计划文档已落档：`docs/06-execution/v0.2-daemon-memory-observer-plan.md`
+   - [x] 完成 D1 代码骨架与最小可运行 smoke（含 checkpoint/recover）
+   - [x] 拆分并落地最小任务包：daemon loop / signal handling / checkpoint store / recover path
+   - [x] 新增 D1 smoke 脚本并纳入 CI（至少覆盖 start -> checkpoint -> restart recover -> graceful shutdown）
+   - [x] 完成 D2：事件标准化与去重节流（`core/event_normalizer_v0_2.py`）。
+   - [x] 完成 D3：实时候选提炼与治理入队（`core/realtime_memory_candidate_v0_2.py`）。
+   - [x] 完成 D4（原型级）：批次指标落盘与运行统计输出（processed/normalized/deduped/candidates/enqueued/throttled/skipped_hwm）。
+   - [x] 完成 D5：运行策略与回退（feature flag / runbook）。
+   - [x] 完成 D6：门禁分层与夜间回放策略固化。
 4. 准备下一阶段（v0.2）需求梳理：外部依赖熔断/降级与长期稳定性观测。
+5. 将 installer + README 安装指引纳入发布手册与 CI smoke 安装验证（避免文档/脚本漂移）。
 
 ## 风险追踪
 
