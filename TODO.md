@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-03-03 10:32 (Asia/Shanghai)_
+_Last updated: 2026-03-03 11:09 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -93,10 +93,12 @@ _Last updated: 2026-03-03 10:32 (Asia/Shanghai)_
 - [x] 已新增闭环验证：`tools/validation/validate_daemon_closed_loop_v0_2.py`（events -> daemon -> scheduler -> reflect worker）。
 - [x] 已完成 D5：feature flag（off/shadow/partial/on）+ 一键回退脚本 `scripts/daemon_v0_2_control.sh` + runbook。
 - [x] 已完成 D6：门禁分层（quick/full）+ 夜间 daemon 回放 workflow（`governance-daemon-nightly.yml`）。
-- [x] 门禁更新后复核：`release_check_v0_1.py --quick` 18/18 PASS；full 22/22 PASS。
+- [x] 已完成外部依赖韧性原型：LLM 熔断/重试/降级（`core/llm_resilience_v0_2.py` + `validate_llm_resilience_v0_2.py`）。
+- [x] 已完成 daemon 观测报告能力：`generate_daemon_observation_report_v0_2.py` + `validate_daemon_observation_report_v0_2.py`。
+- [x] 门禁更新后复核：`release_check_v0_1.py --quick` 20/20 PASS；full 24/24 PASS。
 - [x] 已手动补写本日巡检记录（自动更新失败后人工确认）。
 - [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
-- [x] 核对代码基线增量：`main`/`origin/main` 仍停留在 `8db6643`，自昨日以来无新增提交。
+- [x] 核对代码基线增量：已完成 v0.2 D1~D6 原型提交并推送，`main`/`origin/main` 更新到 `40d9021`。
 - [x] TODO 收口状态保持一致：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
 - [x] v0.2 D1~D6 已形成可闭环原型并完成门禁验证（当前主线切换到运行观察 + 外部依赖熔断降级设计）。
 - [x] 风险画像保持稳定：外部依赖风险（中）持续；安装流程文档/脚本漂移风险维持中低并待 CI smoke 固化。
@@ -117,7 +119,7 @@ _Last updated: 2026-03-03 10:32 (Asia/Shanghai)_
    - [x] 完成 D4（原型级）：批次指标落盘与运行统计输出（processed/normalized/deduped/candidates/enqueued/throttled/skipped_hwm）。
    - [x] 完成 D5：运行策略与回退（feature flag / runbook）。
    - [x] 完成 D6：门禁分层与夜间回放策略固化。
-4. 准备下一阶段（v0.2）需求梳理：外部依赖熔断/降级与长期稳定性观测。
+4. 准备下一阶段（v0.2）需求梳理：外部依赖熔断/降级与长期稳定性观测（韧性原型已落地，待运行观察与阈值固化）。
 5. 将 installer + README 安装指引纳入发布手册与 CI smoke 安装验证（避免文档/脚本漂移）。
 
 ## 风险追踪

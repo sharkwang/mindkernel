@@ -9,6 +9,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -17,10 +18,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOLS_ROOT = ROOT / "tools"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 if str(TOOLS_ROOT) not in sys.path:
     sys.path.insert(0, str(TOOLS_ROOT))
 
 from schema_runtime import validate_payload
+from core.llm_resilience_v0_2 import LLMResilienceController, LLMResilienceConfig
 
 
 @dataclass
@@ -32,6 +36,14 @@ class LLMProcessorConfig:
     timeout_sec: int = 45
     temperature: float = 0.1
     max_tokens: int = 1200
+
+    # v0.2 resilience (external dependency fallback)
+    max_retries: int = 2
+    retry_backoff_sec: float = 1.0
+    fallback_backend: str = "mock"  # mock | none
+    breaker_error_threshold: int = 3
+    breaker_cooldown_sec: int = 300
+    resilience_state_file: str = str(ROOT / "data" / "daemon" / "llm_resilience_v0_2.json")
 
 
 class LLMProcessorError(RuntimeError):
@@ -175,9 +187,24 @@ class LLMMemoryProcessor:
 
         return {"memory_items": candidates}
 
+    def _resilience_controller(self) -> LLMResilienceController:
+        cfg = LLMResilienceConfig(
+            state_file=self.config.resilience_state_file,
+            error_threshold=max(1, int(self.config.breaker_error_threshold)),
+            cooldown_sec=max(1, int(self.config.breaker_cooldown_sec)),
+        )
+        return LLMResilienceController(cfg)
+
     def _extract_candidates(self, raw_text: str, max_items: int) -> dict:
         if self.config.backend == "mock":
-            return self._mock_chat_json(raw_text, max_items=max_items)
+            out = self._mock_chat_json(raw_text, max_items=max_items)
+            out["_runtime"] = {
+                "requested_backend": "mock",
+                "runtime_backend": "mock",
+                "fallback_used": False,
+                "attempts": 0,
+            }
+            return out
 
         if self.config.backend != "openai_compatible":
             raise LLMProcessorError(f"unsupported backend: {self.config.backend}")
@@ -195,7 +222,64 @@ class LLMMemoryProcessor:
             "输入文本如下：\n"
             f"{raw_text}"
         )
-        return self._openai_compatible_chat_json(system_prompt, user_prompt)
+
+        ctrl = self._resilience_controller()
+        state_before = ctrl.load_state()
+
+        # circuit breaker open => fallback path
+        if ctrl.is_open(state_before):
+            if self.config.fallback_backend == "mock":
+                out = self._mock_chat_json(raw_text, max_items=max_items)
+                out["_runtime"] = {
+                    "requested_backend": "openai_compatible",
+                    "runtime_backend": "mock",
+                    "fallback_used": True,
+                    "fallback_reason": "circuit_open",
+                    "attempts": 0,
+                    "breaker_open_until": state_before.get("circuit_open_until"),
+                }
+                return out
+            raise LLMProcessorError("circuit breaker open and fallback disabled")
+
+        max_retries = max(0, int(self.config.max_retries))
+        attempts = 0
+        last_err = None
+
+        for attempt in range(max_retries + 1):
+            attempts = attempt + 1
+            try:
+                out = self._openai_compatible_chat_json(system_prompt, user_prompt)
+                ctrl.record_success()
+                out["_runtime"] = {
+                    "requested_backend": "openai_compatible",
+                    "runtime_backend": "openai_compatible",
+                    "fallback_used": False,
+                    "attempts": attempts,
+                }
+                return out
+            except Exception as e:  # noqa: BLE001
+                last_err = f"{type(e).__name__}: {e}"
+                state_after_failure = ctrl.record_failure(last_err)
+                if attempt < max_retries:
+                    backoff = float(self.config.retry_backoff_sec) * (2 ** attempt)
+                    time.sleep(max(0.0, backoff))
+                else:
+                    # all retries exhausted
+                    if self.config.fallback_backend == "mock":
+                        out = self._mock_chat_json(raw_text, max_items=max_items)
+                        out["_runtime"] = {
+                            "requested_backend": "openai_compatible",
+                            "runtime_backend": "mock",
+                            "fallback_used": True,
+                            "fallback_reason": "request_failed",
+                            "attempts": attempts,
+                            "last_error": last_err,
+                            "breaker_open_until": state_after_failure.get("circuit_open_until"),
+                        }
+                        return out
+                    raise LLMProcessorError(f"LLM backend failed after retries: {last_err}")
+
+        raise LLMProcessorError(f"unexpected extract failure: {last_err}")
 
     def extract_memory_objects(
         self,
@@ -271,7 +355,9 @@ class LLMMemoryProcessor:
             validate_payload("memory.schema.json", obj)
             out.append(obj)
 
-        return {
+        runtime = extracted.get("_runtime") if isinstance(extracted, dict) else None
+
+        out_payload = {
             "ok": True,
             "backend": self.config.backend,
             "model": self.config.model,
@@ -279,6 +365,19 @@ class LLMMemoryProcessor:
             "count": len(out),
             "memory_items": out,
         }
+        if isinstance(runtime, dict):
+            out_payload.update(
+                {
+                    "runtime_backend": runtime.get("runtime_backend"),
+                    "fallback_used": bool(runtime.get("fallback_used", False)),
+                    "fallback_reason": runtime.get("fallback_reason"),
+                    "attempts": runtime.get("attempts"),
+                    "breaker_open_until": runtime.get("breaker_open_until"),
+                    "last_error": runtime.get("last_error"),
+                }
+            )
+
+        return out_payload
 
 
 def write_jsonl(path: Path, rows: list[dict]):
@@ -297,6 +396,12 @@ def main():
     p.add_argument("--timeout-sec", type=int, default=45)
     p.add_argument("--temperature", type=float, default=0.1)
     p.add_argument("--max-tokens", type=int, default=1200)
+    p.add_argument("--max-retries", type=int, default=2)
+    p.add_argument("--retry-backoff-sec", type=float, default=1.0)
+    p.add_argument("--fallback-backend", default="mock", choices=["mock", "none"])
+    p.add_argument("--breaker-error-threshold", type=int, default=3)
+    p.add_argument("--breaker-cooldown-sec", type=int, default=300)
+    p.add_argument("--resilience-state-file", default=str(ROOT / "data" / "daemon" / "llm_resilience_v0_2.json"))
     p.add_argument("--source-ref", required=True)
 
     src = p.add_mutually_exclusive_group(required=True)
@@ -323,6 +428,12 @@ def main():
         timeout_sec=max(1, int(args.timeout_sec)),
         temperature=float(args.temperature),
         max_tokens=max(1, int(args.max_tokens)),
+        max_retries=max(0, int(args.max_retries)),
+        retry_backoff_sec=max(0.0, float(args.retry_backoff_sec)),
+        fallback_backend=args.fallback_backend,
+        breaker_error_threshold=max(1, int(args.breaker_error_threshold)),
+        breaker_cooldown_sec=max(1, int(args.breaker_cooldown_sec)),
+        resilience_state_file=str(Path(args.resilience_state_file).expanduser().resolve()),
     )
 
     processor = LLMMemoryProcessor(cfg)

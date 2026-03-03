@@ -28,6 +28,10 @@ jobs:
         run: |
           python3 tools/validation/validate_daemon_closed_loop_v0_2.py
 
+      - name: Generate daemon observation report (nightly)
+        run: |
+          python3 tools/validation/generate_daemon_observation_report_v0_2.py --window-hours 48
+
       - name: Run workspace replay validation (nightly daemon suite)
         run: |
           python3 tools/validation/validate_scheduler_workspace_replay_v0_1.py
