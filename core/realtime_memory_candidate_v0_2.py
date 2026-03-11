@@ -148,19 +148,29 @@ def is_system_message_text(text: str) -> bool:
     return _has_any(SYSTEM_MESSAGE_PATTERNS, text)
 
 
-# 识别记忆价值信号：主题/结果/产出物
+# 识别记忆价值信号：主题/结果/产出物/操作
 MEMORY_ASSET_PATTERNS = [
+    # 结果/产出
     r"完成|完成",
     r"创建|新建|生成",
     r"修改|更新|编辑",
     r"提交|commit|push",
-    r"测试|验证|验证",
+    r"测试|验证",
     r"报告|总结|摘要",
     r"解决|修复|fix",
     r"部署|deploy",
-    r"配置|配置|setting",
-    r"学习|记住|记住",
+    r"配置|设置",
+    r"学习|记住",
     r"决定|决策|选择",
+    
+    # 操作/执行
+    r"执行|运行|启动",
+    r"停止|关闭|重启",
+    r"查看|检查|查看",
+    r"提取|解析|分析",
+    r"写入|保存|存储",
+    r"调用|触发",
+    r"继续|推进",
 ]
 
 
