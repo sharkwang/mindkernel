@@ -24,6 +24,27 @@ MEMORY_SIGNAL_PATTERNS = [
     r"记住|偏好|习惯|长期",
 ]
 
+# 元认知/分类意图：用户在说某事"属于/归入某类"，暗示认知判断
+METACOGNITIVE_PATTERNS = [
+    r"归入|属于|算是|可以算|属于",
+    r"是.*类|是.*型|属于.*类|属于.*型",
+]
+
+# 兴趣爱好信号：用户表达兴趣/爱好/喜欢
+# 动词可有单字形式（如"学"=学习，"做"可独立）
+HOBBY_INTEREST_PATTERNS = [
+    r"爱好|兴趣|喜欢|热爱|迷",
+    r"(在|刚在).*?(学习|研究|尝试|练|做|搞|学|试)",
+    r"刚学会|第一次|第一次做",
+]
+
+# 纯 PROCEDURAL 内容（步骤/教程/配方）：无个人关联则降权
+# 特征：标题含"做法/步骤/教程/配方"，且不含个人行为信号
+PROCEDURAL_SKIP_PATTERNS = [
+    r"^[做菜|做法|步骤|教程|配方|指南|攻略]",
+    r"^(how to|recipe|steps?|tutorial|guide)\b",
+]
+
 # system/control envelopes that should not be treated as normal memory facts
 SYSTEM_NOISE_PATTERNS = [
     r"^\s*pre-compaction memory flush",
@@ -177,19 +198,27 @@ MEMORY_ASSET_PATTERNS = [
 def infer_value_score(text: str, role: str) -> int:
     # 基础分：用户消息更高
     base = 30 if role == "user" else 5
-    
+
     # 系统消息直接降为最低价值
     if is_system_message_text(text):
         return 5
-    
+
     # 用户消息中的记忆价值信号
     if _has_any(MEMORY_SIGNAL_PATTERNS, text):
         base += 25
-    
+
     # 主题/结果/asset 信号
     if _has_any(MEMORY_ASSET_PATTERNS, text):
         base += 30
-    
+
+    # 元认知/分类意图（"归入...类"）：说明用户在主动分类认知
+    if _has_any(METACOGNITIVE_PATTERNS, text):
+        base += 30
+
+    # 兴趣爱好/学习行为：主动说"在学习/尝试/喜欢XX"
+    if _has_any(HOBBY_INTEREST_PATTERNS, text):
+        base += 40
+
     return min(100, base)
 
 
@@ -208,7 +237,7 @@ def _stable_hash(s: str) -> str:
 def extract_candidates(
     ev: dict,
     *,
-    min_content_len: int = 6,
+    min_content_len: int = 4,
     max_candidates: int = 1,
     include_system: bool = True,
 ) -> list[dict]:
