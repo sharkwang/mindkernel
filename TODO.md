@@ -308,3 +308,43 @@ MindKernel 记忆治理验收清单 v1（20 条）
 - MVP 通过线： 至少完成 B1-B4 + C1-C2 + D1-D3（9 项）
 - 本周通过线： 20 项完成 ≥ 14 项，且无 A 类阻断问题
 
+
+## 今日巡检（2026-03-19）
+
+### Review 发现与修复
+
+**P0 已修复：**
+- ✅ PID 锁竞争（双实例导致候选者状态分裂）
+  - 修复：`acquire_pid_file()` 改用 `fcntl.flock(LOCK_EX|LOCK_NB)` 原子锁
+  - 新增 `--lock-file` 参数
+  - `release_pid_file()` 增加解锁 + 删 PID 文件
+  - 验证：并发启动第二个实例 → 正确报错 "lock file is held"
+  - 提交：`1a2d9c1`（含 health_check.py）
+
+- ✅ launchd 重启行为修复
+  - plist 新增 `--lock-file` 参数 + `PATH` 环境变量
+  - 重启 launchd 服务后 daemon 正常拉起（PID 56005）
+
+- ✅ 候选者碎片状态清理
+  - `feature_flag_off`（15条）和 `observed_only`（15条）→ `legacy_dirty`
+  - 数据库中 30 条已清理为 legacy_dirty 状态
+
+**P0 推送完成：**
+- ✅ 5 个本地提交已推送（`ef3d525`）
+  - 含 v0.2 阈值策略 + 可插拔架构 + PID 锁修复
+  - GitHub secret scanning 误报：fixture 文件含 `--enqueue-min-risk-level`（含 `sk-` 字符串）触发假阳性
+  - 解决：用 interactive rebase 删除含 fixture 改动的历史提交，reset 为最小干净 fixture
+
+**P1 调查结论：**
+- ✅ Reflect worker "空成功"：dry-run 设计行为（v0.1 默认模式），非 bug
+- ✅ 7天运行观察报告已生成（168h 窗口）：candidate=16, enqueued=1, 0 errors
+- ✅ 7天运行观察缺口（Day8-17）：adapter checkpoint 卡在旧 session 文件，但 daemon 已追上，gap 属真实历史缺口
+
+**新增工具：**
+- `tools/daemon/health_check.py` — daemon 健康检查（PID + 锁 + DB + scheduler + events）
+
+**现状：**
+- daemon 运行中（PID 56005，launchd 托管）
+- adapter 运行中（PID 49000）
+- 7天运行观察：candidate=16, enqueued=1
+- 候选者库：enqueued=1, legacy_dirty=30（干净状态）
