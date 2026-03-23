@@ -1,0 +1,115 @@
+[
+  {
+    "id": "op_mindkernel",
+    "statement": "王大爷正在开发 MindKernel，这是他的核心 AI 记忆项目",
+    "summary": "MindKernel 是王大爷的 AI 记忆系统，v0.3 阶段正在开发 REST API + 知识图谱模块",
+    "confidence": 0.95,
+    "topics": [
+      "project",
+      "mindkernel"
+    ],
+    "rule_name": "user_defined",
+    "created_at": "2026-03-03T00:00:00Z",
+    "updated_at": "2026-03-23T13:42:20.553036Z",
+    "access_count": 2
+  },
+  {
+    "id": "op_omexai",
+    "statement": "王大爷在推进 OmexAI 项目，围绕固井行业 AI 升级做调研",
+    "summary": "OmexAI 项目已完成约 45%，调研对象 6 人，核心负责人是唐昌强",
+    "confidence": 0.95,
+    "topics": [
+      "project",
+      "omexai"
+    ],
+    "rule_name": "user_defined",
+    "created_at": "2026-03-02T00:00:00Z",
+    "updated_at": "2026-03-23T13:42:20.553036Z",
+    "access_count": 2
+  },
+  {
+    "id": "op_openclaw",
+    "statement": "王大爷使用 OpenClaw 作为 AI 助手核心平台",
+    "summary": "OpenClaw 是主要对话入口，支持多渠道（飞书/微信/Telegram）",
+    "confidence": 0.95,
+    "topics": [
+      "platform",
+      "openclaw"
+    ],
+    "rule_name": "user_defined",
+    "created_at": "2026-03-01T00:00:00Z",
+    "updated_at": "2026-03-23T00:00:00Z",
+    "access_count": 0
+  },
+  {
+    "id": "op_baking",
+    "statement": "王大爷对烘焙有兴趣，主要研究夏巴塔面包配方",
+    "summary": "新烤箱是艾瑞斯E5（风炉平炉一体，最高280°C），已试烤夏巴塔",
+    "confidence": 0.85,
+    "topics": [
+      "hobby",
+      "baking"
+    ],
+    "rule_name": "user_defined",
+    "created_at": "2026-03-14T00:00:00Z",
+    "updated_at": "2026-03-23T00:00:00Z",
+    "access_count": 0
+  },
+  {
+    "id": "op_elderly_care",
+    "statement": "王大爷在探索老人陪伴助理产品方向（随身 badge + 语音 + 监测）",
+    "summary": "四大功能：纯语音驱动、日常生活陪伴、动作监测、紧急联系",
+    "confidence": 0.8,
+    "topics": [
+      "product",
+      "elderly_care"
+    ],
+    "rule_name": "user_defined",
+    "created_at": "2026-03-19T00:00:00Z",
+    "updated_at": "2026-03-23T00:00:00Z",
+    "access_count": 0
+  },
+  {
+    "id": "op_chinese_preferred",
+    "statement": "王大爷偏好中文交流，沟通风格 D 混合模式",
+    "summary": "平时幽默风趣，办事简洁干脆",
+    "confidence": 0.9,
+    "topics": [
+      "preference",
+      "communication"
+    ],
+    "rule_name": "user_defined",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-03-23T00:00:00Z",
+    "access_count": 0
+  },
+  {
+    "id": "op_wechat_connected",
+    "statement": "微信渠道已接入 OpenClaw，2026-03-23 打通",
+    "summary": "openclaw-weixin 插件正常运行，微信可直接对话",
+    "confidence": 0.95,
+    "topics": [
+      "infrastructure",
+      "wechat"
+    ],
+    "rule_name": "event_derived",
+    "created_at": "2026-03-23T13:00:00Z",
+    "updated_at": "2026-03-23T13:55:52.129102Z",
+    "access_count": 1
+  },
+  {
+    "id": "op_rest_api_live",
+    "statement": "MindKernel v0.3 REST API 已上线（端口 18793）",
+    "summary": "API Key: mk_IsQ2BrHQCmKx6vqDU0wv5JceElh4hjE7zjQks2YdxTM",
+    "confidence": 0.95,
+    "topics": [
+      "project",
+      "mindkernel",
+      "milestone"
+    ],
+    "rule_name": "event_derived",
+    "created_at": "2026-03-23T13:00:00Z",
+    "updated_at": "2026-03-23T13:39:41.496085Z",
+    "access_count": 1
+  }
+]

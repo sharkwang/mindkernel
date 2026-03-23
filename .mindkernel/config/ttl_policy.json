@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "max_age_days": 90,
+  "min_access_count": 2,
+  "decay_factor": 0.95,
+  "prune_threshold": 0.15,
+  "prune_interval_hours": 24,
+  "dry_run": true
+}

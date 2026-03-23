@@ -269,11 +269,12 @@ def memory_to_experience(
     episode_summary: str,
     outcome: str,
     actor_id: str = "mk-me-pipeline",
+    decision_info: dict | None = None,
 ) -> dict:
+    """Create an experience from a memory, with optional decision recording and opinion update."""
     row = c.execute("SELECT payload_json FROM memory_items WHERE id=?", (memory_id,)).fetchone()
     if not row:
         raise ValueError(f"memory not found: {memory_id}")
-
     memory_payload = json.loads(row["payload_json"])
     if len(memory_payload.get("evidence_refs", [])) < 1:
         raise ValueError("memory must include at least one evidence_ref")
@@ -341,12 +342,93 @@ def memory_to_experience(
     )
 
     c.commit()
+
+    # ── Decision 闭环：写入 decision_traces ──────────────────────────
+    actual_exp_status = "candidate"
+    if decision_info:
+        _write_decision_trace(c, exp_id, decision_info, memory_id, experience_payload)
+        # auto_apply 时直接将 experience 升级为 active
+        if decision_info.get("policy_decision") == "auto_apply":
+            c.execute(
+                "UPDATE experience_records SET status=?, updated_at=? WHERE id=?",
+                ("active", now_iso(), exp_id),
+            )
+            actual_exp_status = "active"
+            write_audit_event(
+                c,
+                event_type="state_transition",
+                actor_type="system",
+                actor_id=actor_id,
+                object_type="experience",
+                object_id=exp_id,
+                before={"status": "candidate"},
+                after={"status": "active"},
+                reason=f"auto_apply: {decision_info.get('decision', '')}",
+                evidence_refs=memory_payload.get("evidence_refs", []),
+                metadata={"rule_id": "R-ME-AUTO-APPLY"},
+            )
+            c.commit()
+
+    # ── Opinion 自动更新 ──────────────────────────────────────────
+    try:
+        _update_opinions_auto(memory_payload, episode_summary, exp_id, outcome)
+    except Exception:
+        pass  # Opinion 更新失败不影响主流程
+
     return {
         "memory_id": memory_id,
         "memory_status": memory_payload.get("status"),
         "experience_id": exp_id,
-        "experience_status": "candidate",
+        "experience_status": actual_exp_status,
     }
+
+
+def _write_decision_trace(
+    c: sqlite3.Connection,
+    exp_id: str,
+    decision_info: dict,
+    memory_id: str,
+    experience_payload: dict,
+):
+    """将 decision proposal 写入 decision_traces 表。"""
+    trace_id = f"dt_{uuid.uuid4().hex[:12]}"
+    now = now_iso()
+    payload = {
+        "id": trace_id,
+        "experience_id": exp_id,
+        "memory_id": memory_id,
+        "episode_summary": decision_info.get("episode_summary", ""),
+        "outcome": decision_info.get("outcome", ""),
+        "policy_decision": decision_info.get("policy_decision", "auto_apply"),
+        "decision": decision_info.get("decision", "applied"),
+        "reason_codes": decision_info.get("reason_codes", []),
+        "confidence": experience_payload.get("confidence", 0.5),
+        "created_at": now,
+    }
+    c.execute(
+        "INSERT INTO decision_traces(id, final_outcome, payload_json, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+        (trace_id, decision_info.get("decision", "applied"), json.dumps(payload, ensure_ascii=False), now, now),
+    )
+    c.commit()
+
+
+def _update_opinions_auto(
+    memory_payload: dict,
+    episode_summary: str,
+    experience_id: str,
+    outcome: str,
+):
+    """自动更新 opinions（根据新 experience）。"""
+    try:
+        from core.opinion_updater import update_opinions
+        update_opinions(
+            memory_content=memory_payload.get("content", ""),
+            experience_summary=episode_summary,
+            experience_id=experience_id,
+            outcome=outcome,
+        )
+    except Exception:
+        pass
 
 
 def list_items(c: sqlite3.Connection, table: str, limit: int = 20):

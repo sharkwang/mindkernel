@@ -1,5 +1,71 @@
 # Changelog
 
+## v0.4.1 — 2026-03-23
+
+### Decision 闭环修复（F1）
+- `memory_to_experience()` 新增 `decision_info` 参数
+- reflect 调用后 decision 自动写入 `decision_traces` 表
+- REST API `/reflect` 和 MCP `mindkernel_reflect` 均已修复
+- 新增 `_write_decision_trace()` 函数
+- `policy_decision=auto_apply` 时，experience **自动从 candidate 升级为 active**
+- 升级时写 audit event，记录 `R-ME-AUTO-APPLY` 规则
+
+### Opinion 自动写入路径（F2）
+- 新增 `core/opinion_updater.py` — 自动更新 opinions_v0_1.json
+- `memory_to_experience()` 成功后自动调用 `_update_opinions_auto()`
+- 按 topic keywords 匹配已有 opinions，累加置信度
+- 高频实体自动创建新 opinion 条目
+
+### Opinion 面板刷新
+- 8 条高质量 opinions 实时更新
+- access_count 真实反映触发次数
+
+## v0.4.0 — 2026-03-23（已完成）
+
+### 知识图谱模块（新增）
+- `core/knowledge_graph.py` — 实体关系图谱核心
+- `POST /api/v1/knowledge/relations` — 手动添加关系三元组
+- `GET /api/v1/knowledge/relations?entity=...` — 查询实体关系（支持 depth=1/2）
+- `POST /api/v1/knowledge/extract` — 从文本正则抽取关系（v0.5 升级为 LLM）
+- `knowledge_relations` 表：subject/predicate/object/confidence/source
+
+### Opinion 可视化面板（新增）
+- `tools/inspect_opinions.py` — 生成 HTML 可视化报告
+- `GET /api/v1/opinions/panel` — API 返回面板 HTML
+- 红/黄/灰三级置信度颜色编码
+
+---
+
+## v0.3.0 — 2026-03-23
+
+### REST API Server（新增）
+- `plugins/api_server/` — FastAPI 服务，端口 18793
+- `POST /api/v1/retain` — 写入记忆（含双时间戳 document_date/event_date）
+- `GET /api/v1/recall?q=...` — 关键词语义检索
+- `POST /api/v1/reflect` — 触发反思流程
+- `GET /api/v1/health` — 健康状态
+- `POST /api/v1/prune` — TTL 遗忘策略触发
+- `POST /api/v1/adapters/poll` — 触发所有适配器
+- API Key 认证（`X-MindKernel-Key` header）
+- `run_api_server.sh` — 启动脚本
+- `~/Library/LaunchAgents/com.zhengwang.mindkernel.api.plist` — launchd 自启
+
+### TTL 遗忘策略（新增）
+- `core/ttl_strategy.py` — Score = recency × frequency，grace_period 保护新记忆
+- 配置：`~/.mindkernel/config/ttl_policy.json`
+- CLI：`python core/ttl_strategy.py [--apply]`
+
+### 数据源适配器（新增）
+- `adapters/browser_bookmark_adapter.py` — Chrome/Edge 书签增量同步
+- `adapters/filesystem_adapter.py` — 监控文件夹增量文件
+- 状态文件：`~/.mindkernel/state/`
+
+### 双时间戳（部分完成）
+- retain payload 新增 `document_date` + `event_date` 字段
+- `event_date` 由 reflect 阶段 LLM 推断（待落地）
+
+---
+
 ## v0.1.1-stabilized
 
 _Date: 2026-02-26 (Asia/Shanghai)_
