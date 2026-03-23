@@ -36,6 +36,7 @@ async def reflect(req: ReflectRequest, _key: str = Depends(verify_api_key)):
         routed = route_proposal(proposal, cfg or {})
 
         # 2. 生成 experience，同时写入 decision_traces
+        routed["source"] = req.source  # 透传来源，供治理引擎追踪
         exp_result = memory_to_experience(
             c,
             req.memory_id,

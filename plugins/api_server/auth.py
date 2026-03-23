@@ -14,7 +14,7 @@ from fastapi.security import APIKeyHeader
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parents[3]
-KEY_FILE = ROOT / ".mindkernel" / "api_key"
+KEY_FILE = Path.home() / ".mindkernel" / "api_key"
 
 API_KEY_HEADER = APIKeyHeader(name="X-MindKernel-Key", auto_error=False)
 

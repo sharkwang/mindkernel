@@ -71,6 +71,7 @@ class ReflectRequest(BaseModel):
     memory_id: str = Field(..., description="要反思的记忆 ID")
     episode_summary: str = Field(..., description="事件摘要")
     outcome: str = Field(..., pattern="^(positive|neutral|negative)$")
+    source: str = Field(default="api", description="来源：daemon_candidate / openclaw_memory_md / manual")
 
 
 class ReflectResponse(BaseModel):

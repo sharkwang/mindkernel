@@ -403,6 +403,7 @@ def _write_decision_trace(
         "decision": decision_info.get("decision", "applied"),
         "reason_codes": decision_info.get("reason_codes", []),
         "confidence": experience_payload.get("confidence", 0.5),
+        "source": decision_info.get("source", "api"),
         "created_at": now,
     }
     c.execute(

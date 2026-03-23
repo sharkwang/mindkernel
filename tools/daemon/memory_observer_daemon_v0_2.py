@@ -19,6 +19,8 @@ from __future__ import annotations
 import argparse
 import fcntl
 import json
+import urllib.request
+import urllib.error
 import os
 import signal
 import sqlite3
@@ -113,7 +115,94 @@ def _apply_threshold_strategy(cand: dict) -> tuple[str, str]:
     }
     
     status = status_map.get(decision.action, "observed_only")
-    return status, decision.note
+    return status, decision_note
+
+
+# ---------------------------------------------------------------------------
+# M→E trigger: after a candidate is enqueued, call /retain then /reflect
+# ---------------------------------------------------------------------------
+
+MK_API_BASE = "http://localhost:18793/api/v1"
+MK_API_KEY = "mk_IsQ2BrHQCmKx6vqDU0wv5JceElh4hjE7zjQks2YdxTM"
+_POSITIVE_KW = frozenset(["achievement", "success", "learned", "completed", "improved", "resolved", "fixed", "won", "accomplished", "突破", "成功", "完成", "解决", "学习"])
+_NEGATIVE_KW = frozenset(["error", "failure", "failed", "bug", "crash", "exception", "wrong", "broken", "mistake", "错误", "失败", "异常", "崩溃", "bug"])
+
+
+def _mk_api_headers() -> dict:
+    return {
+        "X-MindKernel-Key": MK_API_KEY,
+        "Content-Type": "application/json",
+    }
+
+
+def _determine_outcome(content: str) -> str:
+    c_lower = content.lower()
+    pos = sum(1 for kw in _POSITIVE_KW if kw in c_lower)
+    neg = sum(1 for kw in _NEGATIVE_KW if kw in c_lower)
+    if neg > pos:
+        return "negative"
+    if pos > neg:
+        return "positive"
+    return "neutral"
+
+
+def _trigger_reflect_for_candidate(cand: dict) -> bool:
+    """
+    Call /retain then /reflect for a memory candidate.
+    Returns True on success, False on failure.
+    """
+    content = str(cand.get("summary") or cand.get("content") or "")
+    if not content:
+        print(f"[M->E] skip reflect: candidate {cand.get('candidate_id')} has no content", file=sys.stderr)
+        return False
+
+    episode_summary = content[:200]
+
+    # Step 1: /retain → get memory_id
+    # 带上来源标签，供治理引擎追踪「来源→outcome」反馈
+    retain_payload = json.dumps({
+        "content": content,
+        "tags": ["daemon_candidate"],
+    }).encode()
+    try:
+        req = urllib.request.Request(
+            f"{MK_API_BASE}/retain",
+            data=retain_payload,
+            headers=_mk_api_headers(),
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            retain_data = json.loads(resp.read())
+        memory_id = retain_data.get("memory_id") or retain_data.get("id")
+        if not memory_id:
+            raise ValueError(f"no memory_id in retain response: {retain_data}")
+    except Exception as e:
+        print(f"[M->E] /retain failed for candidate {cand.get('candidate_id')}: {e}", file=sys.stderr)
+        return False
+
+    # Step 2: /reflect
+    outcome = _determine_outcome(content)
+    reflect_payload = json.dumps({
+        "memory_id": memory_id,
+        "episode_summary": episode_summary,
+        "outcome": outcome,
+        "source": "daemon_candidate",
+    }).encode()
+    try:
+        req = urllib.request.Request(
+            f"{MK_API_BASE}/reflect",
+            data=reflect_payload,
+            headers=_mk_api_headers(),
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            reflect_data = json.loads(resp.read())
+        exp_id = reflect_data.get("experience_id", "unknown")
+        print(f"[M->E] candidate {cand.get('candidate_id')} → memory_id={memory_id} → experience_id={exp_id}", file=sys.stderr)
+        return True
+    except Exception as e:
+        print(f"[M->E] /reflect failed for candidate {cand.get('candidate_id')} memory_id={memory_id}: {e}", file=sys.stderr)
+        return False
 
 
 def now_iso() -> str:
@@ -817,6 +906,11 @@ def process_batch(
                             enqueued += 1
                             scheduler_queued_cache = (scheduler_queued_cache or 0) + 1
                             _candidate_upsert(c, cand, status="enqueued", job_id=job_id)
+                            # Trigger M→E: call /retain then /reflect
+                            try:
+                                _trigger_reflect_for_candidate(cand)
+                            except Exception as mtoke:
+                                print(f"[M->E] trigger error: {mtoke}", file=sys.stderr)
 
                 if verbose:
                     print(f"[daemon] processed event_id={event_id} offset={start}->{end}", file=sys.stderr)
