@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-03-21 09:00 (Asia/Shanghai)_
+_Last updated: 2026-03-29 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -247,6 +247,69 @@ _Last updated: 2026-03-21 09:00 (Asia/Shanghai)_
 - [x] openclaw integration 唯一待办（经验卡片写回 OpenClaw 对话策略）仍未启动，建议本周决策是否继续。
 - [x] 风险画像保持稳定：外部依赖风险（中）持续；安装流程文档/脚本漂移风险维持中低；当前无 P0 阻塞。
 
+## 今日巡检（2026-03-24）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目。
+- [x] 核对代码基线增量：`origin/main` 更新到 `3bf59d7`（feat(v0.5): MECD参数定标系统 + 治理引擎 + Decision反馈环），新增 8 文件 1053 行。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 721）：batches=17, candidates=67, enqueued=37, scheduler jobs=37, succeeded=37, errors=0，零错误运行。
+- [x] adapter 运行正常（PID 709），events file 255 lines / 69701 bytes。
+- [x] v0.5 重大更新已推送：MECD参数定标系统（core/param_config.py）+ 治理引擎（tools/governance/governance_engine.py）+ OpenClaw MEMORY.md 同步（tools/adapters/openclaw_memory_sync.py）+ M→E trigger 全闭环。
+- [x] 7天运行报告（03-03~03-23）已生成：入队率 43%（37/87），medium 降级策略有效，高风险候选正确拦截，无用户行为误报。
+- [x] 本地未提交修改均为运行时文件（WAL/checkpoint/pid/log），无源码漂移风险。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；本地工作树与远端主线对齐良好。
+
+## 今日巡检（2026-03-25）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 32 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 更新到 `197ed82`（feat(pipeline): MECD exporter + canvas panel integration）；本地无源码漂移（仅运行时文件待提交）。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 721，launchd 托管）：batches=17, candidates=67, enqueued=37, scheduler jobs=37, succeeded=37, errors=0，与昨日持平。
+- [x] adapter 运行正常（PID 709），events file 255 lines / 69701 bytes（无新增事件，属正常空轮询）。
+- [x] v0.5 MECD pipeline 新增两个提交已推送：exporter + canvas panel integration（`d6811a1`）。
+- [x] 本地未提交修改均为运行时文件（WAL/checkpoint/pid/log/chat DB），无源码漂移风险。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 22+ 天；当前无新增风险。
+
+## 今日巡检（2026-03-28，周六）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 35 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `197ed82`；本地仅有 TODO.md 待提交，源码无漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（launchd 托管）：连续零错误运行 25+ 天；候选者库处于稳态（enqueued=37，SLA 达标）。
+- [x] adapter 运行正常：events file 无新增事件，属正常空轮询。
+- [x] v0.2 运行观察：最近 observation 停留 03-23（7day_summary）；缺口 5 天（03-24~03-28）。
+- [x] 新增 adapter 代码待决策归档：`tools/adapters/multi_source_coordinator.py` + `tools/adapters/significance_filter.py`（已生成 `data/adapters/` 数据）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 25+ 天；当前无新增风险。
+
+## 今日巡检（2026-03-29，周日）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 36 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 更新到 `cc626e4`（feat: context-aware retain — semantic closure detection + topic segmentation + LLM type correction）；本地 TODO.md 待提交，源码无漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 92977，launchd 托管）：batches=19, candidates=86, enqueued=37, scheduler jobs=37, succeeded=37, errors=0；连续零错误运行 27+ 天。
+- [x] adapter 运行正常：events file 255 lines / 69701 bytes（无新增事件，属正常空轮询）。
+- [x] v0.2 运行观察（Day29）：daemon 无中断；24h 窗口 batches=2, processed=0, candidates=0, errors=0（全零，无新事件，正常空轮询）；最新 observation 为今日自动生成（observation_20260329_010001.json + observation_daily.md）；03-24~03-28 缺口已自动补齐。
+- [x] 新增 adapter 代码待决策归档：`tools/adapters/multi_source_coordinator.py` + `tools/adapters/significance_filter.py`（已生成 `data/adapters/` 数据）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 27+ 天；当前无新增风险。
+- [x] **MECD 混合模式落地**（与王大爷确认方向后）：
+  - ✅ `tools/active_push/active_push_worker_v0_1.py`（置信度≥0.85 触发，幂等 ledger，MEMORY.md 写入）
+  - ✅ `HEARTBEAT.md` 集成：心跳时读取 push buffer 并展示给用户
+  - ✅ `tools/validation/validate_active_push_v0_1.py`（3/3 测试通过）
+  - 🔲 待集成：reflect_scheduler_worker → `cognition_to_decision()`（当前 C→D 未自动触发，decision_traces 表为空）
+  - 已推送：`7133705`
+
+## 今日巡检（2026-03-27，周五）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 34 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `197ed82`；本地与远端同步，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 721，launchd 托管）：batches=17, candidates=67, enqueued=37, scheduler jobs=37, succeeded=37, errors=0，与 03-26 持平（无新事件）。
+- [x] adapter 运行正常（PID 709），events file 255 lines / 69701 bytes（无新增事件，属正常空轮询）。
+- [x] v0.2 运行观察：最近 observation 停留 03-23（7day_summary）；daemon 连续零错误运行 24+ 天；近期无新候选者产生，候选者库处于稳态。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 24+ 天；当前无新增风险。
+
+## 今日巡检（2026-03-26）
+
 ## 下一步（运行期）
 
 > 参考：`docs/06-execution/release-runbook-v0.1.1-stabilized.md`
@@ -265,7 +328,13 @@ _Last updated: 2026-03-21 09:00 (Asia/Shanghai)_
    - [x] 完成 D6：门禁分层与夜间回放策略固化。
 4. 准备下一阶段（v0.2）需求梳理：外部依赖熔断/降级与长期稳定性观测（韧性原型已落地，待运行观察与阈值固化）。
 5. 将 installer + README 安装指引纳入发布手册与 CI smoke 安装验证（避免文档/脚本漂移）。
-6. **新增**：v0.2 daemon 观察缺口 10 天（Day8~Day17），建议本周内：① 确认 daemon 当前运行状态；② 完成观察补录；③ 决策 v0.2 代码合入计划。
+6. **【进行中】MECD 混合模式集成 — 经验卡片主动展示**：
+   - [x] `tools/active_push/active_push_worker_v0_1.py`（worker + HEARTBEAT 展示）
+   - [x] 置信度阈值 0.85，幂等 ledger
+   - [x] MEMORY.md 结论区 + memory/ 日志写入
+   - [ ] **待集成**：reflect_scheduler_worker → `cognition_to_decision()` 接入（当前 decision_traces 表为空，C→D 未自动触发）
+   - [ ] launchd 托管 active_push_worker（建议独立于 daemon 运行，5min 轮询）
+   - [ ] HEARTBEAT 读取 push buffer 并展示给用户
 
 
 ## v0.2 运行观察（实际完成情况）
