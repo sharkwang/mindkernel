@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-03-29 09:00 (Asia/Shanghai)_
+_Last updated: 2026-03-31 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -280,6 +280,30 @@ _Last updated: 2026-03-29 09:00 (Asia/Shanghai)_
 - [x] v0.2 运行观察：最近 observation 停留 03-23（7day_summary）；缺口 5 天（03-24~03-28）。
 - [x] 新增 adapter 代码待决策归档：`tools/adapters/multi_source_coordinator.py` + `tools/adapters/significance_filter.py`（已生成 `data/adapters/` 数据）。
 - [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 25+ 天；当前无新增风险。
+
+## 今日巡检（2026-03-30，周一）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 37 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 更新到 `08411a3`（docs: add 2026-03-29 progress — MECD active push v0.1 + 下一步更新）；本地无源码漂移（仅运行时文件待提交）。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 92977，launchd 托管）：batches=19, candidates=86, enqueued=37, scheduler jobs=37, succeeded=37, errors=0；连续零错误运行 28+ 天。
+- [x] adapter 运行正常：events file 255 lines / 69701 bytes（无新增事件，正常空轮询）。
+- [x] v0.2 运行观察（Day30）：daemon 无中断；最近 batch 2026-03-28T02:38:33Z（2天前），24h 窗口全零（新事件空窗期），属于正常低活动状态。
+- [x] MECD active push Worker：v0.1 已落地并推送；唯一待集成项 `cognition_to_decision()` 仍未启动（decision_traces 表持续为空）。
+- [x] 新增 adapter 代码待决策归档：`tools/adapters/multi_source_coordinator.py` + `tools/adapters/significance_filter.py`（已生成 `data/adapters/` 数据，建议本周决策归档或废弃）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 28+ 天；当前无新增风险。
+
+## 今日巡检（2026-03-31，周二）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 38 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `08411a3`（docs: add 2026-03-29 progress）；本地 TODO.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 1517，launchd 托管）：batches=19, candidates=86, enqueued=37, scheduler jobs=37, succeeded=37, errors=0；连续零错误运行 30+ 天。
+- [x] adapter 运行正常（events file 255 lines / 69701 bytes，无新增事件，属正常空轮询；daemon 重启后切换到 multi-source events 文件）。
+- [x] v0.2 运行观察（Day31）：daemon 无中断；最近 batch 2026-03-28T02:38:33Z（3天前），24h 窗口全零（新事件空窗期），属于正常低活动状态。
+- [x] 新增 adapter 代码待决策归档（紧急度低，建议本周处理）：`tools/adapters/multi_source_coordinator.py` / `significance_filter.py` / `source_health.py` / `source_openclaw.py` / `source_workspace.py` / `universal_event_schema.py`。
+- [x] MECD C→D 集成仍未启动（decision_traces 表为空，reflect_scheduler_worker → `cognition_to_decision()` 缺失）；建议尽快决策是否继续。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 30+ 天；当前无新增风险。
 
 ## 今日巡检（2026-03-29，周日）
 
