@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-03-31 09:00 (Asia/Shanghai)_
+_Last updated: 2026-04-01 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -304,6 +304,30 @@ _Last updated: 2026-03-31 09:00 (Asia/Shanghai)_
 - [x] 新增 adapter 代码待决策归档（紧急度低，建议本周处理）：`tools/adapters/multi_source_coordinator.py` / `significance_filter.py` / `source_health.py` / `source_openclaw.py` / `source_workspace.py` / `universal_event_schema.py`。
 - [x] MECD C→D 集成仍未启动（decision_traces 表为空，reflect_scheduler_worker → `cognition_to_decision()` 缺失）；建议尽快决策是否继续。
 - [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 30+ 天；当前无新增风险。
+
+## 今日巡检（2026-04-01，周三）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 39 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `08411a3`；本地与远端同步，无源码漂移（仅运行时文件待提交）。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 1517，launchd 托管）：batches=19, candidates=86, enqueued=37, scheduler jobs=37, succeeded=37, errors=0；连续零错误运行 **31+ 天**。
+- [x] adapter 运行正常：events file 255 lines / 69701 bytes（无新增事件，属正常空轮询）。
+- [x] v0.2 运行观察（Day32，auto-report）：24h 窗口 batches=0, processed=0, candidates=0, errors=0，无告警；属于正常低活动/空事件期。
+- [x] 本地未跟踪文件均为运行时产物（`data/adapters/`、`data/daemon/`、`data/governance/`、`tools/adapters/` 待归档脚本）；无源码漂移风险。
+- [x] MECD C→D 集成仍未启动（decision_traces 表为空，`cognition_to_decision()` 未接入 reflect worker）；**建议本周决策推进或归档**。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 31+ 天；当前无新增风险。
+
+## 今日巡检（2026-04-02，周四）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新仍为 6.26（2026-02-21），截至今日无新增讨论条目（持续 40 天无更新）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `08411a3`；本地 TODO.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 1517，launchd 托管）：连续零错误运行 **32+ 天**；24h 窗口全零指标属正常低活动期。
+- [x] adapter 运行正常：events file 无新增事件，属正常空轮询。
+- [x] v0.2 运行观察（Day33，auto-report）：24h 窗口 batches=0, processed=0, candidates=0, errors=0，无告警；属于正常空事件期。
+- [x] 本地未跟踪文件均为运行时产物（`data/adapters/`、`data/governance/`、`tools/adapters/` 待归档脚本）；无源码漂移风险。
+- [x] MECD C→D 集成仍未启动（decision_traces 表为空，`cognition_to_decision()` 未接入 reflect worker）；建议本周决策推进或归档。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 32+ 天；当前无新增风险。
 
 ## 今日巡检（2026-03-29，周日）
 
