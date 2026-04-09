@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-04-08 09:00 (Asia/Shanghai)_
+_Last updated: 2026-04-09 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -367,6 +367,17 @@ _Last updated: 2026-04-08 09:00 (Asia/Shanghai)_
 - [x] MECD pipeline 进展确认：M=114(107c/7a/0ar), E=9(6c/3a), C=2, D=4(auto_applied=4)；全链路正常推进。
 - [x] 本地未跟踪文件均为运行时产物（`data/adapters/`、`data/daemon/`、`data/governance/`、`tools/adapters/` 待归档脚本）；无源码漂移风险。
 - [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 36+ 天；当前无新增风险。
+
+## 今日巡检（2026-04-09，周四）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 3 天无新增。
+- [x] 核对代码基线增量：`origin/main` 保持在 `cdb20ab`（与本地同步，无源码漂移）。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 运行状态（推断）：昨日基线 39+ 天零错误，launchd 托管无中断；今日距上次报告约 24h，属正常观测窗口。
+- [x] M1 做梦状态确认延续：dreaming_entries 有 3 条记录（2026-04-06T02:10:44Z），M2 行动分发（ask_human/propose_task/drive_conversation）仍待启动（持续 3 天）。
+- [x] MECD pipeline：C=2, D=4（全 auto_applied），全链路运行正常。
+- [x] 本地未跟踪文件均为运行时产物（`data/adapters/` 待归档脚本）；无源码漂移风险。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 **40+ 天**（里程碑）；当前无新增风险。
 
 ## 今日巡检（2026-04-08，周三）
 
