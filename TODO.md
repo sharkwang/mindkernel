@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-04-09 09:00 (Asia/Shanghai)_
+_Last updated: 2026-04-12 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -564,3 +564,38 @@ MindKernel 记忆治理验收清单 v1（20 条）
 - adapter 运行中（PID 49000）
 - 7天运行观察：candidate=16, enqueued=1
 - 候选者库：enqueued=1, legacy_dirty=30（干净状态）
+
+## 今日巡检（2026-04-12，周日）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **6 天**无新增。
+- [x] 核对代码基线增量：`origin/main` 保持在 `faeca4d`（feat(M2): dreaming action router + active_push buffer consumer）；本地与远端同步，无源码漂移（TODO.md 本次巡检后待提交）。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 1517，launchd 托管）：batches=19（最后批次 2026-03-28，**15天前**），candidates=86（enqueued=37/legacy_dirty=30/throttled=19），errors=0；连续零错误运行 **43+ 天**；无新事件，属正常空轮询。
+- [x] M2 已激活：`dreaming_actions_ledger.jsonl` 新增 `ask_human` 条目（2026-04-09，high urgency，question="M2行动分发优先级：Telegram还是飞书？"）；M2 行动分发正式破冰！
+- [x] 做梦状态：最后运行 2026-04-06（dream_test_002，3条 entries）；04-09 ask_human 触发后无新做梦运行（属正常，间隔约束≥24h）；dreaming_state.json last_run_date 仍为 04-06。
+- [x] active_push ledger：最后 push 2026-04-03（9天前）；`data/governance/` 下有 100+ 个 `.lock` 文件（历史积压，待清理）。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md 本次巡检提交；② `ask_human` Telegram 问题待王大爷决策（飞书 vs Telegram）；③ `data/governance/*.lock` 积压清理（低优先级）；④ discussion-log 无增量 6 天，建议补档或归档。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 43+ 天；当前无新增风险。
+
+## 今日巡检（2026-04-11，周六）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **5 天**无新增。
+- [x] 核对代码基线增量：`origin/main` 保持在 `faeca4d`（feat(M2): dreaming action router + active_push buffer consumer）；本地 TODO.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（launchd 托管）：batches=19, candidates=enqueued:37/legacy_dirty:30/throttled:19；连续零错误运行 **42+ 天**；周六无新事件，属正常空轮询。
+- [x] M1 做梦延续：dreaming_entries 3条（2026-04-06），dreaming_actions_ledger 2条；M2（ask_human Telegram / propose_task Things / drive_conversation）仍未启动（**持续 5 天未推进**）。
+- [x] MECD pipeline：`faeca4d` M2 代码已在主线；C→D 链路保持接通；active_push buffer 正常消费。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 42+ 天（历史新高）；当前无新增风险。
+
+## 今日巡检（2026-04-10，周五）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 4 天无新增。
+- [x] 核对代码基线增量：`origin/main` 更新到 `faeca4d`（feat(M2): dreaming action router + active_push buffer consumer）；TODO.md + discussion-log.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 1517，launchd 托管）：batches=19, candidates=86, enqueued=37；连续零错误运行 **41+ 天**；最后 batch 2026-03-28T02:38:33Z（12天前），24h 窗口全零，属正常低活动/空事件期。
+- [x] M1 做梦延续：dreaming_entries 3条（2026-04-06），dreaming_actions_ledger 2条；M2（ask_human Telegram / propose_task Things / drive_conversation）仍未启动。
+- [x] MECD pipeline：`faeca4d` 推送了 M2 dreaming action router + active_push buffer consumer（远端确认）；C→D 链路保持接通。
+- [x] 本地未跟踪文件均为运行时产物（`data/dreaming/`、`data/dreaming_sessions/`、`data/dreaming_actions_ledger.jsonl`）；无源码漂移风险。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 41+ 天（里程碑）；当前无新增风险。
