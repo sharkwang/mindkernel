@@ -115,7 +115,7 @@ def _apply_threshold_strategy(cand: dict) -> tuple[str, str]:
     }
     
     status = status_map.get(decision.action, "observed_only")
-    return status, decision_note
+    return status, decision.action
 
 
 # ---------------------------------------------------------------------------
