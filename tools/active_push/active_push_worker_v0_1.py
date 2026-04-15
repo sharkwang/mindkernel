@@ -247,13 +247,19 @@ def scan_dreaming_buffer() -> list[dict]:
         text = entry.get("text", "")
         topic = entry.get("topic", "")
         urgency = entry.get("urgency", "medium")
-        entry_type = entry.get("type", "dreaming")
-
-        if entry_type == "emotion_action":
+        # Use action_type field if present (set by dreaming router for ask_human/propose_task)
+        action_type = entry.get("action_type", "")
+        if action_type == "ask_human":
+            prefix = "🤔"
+        elif action_type == "propose_task":
+            prefix = "🎯"
+        elif action_type == "drive_conversation":
             prefix = "💬"
-        elif entry_type == "association":
+        elif entry.get("type") == "emotion_action":
+            prefix = "💬"
+        elif entry.get("type") == "association":
             prefix = "🔗"
-        elif entry_type == "task_activation":
+        elif entry.get("type") == "task_activation":
             prefix = "🎯"
         else:
             prefix = "🌙"

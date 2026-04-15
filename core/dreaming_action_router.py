@@ -45,14 +45,14 @@ def push_to_active_buffer(
     urgency = action.get("urgency", "medium")
 
     # 构建展示文本
-    action_type = entry.get("dreaming_task", "dreaming")
+    actual_action = action.get("action", "")
     if opening_line:
         display_text = opening_line
     elif task_text:
         display_text = f"💡 建议：{task_text}"
     elif topic:
         display_text = f"💬 {topic}"
-    elif action_type == "ask_human" and action.get("question"):
+    elif actual_action == "ask_human" and action.get("question"):
         display_text = f"🤔 {action.get('question')}"
     else:
         display_text = f"🌙 做梦洞察（ID: {insight_id}）"
@@ -62,6 +62,7 @@ def push_to_active_buffer(
         "source": "dreaming",
         "insight_id": insight_id,
         "type": push_type,
+        "action_type": actual_action,
         "text": display_text,
         "urgency": urgency,
         "triggered_at": now_iso(),
