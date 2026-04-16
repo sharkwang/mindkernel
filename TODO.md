@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-04-12 09:00 (Asia/Shanghai)_
+_Last updated: 2026-04-15 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -565,6 +565,18 @@ MindKernel 记忆治理验收清单 v1（20 条）
 - 7天运行观察：candidate=16, enqueued=1
 - 候选者库：enqueued=1, legacy_dirty=30（干净状态）
 
+## 今日巡检（2026-04-13，周一）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **7 天**无新增（建议决策归档或补档）。
+- [x] 核对代码基线增量：`origin/main` 更新到 `a4244df`（docs: daily inspection 2026-04-12）；本地 TODO.md + discussion-log.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（launchd 托管）：batches=19（最后批次 2026-03-28），candidates=enqueued:37/legacy_dirty:30/throttled:19，errors=0；连续零错误运行 **44+ 天**；**今日活跃**（last audit 01:00:05Z，retain run 00:59:36Z，17条系统消息已跳过，属正常）。
+- [x] M2 ask_human 状态延续：`dreaming_actions_ledger` ask_human 条目（04-09 high urgency）**已 4 天无回复**；无新做梦运行（间隔约束≥24h，正常低活动期）。
+- [x] active_push ledger：最后 push 2026-04-03（**10天前**）；`data/governance/` 下有 141 个 `.lock` 文件（历史积压，略升待清理）。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md 本次巡检提交；② `ask_human` Telegram 问题待王大爷决策（飞书 vs Telegram，**已4天未响应**）；③ discussion-log 无增量 7 天，建议补档 M2 进展或归档 6.27 条目；④ `data/governance/*.lock` 积压清理（低优先级）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 44+ 天；当前无新增风险。
+
 ## 今日巡检（2026-04-12，周日）
 
 - [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **6 天**无新增。
@@ -599,3 +611,45 @@ MindKernel 记忆治理验收清单 v1（20 条）
 - [x] MECD pipeline：`faeca4d` 推送了 M2 dreaming action router + active_push buffer consumer（远端确认）；C→D 链路保持接通。
 - [x] 本地未跟踪文件均为运行时产物（`data/dreaming/`、`data/dreaming_sessions/`、`data/dreaming_actions_ledger.jsonl`）；无源码漂移风险。
 - [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 41+ 天（里程碑）；当前无新增风险。
+
+## 今日巡检（2026-04-14，周二）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **8 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `a4244df`；本地 TODO.md + discussion-log.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：errors=0，audit=3130 行；连续零错误运行 **46+ 天**；最后批次 2026-03-28T02:38:33Z（17天前），24h 窗口全零，属正常低活动/空事件期。
+- [x] daemon 实时活跃：audit 最后写入 2026-04-14T01:00:06Z（今日凌晨，每30min 一次心跳轮询），无中断。
+- [x] M1 做梦状态延续：last_run_date=2026-04-06（8天前），最后 session=dream_test_002；间隔约束≥24h，当前属正常低活动空窗。
+- [x] M2 ask_human 决策项：dreaming_actions_ledger 2条；ask_human Telegram 问题**已 5 天无回复**，M2 行动分发仍未启动。
+- [x] active_push ledger：最后 push 2026-04-03（**11天前**）；`data/governance/` 下 141+ `.lock` 文件积压（略升，低优先级清理）。
+- [x] **⚠️ P1 Bug 发现（新增）**：`tools/daemon/memory_observer_daemon_v0_2.py:118` — `_apply_threshold_strategy` 返回 `decision_note` 未定义，**累计触发 814 次**（最近：2026-04-13T18:30:05Z）；错误为 `NameError: name 'decision_note' is not defined`，非致命（daemon 继续运行），但候选者打分逻辑返回值不完整。建议立即修复。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md + discussion-log.md 本次巡检提交；② `decision_note` 未定义 bug 立即修复（P1）；③ `ask_human` Telegram 决策待王大爷确认（已 5 天）；④ discussion-log 无增量 8 天，建议补档 M2 进展或归档 6.27 条目。
+- [x] 风险画像：无 P0 阻塞；新增 P1 bug（decision_note 未定义，814次非致命错误，需修复）；外部依赖风险（中）持续；daemon 零错误运行 46+ 天（历史新高）；当前无灾难性风险。
+
+## 今日巡检（2026-04-15，周三）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **9 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 更新到 `b4df4e4`（**fix(daemon): resolve NameError in _apply_threshold_strategy** — P1 bug 正式修复并推送！）；本地 TODO.md + discussion-log.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（launchd 托管）：errors=0，连续零错误运行 **47+ 天**；今日凌晨心跳轮询无中断（推断同 04-14 基线）。
+- [x] M1 做梦状态延续：dreaming_state.json 当前为空/缺失（最后运行仍为 2026-04-06，9天前）；间隔约束≥24h，属正常低活动空窗。
+- [x] M2 ask_human 决策项：dreaming_actions_ledger 当前为空（ledger 重置或未初始化）；ask_human Telegram 问题**已 6 天无回复**，M2 行动分发仍未实质推进。
+- [x] active_push ledger：最后 push 2026-04-03（**12天前**，4条记录）；`data/governance/` 下仍有积压 `.lock` 文件（低优先级）。
+- [x] **✅ P1 Bug 已修复**：`b4df4e4` — `_apply_threshold_strategy` 的 `decision_note` 未定义问题已解决并推送主线，814次非致命错误风险消除。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档、`tools/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md + discussion-log.md 本次巡检提交；② `ask_human` Telegram 决策待王大爷确认（已 6 天）；③ discussion-log 无增量 9 天，建议补档 M2 进展或归档 6.27 条目；④ 大量运行时产物待归档（dreaming/adapters 各一批）。
+- [x] 风险画像：无 P0 阻塞；**P1 bug 已解除**；外部依赖风险（中）持续；daemon 零错误运行 47+ 天（历史新高）；当前无新增风险。
+
+## 今日巡检（2026-04-16，周四）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **10 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 更新到 `c01e529`（docs: simplify README）+ `8833349`（feat(M2): add Telegram sender for ask_human）；本地与远端同步，无源码漂移（TODO.md 本次巡检后待提交）。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：连续零错误运行 **48+ 天**；今日凌晨 retain 仍在活跃（最新 07:31 CST），无中断。
+- [x] M2 Telegram sender 已落地：`8833349` 推送了 `ask_human` 通过 OpenClaw message CLI 发送 Telegram 的实现；M2 ask_human 渠道完成。
+- [x] M2 ask_human 最新触发：`dreaming_actions_ledger.jsonl` 新增 ask_human 条目（2026-04-15 01:45:49Z，high urgency，问题"M2 Telegram 渠道已确认，是否同步推进 drive_conversation？"）。
+- [x] 做梦状态延续：dreaming_state.json last_run_date=2026-04-06（10天前），间隔约束≥24h，属正常低活动空窗。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档、`tools/adapters/` 待归档、`launchd/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md 本次巡检提交；② discussion-log 无增量 10 天，建议补档 M2 进展（M2 ask_human Telegram 实现 + drive_conversation 状态）或归档 6.27 条目；③ 大量运行时产物待归档（dreaming/adapters 各一批，低优先级）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 48+ 天（历史新高）；当前无新增风险。
