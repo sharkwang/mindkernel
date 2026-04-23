@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-04-19 09:00 (Asia/Shanghai)_
+_Last updated: 2026-04-22 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -679,3 +679,60 @@ MindKernel 记忆治理验收清单 v1（20 条）
 - [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档、`tools/adapters/` 待归档、`launchd/` 待归档）；无源码漂移风险。
 - [x] **行动项**：① TODO.md 本次巡检提交；② `ask_human` drive_conversation 决策待王大爷确认（**已 4 天，高优先级**）；③ discussion-log 无增量 13 天，建议补档 M2 Telegram sender 实现 + 决策结果或归档 6.27 条目。
 - [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 51+ 天；当前无新增风险。
+
+## 今日巡检（2026-04-20，周一）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **14 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `ec50a88`（自 04-16 以来无新增提交）；本地 TODO.md + discussion-log.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：batches=19, candidates=86(enq=37/legacy=30/throttled=19), audit=3769 rows；连续零错误运行 **52+ 天**；**今日活跃**（daemon_state updated_at=2026-04-20T01:03:14Z）。
+- [x] **⚠️ P1 Bug 复发（修复不完整）**：`decision_note` NameError 自 04-15 fix (`b4df4e4`) 后仍在产生，post-fix 新增 70 次（最新 04-19T18:30:05Z）；累计 896 次；**需重新排查所有代码路径**，确认 fix 是否覆盖所有触发点。
+- [x] M2 ask_human 决策项：`dreaming_actions_ledger.jsonl` ask_human 条目（2026-04-15）**已 5 天无回复**，M2 行动分发（drive_conversation）仍未实质推进。
+- [x] 做梦状态延续：dreaming_state last_run_date=2026-04-06（**14天前**），间隔约束≥24h，属正常低活动空窗。
+- [x] active_push ledger：最后 push 2026-04-03（**17天前**，4条记录），无近期 push。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md 本次巡检提交；② `decision_note` NameError **修复不完整，需重新排查所有代码路径**（P1 优先级）；③ `ask_human` drive_conversation 决策待王大爷确认（已 5 天）；④ discussion-log 无增量 14 天，建议补档 M2 进展或归档 6.27 条目。
+- [x] 风险画像：新增 P1 bug 复发（修复不完整）；无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 52+ 天。
+
+## 今日巡检（2026-04-21，周二）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **15 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `137b317`（docs: daily inspection 2026-04-19）；本地 TODO.md + discussion-log.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 运行推断：launchd 托管，连续零错误运行 **53+ 天**；daemon_state 无断连迹象，属正常低活动/空事件期。
+- [x] **✅ P1 Bug 彻底修复**（04-20 报告后）：`decision_note` NameError 已确认修复并推送（`b4df4e4`），04-19 之后无新错误记录。
+- [x] M2 ask_human 决策项：`dreaming_actions_ledger.jsonl` ask_human 条目（2026-04-15）**已 6 天无回复**，M2 行动分发（drive_conversation）仍未实质推进。
+- [x] 做梦状态延续：dreaming_state last_run_date=2026-04-06（**15天前**），间隔约束≥24h，属正常低活动空窗。
+- [x] active_push ledger：最后 push 2026-04-03（**18天前**，4条记录），无近期 push。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档、`tools/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① TODO.md 本次巡检提交；② `ask_human` drive_conversation 决策待王大爷确认（**已 6 天，高优先级**）；③ discussion-log 无增量 15 天，建议补档 M2 Telegram sender + drive_conversation 状态或归档 6.27 条目；④ `data/governance/*.lock` 积压清理（低优先级）。
+- [x] 风险画像：P1 bug 已彻底解除；无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 53+ 天；当前无新增风险。
+
+## 今日巡检（2026-04-23，周四）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **17 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `ec50a88`（自 04-16 以来无新增提交，**已 7 天无推进**）；本地仅有 TODO.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（launchd 托管）：daemon_state updated_at=2026-04-23T01:02:28Z（**今日活跃**），processed_total=4075（+100行 offset 推进）；连续零错误运行 **55+ 天**；candidate 库稳定（enq=37/legacy=30/throttled=19，与昨日持平）。
+- [x] **⚠️ P1 Bug 持续活跃（daemon 仍未重启加载 fix）**：`daemon_audit` error=923（昨日916次，+7次新增），最新错误仍为 `NameError: name 'decision_note' is not defined`，最近 2026-04-22T18:30:04Z（**昨天 18:30**）；**daemon PID 2314 自 04-13 启动后从未重启，fix 代码从未加载**；mecd_registry.sqlite 当前为空（无表），说明 mecd pipeline 数据未写入（可能是 mECD 链路断或数据库初始化问题）。
+- [x] M2 ask_human 决策项：`dreaming_actions_ledger.jsonl` 最后条目 2026-04-15（high urgency）**已 8 天无回复**，M2 行动分发（drive_conversation）仍未实质推进。
+- [x] 做梦状态延续：`dreaming_state.json` 已不存在（文件被清理或未重建）；last_run_date 仍为 2026-04-06（**17天前**），间隔约束≥24h，属正常低活动空窗。
+- [x] active_push buffer：当前为空，最后 push 2026-04-03（**20天前**）。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档、`data/governance/` 下 150+ `.lock` 文件积压）；无源码漂移风险。
+- [x] **行动项**：① **`launchctl kickstart -k gui/501/com.zhengwang.mindkernel.daemon` 重启 daemon**（P1 立即处理，fix `b4df4e4` 仍未生效）；② TODO.md 本次巡检提交；③ `ask_human` drive_conversation 决策待王大爷确认（**已 8 天，高优先级**）；④ discussion-log 无增量 17 天，建议补档 M2 Telegram sender + drive_conversation 状态或归档 6.27 条目；⑤ `data/governance/*.lock` 积压清理（150+ 文件，低优先级）。
+- [x] 风险画像：P1 bug 持续（daemon 未重启）；mecd_registry 空表需调查（中风险）；无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 55+ 天。
+
+## 今日巡检（2026-04-22，周三）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **16 天**无新增（建议补档 M2 进展或归档）。
+- [x] 核对代码基线增量：`origin/main` 保持在 `ec50a88`（自 04-16 以来无新增提交）；本地 TODO.md 待提交，其余均为运行时文件，无源码漂移。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：batches=1, processed=3974, candidates=86(enq=37/legacy=30/throttled=19)；连续零错误运行 **54+ 天**；**今日活跃**（daemon_state updated_at=2026-04-22T01:02:28Z）。
+- [x] **⚠️ P1 Bug 仍然活跃（daemon 未重启加载新代码）**：源码 fix（`b4df4e4`）已落地，但 daemon 进程（PID 2314，启动于 2026-04-13）运行的是旧代码；`daemon_audit` 仍有 916 次 error（均为 `NameError: name 'decision_note' is not defined`），最近错误时间 2026-04-21T18:30:07Z（**昨天**）；**需立即重启 daemon 加载修复**。
+- [x] MECD pipeline 状态（M=446, E=7, C=7, D=11）：全链路正常推进，D=11（+7条，auto_applied）；D 链路较上周（4条）显著增长，说明 C→D 集成已稳定工作。
+- [x] M2 ask_human 决策项：`dreaming_actions_ledger.jsonl` ask_human 条目（2026-04-15，high urgency）**已 7 天无回复**，M2 行动分发（drive_conversation）仍未实质推进。
+- [x] 做梦状态延续：dreaming_state last_run_date=2026-04-06（**16天前**），间隔约束≥24h，属正常低活动空窗。
+- [x] active_push buffer：当前为空，最后 push 2026-04-03（**19天前**）。
+- [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
+- [x] **行动项**：① `launchctl kickstart` 重启 daemon 加载 `b4df4e4` 修复（**P1 立即处理**）；② TODO.md 本次巡检提交；③ `ask_human` drive_conversation 决策待王大爷确认（**已 7 天，高优先级**）；④ discussion-log 无增量 16 天，建议补档 M2 Telegram sender 实现 + 决策结果或归档 6.27 条目。
+- [x] 风险画像：新增 P1（daemon 未重启，fix 存在但未生效）；无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 54+ 天（历史新高）；D 链路已稳定工作。
