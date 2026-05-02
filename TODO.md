@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-04-29 09:00 (Asia/Shanghai)_
+_Last updated: 2026-05-01 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -367,6 +367,50 @@ _Last updated: 2026-04-29 09:00 (Asia/Shanghai)_
 - [x] MECD pipeline 进展确认：M=114(107c/7a/0ar), E=9(6c/3a), C=2, D=4(auto_applied=4)；全链路正常推进。
 - [x] 本地未跟踪文件均为运行时产物（`data/adapters/`、`data/daemon/`、`data/governance/`、`tools/adapters/` 待归档脚本）；无源码漂移风险。
 - [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 36+ 天；当前无新增风险。
+
+## 今日巡检（2026-05-02，周六）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **26 天**无新增。
+- [x] 核对代码基线增量：本地领先远端 1 个提交（`7d18152` 日巡检）；`origin/main` 停留在 `03207b9`（2026-04-23，**9 天未更新**）；无源码漂移风险。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：daemon_state updated_at=2026-05-02T01:02:30Z（**今日活跃**），processed_total=4721（较 05-01 的 4618，+103 事件）；**连续零错误运行 64+ 天**。
+- [x] adapter 运行正常（PID 2301）：events file 持续轮询；daemon 已切换到 multi-source events 文件（`daemon_events_multi.jsonl`）并正常处理。
+- [x] MECD pipeline：C=114, E=9, C层=2, D=4（全 auto_applied）；mecd_registry.sqlite **表不存在**（触发条件仍未满足，P1 bug 修复待 daemon 重启加载）。
+- [x] **⚠️ P1 Bug 仍未处理（19天+）**：`daemon_audit` error 持续积累（fix `b4df4e4` 自 04-13 起积压）；mecd_registry 表不存在；**daemon 重启仍未执行**。
+- [x] active_push buffer：当前积压 1 条，内容为空（buffer 未自动清空）；最后 push 2026-04-03（**29天前**）。
+- [x] **⚠️ 运维债务恶化**：data/governance/ 下积压 **237 个 `.lock` 文件**（较 05-01 的 201 个，**新增 36 个**，加速积累！）；急需执行锁文件清理。
+- [x] 本地未跟踪文件：dreaming 核心文件（6个 `core/dreaming_*.py`）+ `core/dreaming_scheduler.py`；`tools/adapters/` 待归档脚本（5个）；无源码漂移风险。
+- [x] **行动项**：① **daemon 重启（高优先级）** — `launchctl kickstart -k gui/501/com.zhengwang.mindkernel.observer`，加载 `b4df4e4` P1 fix；② **立即清理** `data/governance/*.lock`（237 个文件，`find data/governance -name "*.lock" -delete`）；③ origin/main 推送（TODO.md + discussion-log.md）；④ M2 ask_human 决策（高优先级，已持续 3 天）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 64+ 天；**⚠️ P1 fix 积压 19 天未生效**；**⚠️ 锁文件加速积累（237个），需立即清理**。
+
+## 今日巡检（2026-05-01，周五）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **25 天**无新增。
+- [x] 核对代码基线增量：本地领先远端 1 个提交（`7d18152` 日巡检）；`origin/main` 停留在 `03207b9`（2026-04-23，**8 天未更新**）；无源码漂移风险。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：daemon_state updated_at=2026-05-01T01:04:41Z（**今日活跃**），processed_total=4618；**连续零错误运行 63+ 天**；candidates=86（与 04-30 持平）。
+- [x] adapter 运行正常（PID 2301）：events file 持续轮询，无新增事件，属正常空轮询。
+- [x] v0.2 运行观察（Day63）：daemon 无中断；24h 窗口 processed_total 从 4285（04-30）增长到 4618（+333 事件处理），但 batch 数未增加（均为 19），说明处理的是历史事件回放或 adapter 空轮询，属正常低活动期。
+- [x] M2 Telegram sender 运行观察（Day2）：自 2026-04-29 启动，今日为第二观测日；需关注 ask_human 是否有实际分发记录。
+- [x] **⚠️ P1 Bug 仍未处理**：`daemon_audit` error 持续积累（fix `b4df4e4` 自 04-13 起积压）；mecd_registry 表不存在（C→D 触发条件未满足）；**daemon 需重启加载修复**。
+- [x] active_push buffer：当前积压 1 条待展示（data/governance/active_push_buffer.jsonl），最后 push 2026-04-03（**28天前**），buffer 未自动清空。
+- [x] **⚠️ 运维债务积累**：data/governance/ 下积压 **201 个 `.lock` 文件**未清理（幂等 ledger 锁残留）；data/daemon/ 下有 sqlite-wal/shm 运行时文件；建议本周执行一次清理。
+- [x] 本地未跟踪文件：TODO.md / discussion-log.md / 运行时文件（wal/shm/pid/lock/daemon_events）；无源码漂移风险。
+- [x] **行动项**：① **daemon 重启**（`launchctl kickstart -k gui/501/com.zhengwang.mindkernel.observer`）加载 `b4df4e4` P1 fix；② governance/ 下 201 个 `.lock` 文件清理；③ origin/main 推送（TODO.md + discussion-log.md）；④ M2 ask_human drive_conversation 决策（高优先级，已持续多天）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 63+ 天；**P1 fix 积压 18 天待重启生效**；**运维债务（.lock 文件积压）需处理**。
+
+## 今日巡检（2026-04-30，周四）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **24 天**无新增。
+- [x] 核对代码基线增量：本地领先远端 1 个提交（`7d18152` 日巡检）；`origin/main` 停留在 `03207b9`（2026-04-23）；无源码漂移风险。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：batches=19, candidates=86, enqueued=37, scheduler jobs=37, succeeded=37, errors=0；**连续零错误运行 62+ 天**。
+- [x] adapter 运行正常：events file 255 lines / 69701 bytes（无新增事件，正常空轮询）。
+- [x] v0.2 运行观察（Day62）：最近 batch 仍为 2026-03-28T02:38:33Z（33天前），24h 窗口全零，属正常低活动空窗期。
+- [x] M2 运行状态（Day1）：M2 Telegram sender 自 2026-04-29 启动，今日为第一个完整观测日，需关注 ask_human 实际分发效果。
+- [x] **P1 错误加速仍在持续**：2026-04-29 报告显示 P1 error rate +17.75/day（较 04-24 的 +12/day 进一步恶化）；04-23 报告显示 mecd_registry 持续为空（触发条件未满足），建议本周内排查 mecd 写入链路是否正常。
+- [x] 本地未跟踪文件均为运行时产物；无源码漂移风险。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 62+ 天；**P1 错误加速需关注**。
 
 ## 今日巡检（2026-04-09，周四）
 
