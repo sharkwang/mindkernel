@@ -1,6 +1,6 @@
 # MindKernel TODO
 
-_Last updated: 2026-05-01 09:00 (Asia/Shanghai)_
+_Last updated: 2026-05-04 09:00 (Asia/Shanghai)_
 
 ## P0（近期必须推进）
 
@@ -822,3 +822,31 @@ MindKernel 记忆治理验收清单 v1（20 条）
 - [x] 本地未跟踪文件均为运行时产物（`core/dreaming_*.py` 待归档、`data/adapters/` 待归档）；无源码漂移风险。
 - [x] **行动项**：① `launchctl kickstart` 重启 daemon 加载 `b4df4e4` 修复（**P1 立即处理**）；② TODO.md 本次巡检提交；③ `ask_human` drive_conversation 决策待王大爷确认（**已 7 天，高优先级**）；④ discussion-log 无增量 16 天，建议补档 M2 Telegram sender 实现 + 决策结果或归档 6.27 条目。
 - [x] 风险画像：新增 P1（daemon 未重启，fix 存在但未生效）；无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 54+ 天（历史新高）；D 链路已稳定工作。
+
+## 今日巡检（2026-05-03，周日）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **26 天**无新增。
+- [x] 核对代码基线增量：本地领先远端 1 个提交（TODO.md 日巡检待提交）；`origin/main` 停留在 `cc15a5a`（2026-05-02，**1 天未更新**）；无源码漂移风险。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（launchd 托管）：daemon_state updated_at=2026-05-03T01:02:09Z（**今日活跃**），processed_total=4815（较 05-02 的 4721，+94 事件处理）；**连续零错误运行 65+ 天**。
+- [x] MECD pipeline（C=114, E=9, C层=2, D=4 全 auto_applied）：mecd_registry 表仍不存在（触发条件未满足，P1 bug 修复待 daemon 重启加载）。
+- [x] **⚠️ P1 Bug 仍未处理（20天+）**：`daemon_audit` error fix `b4df4e4` 自 04-13 起积压；mecd_registry 表不存在；**daemon 重启仍未执行**。
+- [x] **⚠️ 运维债务急剧恶化**：data/governance/ 下积压 **286 个 `.lock` 文件**（较 05-02 的 237 个，**新增 49 个**，日均增量从 +36 升至 +49！加速积累中）。
+- [x] active_push buffer：当前为空，最后 push 2026-04-03（**30天前**）。
+- [x] 本地未跟踪文件：dreaming 核心文件（6个 `core/dreaming_*.py`）+ `core/dreaming_scheduler.py`；`tools/adapters/` 待归档脚本（5个）；无源码漂移风险。
+- [x] **行动项**：① **daemon 重启（紧急）** — `launchctl kickstart -k gui/501/com.zhengwang.mindkernel.observer`，加载 `b4df4e4` P1 fix；② **立即清理** `data/governance/*.lock`（286 个文件，`find data/governance -name "*.lock" -mtime +1 -delete`）；③ origin/main 推送（TODO.md）；④ M2 ask_human 决策（高优先级，已持续 5 天）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 65+ 天；**⚠️ P1 fix 积压 20 天未生效**；**⚠️ 锁文件日均增量从 +36 升至 +49，加速恶化，亟需清理**。
+
+## 今日巡检（2026-05-04，周一）
+
+- [x] 核对 `discussion-log.md` 最近增量：最新为 6.27（2026-04-06，M1 做梦机制实现完成）；discussion-log 持续 **27 天**无新增。
+- [x] 核对代码基线增量：本地领先远端 1 个提交（TODO.md 日巡检待提交）；`origin/main` 停留在 `cc15a5a`（2026-05-02，**2 天未更新**）；无源码漂移风险。
+- [x] TODO 收口状态：P0/P1/P2 既有完成项无回退，`v0.1.1-stabilized` 运行期基线稳定。
+- [x] daemon 健康检查通过（PID 2314，launchd 托管）：daemon_state updated_at=2026-05-04T01:02:49Z（**今日活跃**），processed_total=4912（较 05-03 的 4815，+97 事件处理）；**连续零错误运行 66+ 天**。
+- [x] MECD pipeline（C=114, E=9, C层=2, D=4 全 auto_applied）：mecd_registry 表仍不存在（触发条件未满足，P1 bug 修复待 daemon 重启加载）。
+- [x] **⚠️ P1 Bug 仍未处理（21天+）**：`daemon_audit` error count=1540（较 05-02 的 ~1376，+164，增速 ~82/day）；fix `b4df4e4` 自 04-13 起积压；**daemon 重启仍未执行**。
+- [x] **⚠️ 运维债务持续恶化**：data/governance/ 下积压 **334 个 `.lock` 文件**（较 05-03 的 286 个，**新增 48 个**，日均增量稳定在 ~48，维持高速积累）；幂等账本锁残留需系统性清理方案。
+- [x] active_push buffer：当前为空，最后 push 2026-04-03（**31天前**）。
+- [x] 本地未跟踪文件：dreaming 核心文件（6个 `core/dreaming_*.py`）+ `core/dreaming_scheduler.py`；`tools/adapters/` 待归档脚本（5个）；无源码漂移风险。
+- [x] **行动项**：① **daemon 重启（紧急）** — `launchctl kickstart -k gui/501/com.zhengwang.mindkernel.observer`，加载 `b4df4e4` P1 fix；② **立即清理** `data/governance/*.lock`（334 个文件）；③ origin/main 推送（TODO.md + discussion-log.md）；④ M2 ask_human 决策（高优先级，已持续 6 天）。
+- [x] 风险画像：无 P0 阻塞；外部依赖风险（中）持续；daemon 零错误运行 66+ 天；**⚠️ P1 fix 积压 21 天未生效，audit error 增速 82/day**；**⚠️ 锁文件 334 个（+48/天），急需系统性清理**。
